@@ -75,7 +75,8 @@
   /* 候補の文字色は所属施設のカラーに連動(--zone-c はJSが設定) */
   .picker-list .opt { padding: 7px 10px; font-size: 13px; color: var(--zone-c, #dfe7f1); cursor: pointer; }
   .picker-list .opt:hover { background: #22304a; }
-  .picker-list .opt.selected { background: #17293a; }
+  /* 選択中の候補: 施設カラーより優先して強い赤で示す(現在地マーカーと同系色) */
+  .picker-list .opt.selected { color: #ff4757; font-weight: bold; background: #2a1620; }
   .picker-list .opt.shop-opt { font-size: 12px; }
 
   .node-label.shop {
