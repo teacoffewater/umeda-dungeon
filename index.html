@@ -101,7 +101,9 @@
   #panel button.secondary { background: #22304a; color: #aebfd6; font-weight: normal; font-size: 12px; margin-top: 6px; padding: 6px; }
   #route-info { margin-top: 12px; font-size: 12px; line-height: 1.7; max-height: 34vh; overflow-y: auto; }
   #route-info .summary { color: #7dffce; font-weight: bold; margin-bottom: 6px; font-size: 13px; }
-  #route-info .step { color: #c3d0e0; border-left: 2px solid #2fbf8f; padding-left: 8px; margin: 4px 0; }
+  #route-info .step { color: #c3d0e0; border-left: 2px solid #2fbf8f; padding-left: 8px; margin: 4px 0; cursor: pointer; border-radius: 0 6px 6px 0; }
+  #route-info .step:hover { background: rgba(120,150,190,0.12); }
+  #route-info .step.active { background: rgba(255,69,69,0.16); border-left-color: #ff4545 !important; }
   #route-info .step.stairs { border-left-color: #ffd97a; color: #ffe9b0; }
   #route-info .step.pass { border-left-color: #55708f; color: #9fb4cc; font-size: 11px; }
   #route-info .step.turn { border-left-color: #ffb050; color: #ffd9a0; font-weight: bold; }

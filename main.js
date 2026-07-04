@@ -1126,6 +1126,10 @@ let routeCurve = null;
 let marker = null;
 let startIcon = null;
 let camAnim = null; // ルート実行時のカメラ移動アニメーション
+// 案内文タップ → 赤い人がその地点までルート沿いに歩くアニメーション
+let routeStepUs = [];  // 案内行ごとのカーブ上パラメータu(0〜1)
+let walkU = 0;         // 赤い人の現在位置(u)
+let walkAnim = null;   // { from, to, start, dur }
 
 // 出発地が手前・ゴールが奥になる視点へ、ルート全体が収まる距離で移動
 function flyCameraToRoute(startId, goalId, pathIds) {
@@ -1323,6 +1327,9 @@ function clearRoute() {
   document.getElementById('route-info').innerHTML = '';
   document.body.classList.remove('route-active'); // スマホ: 入力シートに戻す
   applyViewOffset();
+  routeStepUs = [];
+  walkU = 0;
+  walkAnim = null;
 }
 
 function showRoute(startId, goalId) {
@@ -1395,17 +1402,20 @@ function showRoute(startId, goalId) {
   };
 
   const steps = [];
+  const stepNodes = []; // 各案内行が指す経路上のノード(タップで赤い人を移動させる先)
+  const pushStep = (html, node) => { steps.push(html); stepNodes.push(node); };
   const usedShopIds = new Set(); // 一度案内に使った店は再登場させない
   let leg = 0, legSegs = [], curZone = nodeById[startId].zone || null, firstLandmark = null;
   const flushLeg = () => {
+    const legEnd = legSegs.length ? legSegs[legSegs.length - 1][1] : null;
     // 12m未満の短い区間は通過店を並べない（館内の格子移動などのノイズ防止）
     if (leg >= 12) {
       const passed = shopsAlongLeg(legSegs, passExclude, usedShopIds);
       if (passed.length) {
         if (!firstLandmark && steps.length === 0) firstLandmark = passed[0];
-        steps.push(`<div class="step">🏪 ${passed.map(p => `「${p}」`).join(' → ')} の前を通過（約${Math.round(leg)}m）</div>`);
+        pushStep(`<div class="step">🏪 ${passed.map(p => `「${p}」`).join(' → ')} の前を通過（約${Math.round(leg)}m）</div>`, legEnd);
       } else if (leg >= 30) {
-        steps.push(`<div class="step">→ そのまま約${Math.round(leg)}m直進</div>`);
+        pushStep(`<div class="step">→ そのまま約${Math.round(leg)}m直進</div>`, legEnd);
       }
     }
     leg = 0;
@@ -1425,7 +1435,7 @@ function showRoute(startId, goalId) {
     const ez = edgeZoneByPair[pairKey(prevN.id, n.id)];
     if (ez && ez !== curZone) {
       flushLeg();
-      steps.push(`<div class="step zone">📍 ここから ${ZONES[ez].name}</div>`);
+      pushStep(`<div class="step zone">📍 ここから ${ZONES[ez].name}</div>`, prevN);
       curZone = ez;
     }
 
@@ -1438,7 +1448,7 @@ function showRoute(startId, goalId) {
       const anchor = vp ? nearestShopTo(vp.x, vp.z, prevN.floor) : null;
       const anchorTxt = anchor ? `「${shortShopName(anchor.name)}」の横の` : '';
       const dirWord = FLOOR_Y[n.floor] < FLOOR_Y[prevN.floor] ? '下りる' : '上がる';
-      steps.push(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}で ${n.floor}Fへ${dirWord}${evNote}</div>`);
+      pushStep(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}で ${n.floor}Fへ${dirWord}${evNote}</div>`, n);
       continue;
     }
 
@@ -1452,11 +1462,11 @@ function showRoute(startId, goalId) {
       flushLeg();
       const anchor = shop ? `「${shortShopName(shop.name)}」の前で` :
         (n.type !== 'junction' ? `${n.name}で` : '突き当たり・分岐を');
-      steps.push(`<div class="step turn">↪ ${anchor}${turn}へ曲がる</div>`);
+      pushStep(`<div class="step turn">↪ ${anchor}${turn}へ曲がる</div>`, n);
     } else if (n.type === 'spot' || n.type === 'station') {
       // 曲がらないが、広場や駅など見て分かる目標物は確認情報として出す
       flushLeg();
-      steps.push(`<div class="step">→ ${n.name} を通過</div>`);
+      pushStep(`<div class="step">→ ${n.name} を通過</div>`, n);
     }
   }
   flushLeg();
@@ -1468,6 +1478,28 @@ function showRoute(startId, goalId) {
   html += steps.join('');
   html += `<div class="step" style="border-left-color:#ff5d8f">🏁 到着：${nodeById[goalId].name}</div>`;
   info.innerHTML = html;
+
+  // 各案内行に経路上の位置(カーブ上のu)を割り当てる → タップで赤い人がそこまで歩く
+  {
+    const anchors = [startN, ...stepNodes, nodeById[goalId]];
+    const samples = routeCurve.getPoints(400);
+    const uOf = node => {
+      if (!node) return null;
+      const p = posOf(node).add(new THREE.Vector3(0, 7, 0)); // カーブ点は床+7
+      let best = 0, bd = Infinity;
+      for (let k = 0; k < samples.length; k++) {
+        const d = samples[k].distanceToSquared(p);
+        if (d < bd) { bd = d; best = k; }
+      }
+      return best / (samples.length - 1);
+    };
+    routeStepUs = anchors.map(uOf);
+    walkU = 0;
+    walkAnim = null;
+    info.querySelectorAll('.step').forEach((el, i) => {
+      if (routeStepUs[i] != null) el.dataset.stepI = i;
+    });
+  }
 
   // 案内文に登場した店をマップ上でもハイライト
   decorateRouteShops(usedShopIds);
@@ -1582,6 +1614,19 @@ document.getElementById('navigate').addEventListener('click', () => {
   if (startSel.value !== goalSel.value) showRoute(startSel.value, goalSel.value);
 });
 document.getElementById('reset').addEventListener('click', clearRoute);
+
+// 案内文の行をタップ → 赤い人(現在地マーカー)がその地点までルート沿いに歩く
+document.getElementById('route-info').addEventListener('click', e => {
+  const el = e.target.closest('.step');
+  if (!el || el.dataset.stepI === undefined || !routeCurve || !startIcon) return;
+  const u = routeStepUs[+el.dataset.stepI];
+  if (u == null) return;
+  document.querySelectorAll('#route-info .step.active').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  // 距離に応じた歩行時間(近い行はサッと、遠い行はゆっくり長く)
+  walkAnim = { from: walkU, to: u, start: performance.now(), dur: 500 + Math.abs(u - walkU) * 2500 };
+  camAnim = null; // ルート全体表示への自動移動中なら中断して人の追尾を優先
+});
 
 // 施設レイヤー（強調表示フィルタ）
 const activeZones = new Set();
@@ -1750,6 +1795,20 @@ function animate() {
       ring.scale.set(s, s, s);
       ring.material.opacity = 0.7 * (1 - phase);
     });
+  }
+  // 案内文タップによる赤い人の歩行(ルート沿い・階の上下も追従)
+  if (walkAnim && startIcon && routeCurve) {
+    const p = Math.min(1, (performance.now() - walkAnim.start) / walkAnim.dur);
+    const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    walkU = walkAnim.from + (walkAnim.to - walkAnim.from) * ease;
+    const pt = routeCurve.getPointAt(Math.max(0, Math.min(1, walkU)));
+    startIcon.position.set(pt.x, pt.y - 3.5, pt.z); // カーブ点(床+7)→人の基準(床+3.5)
+    // カメラは視角を保ったまま水平にパンして人を緩く追尾する
+    const fx = (pt.x - controls.target.x) * 0.06;
+    const fz = (pt.z - controls.target.z) * 0.06;
+    controls.target.x += fx; controls.target.z += fz;
+    camera.position.x += fx; camera.position.z += fz;
+    if (p >= 1) walkAnim = null;
   }
   controls.update();
   renderer.render(scene, camera);

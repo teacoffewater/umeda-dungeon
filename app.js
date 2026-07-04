@@ -24508,6 +24508,9 @@
       var marker = null;
       var startIcon = null;
       var camAnim = null;
+      var routeStepUs = [];
+      var walkU = 0;
+      var walkAnim = null;
       function flyCameraToRoute(startId, goalId, pathIds) {
         const s2 = posOf(nodeById[startId]), g2 = posOf(nodeById[goalId]);
         const box = new Box3();
@@ -24677,6 +24680,9 @@
         document.getElementById("route-info").innerHTML = "";
         document.body.classList.remove("route-active");
         applyViewOffset();
+        routeStepUs = [];
+        walkU = 0;
+        walkAnim = null;
       }
       function showRoute(startId, goalId) {
         clearRoute();
@@ -24738,16 +24744,22 @@
           return ang > 0 ? "\u5DE6" : "\u53F3";
         };
         const steps = [];
+        const stepNodes = [];
+        const pushStep = (html2, node) => {
+          steps.push(html2);
+          stepNodes.push(node);
+        };
         const usedShopIds = /* @__PURE__ */ new Set();
         let leg = 0, legSegs = [], curZone = nodeById[startId].zone || null, firstLandmark = null;
         const flushLeg = () => {
+          const legEnd = legSegs.length ? legSegs[legSegs.length - 1][1] : null;
           if (leg >= 12) {
             const passed = shopsAlongLeg(legSegs, passExclude, usedShopIds);
             if (passed.length) {
               if (!firstLandmark && steps.length === 0) firstLandmark = passed[0];
-              steps.push(`<div class="step">\u{1F3EA} ${passed.map((p) => `\u300C${p}\u300D`).join(" \u2192 ")} \u306E\u524D\u3092\u901A\u904E\uFF08\u7D04${Math.round(leg)}m\uFF09</div>`);
+              pushStep(`<div class="step">\u{1F3EA} ${passed.map((p) => `\u300C${p}\u300D`).join(" \u2192 ")} \u306E\u524D\u3092\u901A\u904E\uFF08\u7D04${Math.round(leg)}m\uFF09</div>`, legEnd);
             } else if (leg >= 30) {
-              steps.push(`<div class="step">\u2192 \u305D\u306E\u307E\u307E\u7D04${Math.round(leg)}m\u76F4\u9032</div>`);
+              pushStep(`<div class="step">\u2192 \u305D\u306E\u307E\u307E\u7D04${Math.round(leg)}m\u76F4\u9032</div>`, legEnd);
             }
           }
           leg = 0;
@@ -24763,7 +24775,7 @@
           const ez = edgeZoneByPair[pairKey(prevN.id, n.id)];
           if (ez && ez !== curZone) {
             flushLeg();
-            steps.push(`<div class="step zone">\u{1F4CD} \u3053\u3053\u304B\u3089 ${ZONES[ez].name}</div>`);
+            pushStep(`<div class="step zone">\u{1F4CD} \u3053\u3053\u304B\u3089 ${ZONES[ez].name}</div>`, prevN);
             curZone = ez;
           }
           if (prevN.floor !== n.floor) {
@@ -24775,7 +24787,7 @@
             const anchor = vp ? nearestShopTo(vp.x, vp.z, prevN.floor) : null;
             const anchorTxt = anchor ? `\u300C${shortShopName(anchor.name)}\u300D\u306E\u6A2A\u306E` : "";
             const dirWord = FLOOR_Y[n.floor] < FLOOR_Y[prevN.floor] ? "\u4E0B\u308A\u308B" : "\u4E0A\u304C\u308B";
-            steps.push(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}\u3067 ${n.floor}F\u3078${dirWord}${evNote}</div>`);
+            pushStep(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}\u3067 ${n.floor}F\u3078${dirWord}${evNote}</div>`, n);
             continue;
           }
           const turn = turnAt(i);
@@ -24787,10 +24799,10 @@
             }
             flushLeg();
             const anchor = shop ? `\u300C${shortShopName(shop.name)}\u300D\u306E\u524D\u3067` : n.type !== "junction" ? `${n.name}\u3067` : "\u7A81\u304D\u5F53\u305F\u308A\u30FB\u5206\u5C90\u3092";
-            steps.push(`<div class="step turn">\u21AA ${anchor}${turn}\u3078\u66F2\u304C\u308B</div>`);
+            pushStep(`<div class="step turn">\u21AA ${anchor}${turn}\u3078\u66F2\u304C\u308B</div>`, n);
           } else if (n.type === "spot" || n.type === "station") {
             flushLeg();
-            steps.push(`<div class="step">\u2192 ${n.name} \u3092\u901A\u904E</div>`);
+            pushStep(`<div class="step">\u2192 ${n.name} \u3092\u901A\u904E</div>`, n);
           }
         }
         flushLeg();
@@ -24801,6 +24813,29 @@
         html += steps.join("");
         html += `<div class="step" style="border-left-color:#ff5d8f">\u{1F3C1} \u5230\u7740\uFF1A${nodeById[goalId].name}</div>`;
         info.innerHTML = html;
+        {
+          const anchors = [startN, ...stepNodes, nodeById[goalId]];
+          const samples = routeCurve.getPoints(400);
+          const uOf = (node) => {
+            if (!node) return null;
+            const p = posOf(node).add(new Vector3(0, 7, 0));
+            let best = 0, bd = Infinity;
+            for (let k = 0; k < samples.length; k++) {
+              const d = samples[k].distanceToSquared(p);
+              if (d < bd) {
+                bd = d;
+                best = k;
+              }
+            }
+            return best / (samples.length - 1);
+          };
+          routeStepUs = anchors.map(uOf);
+          walkU = 0;
+          walkAnim = null;
+          info.querySelectorAll(".step").forEach((el, i) => {
+            if (routeStepUs[i] != null) el.dataset.stepI = i;
+          });
+        }
         decorateRouteShops(usedShopIds);
         document.body.classList.add("route-active");
         applyViewOffset();
@@ -24896,6 +24931,16 @@
         if (startSel.value !== goalSel.value) showRoute(startSel.value, goalSel.value);
       });
       document.getElementById("reset").addEventListener("click", clearRoute);
+      document.getElementById("route-info").addEventListener("click", (e) => {
+        const el = e.target.closest(".step");
+        if (!el || el.dataset.stepI === void 0 || !routeCurve || !startIcon) return;
+        const u = routeStepUs[+el.dataset.stepI];
+        if (u == null) return;
+        document.querySelectorAll("#route-info .step.active").forEach((s2) => s2.classList.remove("active"));
+        el.classList.add("active");
+        walkAnim = { from: walkU, to: u, start: performance.now(), dur: 500 + Math.abs(u - walkU) * 2500 };
+        camAnim = null;
+      });
       var activeZones = /* @__PURE__ */ new Set();
       function applyZoneFilter() {
         const filtering = activeZones.size > 0;
@@ -25045,6 +25090,20 @@
             ring.scale.set(s2, s2, s2);
             ring.material.opacity = 0.7 * (1 - phase);
           });
+        }
+        if (walkAnim && startIcon && routeCurve) {
+          const p = Math.min(1, (performance.now() - walkAnim.start) / walkAnim.dur);
+          const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+          walkU = walkAnim.from + (walkAnim.to - walkAnim.from) * ease;
+          const pt = routeCurve.getPointAt(Math.max(0, Math.min(1, walkU)));
+          startIcon.position.set(pt.x, pt.y - 3.5, pt.z);
+          const fx = (pt.x - controls.target.x) * 0.06;
+          const fz = (pt.z - controls.target.z) * 0.06;
+          controls.target.x += fx;
+          controls.target.z += fz;
+          camera.position.x += fx;
+          camera.position.z += fz;
+          if (p >= 1) walkAnim = null;
         }
         controls.update();
         renderer.render(scene, camera);
