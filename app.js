@@ -24951,8 +24951,22 @@
         if (u == null) return;
         document.querySelectorAll("#route-info .step.active").forEach((s2) => s2.classList.remove("active"));
         el.classList.add("active");
-        walkAnim = { from: walkU, to: u, start: performance.now(), dur: 500 + Math.abs(u - walkU) * 2500 };
-        camAnim = null;
+        const dur = 500 + Math.abs(u - walkU) * 2500;
+        walkAnim = { from: walkU, to: u, start: performance.now(), dur };
+        const dest = routeCurve.getPointAt(u);
+        const dirH = new Vector3().subVectors(camera.position, controls.target);
+        dirH.y = 0;
+        if (dirH.lengthSq() < 1) dirH.set(0, 0, 1);
+        else dirH.normalize();
+        const D = 175;
+        camAnim = {
+          fromPos: camera.position.clone(),
+          toPos: new Vector3(dest.x + dirH.x * D, dest.y + D, dest.z + dirH.z * D),
+          fromTgt: controls.target.clone(),
+          toTgt: dest.clone(),
+          start: performance.now(),
+          dur
+        };
       });
       var activeZones = /* @__PURE__ */ new Set();
       function applyZoneFilter() {
@@ -25084,7 +25098,7 @@
         requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
         if (camAnim) {
-          const p = Math.min(1, (performance.now() - camAnim.start) / 900);
+          const p = Math.min(1, (performance.now() - camAnim.start) / (camAnim.dur || 900));
           const e = 1 - Math.pow(1 - p, 3);
           camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
           controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
@@ -25110,12 +25124,6 @@
           walkU = walkAnim.from + (walkAnim.to - walkAnim.from) * ease;
           const pt = routeCurve.getPointAt(Math.max(0, Math.min(1, walkU)));
           startIcon.position.set(pt.x, pt.y - 3.5, pt.z);
-          const fx = (pt.x - controls.target.x) * 0.06;
-          const fz = (pt.z - controls.target.z) * 0.06;
-          controls.target.x += fx;
-          controls.target.z += fz;
-          camera.position.x += fx;
-          camera.position.z += fz;
           if (p >= 1) walkAnim = null;
         }
         controls.update();

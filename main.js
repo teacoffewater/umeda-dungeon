@@ -1640,8 +1640,23 @@ document.getElementById('route-info').addEventListener('click', e => {
   document.querySelectorAll('#route-info .step.active').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
   // 距離に応じた歩行時間(近い行はサッと、遠い行はゆっくり長く)
-  walkAnim = { from: walkU, to: u, start: performance.now(), dur: 500 + Math.abs(u - walkU) * 2500 };
-  camAnim = null; // ルート全体表示への自動移動中なら中断して人の追尾を優先
+  const dur = 500 + Math.abs(u - walkU) * 2500;
+  walkAnim = { from: walkU, to: u, start: performance.now(), dur };
+  // カメラも同じ時間をかけて、到着地点を見やすい距離・角度(斜め45°)でフレーミングする。
+  // 水平方向は現在の向きを保つので視点がぐるっと回らない
+  const dest = routeCurve.getPointAt(u);
+  const dirH = new THREE.Vector3().subVectors(camera.position, controls.target);
+  dirH.y = 0;
+  if (dirH.lengthSq() < 1) dirH.set(0, 0, 1); else dirH.normalize();
+  const D = 175; // 人がランドマークと一緒に見える近さ
+  camAnim = {
+    fromPos: camera.position.clone(),
+    toPos: new THREE.Vector3(dest.x + dirH.x * D, dest.y + D, dest.z + dirH.z * D),
+    fromTgt: controls.target.clone(),
+    toTgt: dest.clone(),
+    start: performance.now(),
+    dur,
+  };
 });
 
 // 施設レイヤー（強調表示フィルタ）
@@ -1791,7 +1806,7 @@ function animate() {
   const t = clock.getElapsedTime();
   // ルート実行時のカメラ移動（ユーザーが操作したら中断）
   if (camAnim) {
-    const p = Math.min(1, (performance.now() - camAnim.start) / 900);
+    const p = Math.min(1, (performance.now() - camAnim.start) / (camAnim.dur || 900));
     const e = 1 - Math.pow(1 - p, 3);
     camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
     controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
@@ -1819,11 +1834,7 @@ function animate() {
     walkU = walkAnim.from + (walkAnim.to - walkAnim.from) * ease;
     const pt = routeCurve.getPointAt(Math.max(0, Math.min(1, walkU)));
     startIcon.position.set(pt.x, pt.y - 3.5, pt.z); // カーブ点(床+7)→人の基準(床+3.5)
-    // カメラは視角を保ったまま水平にパンして人を緩く追尾する
-    const fx = (pt.x - controls.target.x) * 0.06;
-    const fz = (pt.z - controls.target.z) * 0.06;
-    controls.target.x += fx; controls.target.z += fz;
-    camera.position.x += fx; camera.position.z += fz;
+    // カメラ移動はcamAnim(タップ時に同じ時間で発火)が担当する
     if (p >= 1) walkAnim = null;
   }
   controls.update();
