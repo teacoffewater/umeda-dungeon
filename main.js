@@ -1124,7 +1124,7 @@ function dijkstra(start, goal) {
 let routeGroup = new THREE.Group();
 scene.add(routeGroup);
 let routeCurve = null;
-let marker = null;
+let markers = []; // ルート上を等間隔で流れる進行方向インジケータ(白球×4)
 let startIcon = null;
 let camAnim = null; // ルート実行時のカメラ移動アニメーション
 // 案内文タップ → 赤い人がその地点までルート沿いに歩くアニメーション
@@ -1321,7 +1321,7 @@ function clearRoute() {
   routeGroup = new THREE.Group();
   scene.add(routeGroup);
   routeCurve = null;
-  marker = null;
+  markers = [];
   startIcon = null;
   clearRouteShops();
   if (typeof resetZoneFocus === 'function') resetZoneFocus();
@@ -1366,11 +1366,15 @@ function showRoute(startId, goalId) {
   );
   routeGroup.add(tube);
 
-  marker = new THREE.Mesh(
-    new THREE.SphereGeometry(6, 20, 20),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x2fffa8, emissiveIntensity: 2.2 })
-  );
-  routeGroup.add(marker);
+  // 進行方向インジケータ: 小さな白球を等間隔に4個流し、どこから見ても向きが分かるように
+  markers = [];
+  const markerGeo = new THREE.SphereGeometry(3, 14, 14);
+  const markerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.6 });
+  for (let i = 0; i < 4; i++) {
+    const m = new THREE.Mesh(markerGeo, markerMat);
+    routeGroup.add(m);
+    markers.push(m);
+  }
 
   startIcon = makeStartPerson(posOf(nodeById[startId]));
   routeGroup.add(startIcon);
@@ -1813,9 +1817,11 @@ function animate() {
     controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
     if (p >= 1) camAnim = null;
   }
-  if (routeCurve && marker) {
-    const u = (t * 0.06) % 1;
-    marker.position.copy(routeCurve.getPointAt(u));
+  if (routeCurve && markers.length) {
+    markers.forEach((m, i) => {
+      const u = (t * 0.06 + i * 0.25) % 1;
+      m.position.copy(routeCurve.getPointAt(u));
+    });
   }
   // 現在地マーカー: 人型の浮遊＋足元のパルスリング
   if (startIcon) {

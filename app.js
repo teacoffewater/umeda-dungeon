@@ -24506,7 +24506,7 @@
       var routeGroup = new Group();
       scene.add(routeGroup);
       var routeCurve = null;
-      var marker = null;
+      var markers = [];
       var startIcon = null;
       var camAnim = null;
       var routeStepUs = [];
@@ -24674,7 +24674,7 @@
         routeGroup = new Group();
         scene.add(routeGroup);
         routeCurve = null;
-        marker = null;
+        markers = [];
         startIcon = null;
         clearRouteShops();
         if (typeof resetZoneFocus === "function") resetZoneFocus();
@@ -24712,11 +24712,14 @@
           new MeshStandardMaterial({ color: 16777215, emissive: 14540253, emissiveIntensity: 1.3 })
         );
         routeGroup.add(tube);
-        marker = new Mesh(
-          new SphereGeometry(6, 20, 20),
-          new MeshStandardMaterial({ color: 16777215, emissive: 3145640, emissiveIntensity: 2.2 })
-        );
-        routeGroup.add(marker);
+        markers = [];
+        const markerGeo = new SphereGeometry(3, 14, 14);
+        const markerMat = new MeshStandardMaterial({ color: 16777215, emissive: 16777215, emissiveIntensity: 1.6 });
+        for (let i = 0; i < 4; i++) {
+          const m = new Mesh(markerGeo, markerMat);
+          routeGroup.add(m);
+          markers.push(m);
+        }
         startIcon = makeStartPerson(posOf(nodeById[startId]));
         routeGroup.add(startIcon);
         routeGroup.add(makeGoalFlag(posOf(nodeById[goalId])));
@@ -25105,9 +25108,11 @@
           controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
           if (p >= 1) camAnim = null;
         }
-        if (routeCurve && marker) {
-          const u = t * 0.06 % 1;
-          marker.position.copy(routeCurve.getPointAt(u));
+        if (routeCurve && markers.length) {
+          markers.forEach((m, i) => {
+            const u = (t * 0.06 + i * 0.25) % 1;
+            m.position.copy(routeCurve.getPointAt(u));
+          });
         }
         if (startIcon) {
           const a = startIcon.userData.anim;
