@@ -23844,6 +23844,7 @@
       controls.target.set(-30, -10, -10);
       controls.enableDamping = true;
       controls.zoomSpeed = 3;
+      controls.zoomToCursor = true;
       controls.maxPolarAngle = Math.PI * 0.49;
       scene.add(new AmbientLight(8952251, 0.9));
       var dir = new DirectionalLight(16777215, 1.4);
@@ -24806,8 +24807,13 @@
           }
         }
         flushLeg();
-        let html = `<div class="summary">\u{1F6B6} \u7D04${Math.round(total)}m \u30FB \u5F92\u6B69\u7D04${minutes}\u5206</div>`;
         const startN = nodeById[startId];
+        const goalN = nodeById[goalId];
+        let html = `<div class="od">
+    <div class="od-row">\u{1F9CD} \u73FE\u5728\u5730: ${startN.name}\uFF08${startN.floor}F\uFF09</div>
+    <div class="od-row goal">\u{1F3C1} \u76EE\u7684\u5730: ${goalN.name}\uFF08${goalN.floor}F\uFF09</div>
+  </div>`;
+        html += `<div class="summary">\u{1F6B6} \u7D04${Math.round(total)}m \u30FB \u5F92\u6B69\u7D04${minutes}\u5206</div>`;
         const startZoneTxt = startN.zone && ZONES[startN.zone] ? `\uFF08\u3044\u307E\u3044\u308B\u5834\u6240: ${ZONES[startN.zone].name} ${startN.floor}F\uFF09` : "";
         html += `<div class="step">\u{1F9CD} \u300C${startN.name}\u300D\u3092\u51FA\u767A${startZoneTxt}${firstLandmark ? ` \u2014 \u300C${firstLandmark}\u300D\u304C\u898B\u3048\u308B\u65B9\u5411\u3078` : ""}</div>`;
         html += steps.join("");

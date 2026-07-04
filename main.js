@@ -470,6 +470,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(-30, -10, -10);
 controls.enableDamping = true;
 controls.zoomSpeed = 3; // ホイールズームの感度
+controls.zoomToCursor = true; // カーソル/ピンチ中心の地点に向かって拡大縮小(固定中心をやめる)
 controls.maxPolarAngle = Math.PI * 0.49;
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.9));
@@ -1471,8 +1472,14 @@ function showRoute(startId, goalId) {
   }
   flushLeg();
 
-  let html = `<div class="summary">🚶 約${Math.round(total)}m ・ 徒歩約${minutes}分</div>`;
   const startN = nodeById[startId];
+  const goalN = nodeById[goalId];
+  // サマリーの上に現在地・目的地を明示(スマホの案内表示では入力欄が隠れるため特に重要)
+  let html = `<div class="od">
+    <div class="od-row">🧍 現在地: ${startN.name}（${startN.floor}F）</div>
+    <div class="od-row goal">🏁 目的地: ${goalN.name}（${goalN.floor}F）</div>
+  </div>`;
+  html += `<div class="summary">🚶 約${Math.round(total)}m ・ 徒歩約${minutes}分</div>`;
   const startZoneTxt = startN.zone && ZONES[startN.zone] ? `（いまいる場所: ${ZONES[startN.zone].name} ${startN.floor}F）` : '';
   html += `<div class="step">🧍 「${startN.name}」を出発${startZoneTxt}${firstLandmark ? ` — 「${firstLandmark}」が見える方向へ` : ''}</div>`;
   html += steps.join('');
