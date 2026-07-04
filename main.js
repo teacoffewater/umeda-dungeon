@@ -1597,9 +1597,7 @@ function makePicker(rootId) {
 
 const startSel = makePicker('start');
 const goalSel = makePicker('goal');
-const findShopId = q => NAMED.find(n => n.type === 'shop' && n.name.includes(q))?.id;
-startSel.value = findShopId('マクドナルド') || 'hankyu';
-goalSel.value = findShopId('インデアンカレー') || 'kitashinchi';
+// 初期状態は出発地・目的地とも未選択(プレースホルダーの検索例だけ見せる)
 document.addEventListener('click', () => {
   // 入力欄にフォーカスが残っている間は閉じない。
   // シート移動(picker-editing)直後は、レイアウト変化で無関係な要素上のclickが発生するため、
@@ -1618,6 +1616,17 @@ document.addEventListener('click', () => {
 });
 
 document.getElementById('navigate').addEventListener('click', () => {
+  // 未選択のまま押されたら、該当する入力欄を一瞬赤くして知らせる
+  let missing = false;
+  for (const [rootId, sel] of [['start', startSel], ['goal', goalSel]]) {
+    if (!sel.value) {
+      missing = true;
+      const input = document.querySelector(`#${rootId} .picker-value`);
+      input.classList.add('missing');
+      setTimeout(() => input.classList.remove('missing'), 1600);
+    }
+  }
+  if (missing) return;
   if (startSel.value !== goalSel.value) showRoute(startSel.value, goalSel.value);
 });
 document.getElementById('reset').addEventListener('click', clearRoute);
@@ -1831,4 +1840,4 @@ addEventListener('resize', () => {
   labelRenderer.setSize(innerWidth, innerHeight);
 });
 
-// 初期状態はルート未実行のフラットな全体表示（出発地・目的地の例は選択済みにしておく）
+// 初期状態はルート未実行のフラットな全体表示(出発地・目的地は未選択)

@@ -62,6 +62,10 @@
   }
   input.picker-value::placeholder { color: #5d7089; }
   .picker.open .picker-value { border-color: #2fbf8f; }
+  input.picker-value.missing {
+    border-color: #ff5d5d; box-shadow: 0 0 0 2px rgba(255, 93, 93, 0.3);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
   .picker-list {
     display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 30;
     background: #141b28; border: 1px solid rgba(120,150,190,0.45); border-radius: 8px;

@@ -24918,9 +24918,6 @@
       }
       var startSel = makePicker("start");
       var goalSel = makePicker("goal");
-      var findShopId = (q) => NAMED.find((n) => n.type === "shop" && n.name.includes(q))?.id;
-      startSel.value = findShopId("\u30DE\u30AF\u30C9\u30CA\u30EB\u30C9") || "hankyu";
-      goalSel.value = findShopId("\u30A4\u30F3\u30C7\u30A2\u30F3\u30AB\u30EC\u30FC") || "kitashinchi";
       document.addEventListener("click", () => {
         const ae = document.activeElement;
         if (ae && ae.classList && ae.classList.contains("picker-value")) return;
@@ -24934,6 +24931,16 @@
         }
       });
       document.getElementById("navigate").addEventListener("click", () => {
+        let missing = false;
+        for (const [rootId, sel] of [["start", startSel], ["goal", goalSel]]) {
+          if (!sel.value) {
+            missing = true;
+            const input = document.querySelector(`#${rootId} .picker-value`);
+            input.classList.add("missing");
+            setTimeout(() => input.classList.remove("missing"), 1600);
+          }
+        }
+        if (missing) return;
         if (startSel.value !== goalSel.value) showRoute(startSel.value, goalSel.value);
       });
       document.getElementById("reset").addEventListener("click", clearRoute);
