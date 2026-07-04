@@ -24713,9 +24713,10 @@
         );
         routeGroup.add(tube);
         markers = [];
+        const markerCount = Math.max(2, Math.min(12, Math.round(total / 120)));
         const markerGeo = new SphereGeometry(3, 14, 14);
         const markerMat = new MeshStandardMaterial({ color: 16777215, emissive: 16777215, emissiveIntensity: 1.6 });
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < markerCount; i++) {
           const m = new Mesh(markerGeo, markerMat);
           routeGroup.add(m);
           markers.push(m);
@@ -25110,7 +25111,7 @@
         }
         if (routeCurve && markers.length) {
           markers.forEach((m, i) => {
-            const u = (t * 0.06 + i * 0.25) % 1;
+            const u = (t * 0.06 + i / markers.length) % 1;
             m.position.copy(routeCurve.getPointAt(u));
           });
         }

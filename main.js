@@ -1366,11 +1366,13 @@ function showRoute(startId, goalId) {
   );
   routeGroup.add(tube);
 
-  // 進行方向インジケータ: 小さな白球を等間隔に4個流し、どこから見ても向きが分かるように
+  // 進行方向インジケータ: 小さな白球を等間隔に流し、どこから見ても向きが分かるように。
+  // 個数はルート距離に連動(約120mに1個・2〜12個)し、短いルートで密集しないようにする
   markers = [];
+  const markerCount = Math.max(2, Math.min(12, Math.round(total / 120)));
   const markerGeo = new THREE.SphereGeometry(3, 14, 14);
   const markerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.6 });
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < markerCount; i++) {
     const m = new THREE.Mesh(markerGeo, markerMat);
     routeGroup.add(m);
     markers.push(m);
@@ -1819,7 +1821,7 @@ function animate() {
   }
   if (routeCurve && markers.length) {
     markers.forEach((m, i) => {
-      const u = (t * 0.06 + i * 0.25) % 1;
+      const u = (t * 0.06 + i / markers.length) % 1;
       m.position.copy(routeCurve.getPointAt(u));
     });
   }
