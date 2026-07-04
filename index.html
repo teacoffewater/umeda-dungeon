@@ -81,16 +81,18 @@
     font-size: 9px; padding: 1px 5px; color: #ffc7de;
     border-color: rgba(255, 150, 190, 0.45); background: rgba(40, 15, 28, 0.85);
   }
-  /* ルート経由店舗: 背景を施設カラーにして「どの施設エリアの店か」を地図の色と対応させる */
+  /* ルート経由店舗: 背景を施設カラーにして「どの施設エリアの店か」を地図の色と対応させる。
+     マップの邪魔にならないよう装飾(背景・枠・矢羽根)は30%、文字は60%の透明度に抑える */
   .node-label.route-shop {
-    position: relative; font-size: 10px; padding: 2px 7px; color: #ffffff; font-weight: bold;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.75);
-    border-color: var(--zone-border, rgba(255,255,255,0.55));
-    background: var(--zone-bg, rgba(30, 45, 40, 0.92));
+    position: relative; font-size: 10px; padding: 2px 7px; font-weight: bold;
+    color: rgba(255, 255, 255, 0.6);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+    border-color: var(--zone-border, rgba(255,255,255,0.3));
+    background: var(--zone-bg, rgba(30, 45, 40, 0.3));
   }
   .node-label.route-shop::after { /* ドットを指す矢羽根 */
     content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
-    border: 5px solid transparent; border-top-color: var(--zone-bg, rgba(30, 45, 40, 0.92));
+    border: 5px solid transparent; border-top-color: var(--zone-bg, rgba(30, 45, 40, 0.3));
   }
 
   .bldg-label {

@@ -1184,11 +1184,12 @@ function decorateRouteShops(shopIds) {
     div.className = 'node-label route-shop';
     div.textContent = shortShopName(nodeById[id].name);
     if (zone) {
-      // 背景は施設色を少し沈めて白文字を読めるように、枠は施設色そのまま
-      const bg = '#' + new THREE.Color(zone.color).multiplyScalar(0.62).getHexString();
-      const border = '#' + zone.color.toString(16).padStart(6, '0');
-      div.style.setProperty('--zone-bg', bg);
-      div.style.setProperty('--zone-border', border);
+      // 背景は施設色を少し沈めた色、枠は施設色そのまま。いずれも透明度30%(装飾を控えめに)
+      const hex = new THREE.Color(zone.color).multiplyScalar(0.62).getHexString();
+      const [r, g, b] = [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16));
+      const c = zone.color;
+      div.style.setProperty('--zone-bg', `rgba(${r}, ${g}, ${b}, 0.3)`);
+      div.style.setProperty('--zone-border', `rgba(${(c >> 16) & 255}, ${(c >> 8) & 255}, ${c & 255}, 0.3)`);
     }
     const label = new CSS2DObject(div);
     label.position.set(0, 6, 0);

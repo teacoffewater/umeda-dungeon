@@ -24561,10 +24561,11 @@
           div.className = "node-label route-shop";
           div.textContent = shortShopName(nodeById[id].name);
           if (zone) {
-            const bg = "#" + new Color(zone.color).multiplyScalar(0.62).getHexString();
-            const border = "#" + zone.color.toString(16).padStart(6, "0");
-            div.style.setProperty("--zone-bg", bg);
-            div.style.setProperty("--zone-border", border);
+            const hex = new Color(zone.color).multiplyScalar(0.62).getHexString();
+            const [r, g2, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+            const c = zone.color;
+            div.style.setProperty("--zone-bg", `rgba(${r}, ${g2}, ${b}, 0.3)`);
+            div.style.setProperty("--zone-border", `rgba(${c >> 16 & 255}, ${c >> 8 & 255}, ${c & 255}, 0.3)`);
           }
           const label = new CSS2DObject(div);
           label.position.set(0, 6, 0);
