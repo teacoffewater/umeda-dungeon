@@ -23309,8 +23309,10 @@
         osaka_sta: { name: "JR\u5927\u962A\u99C5 / \u30EB\u30AF\u30A2\u5468\u8FBA", color: 6266841, label: [690, 850] },
         diamor: { name: "\u30C7\u30A3\u30A2\u30E2\u30FC\u30EB\u5927\u962A", color: 4573352, label: [856, 1168] },
         nishi_umeda: { name: "\u897F\u6885\u7530 / \u30CF\u30FC\u30D3\u30B9", color: 10518489, label: [470, 1245] },
-        ekimae: { name: "\u5927\u962A\u99C5\u524D\u30D3\u30EB", color: 14249839, label: [890, 1258] },
-        sonechika: { name: "\u305D\u306D\u3061\u304B", color: 11569503, label: [995, 1372] },
+        ekimae: { name: "\u5927\u962A\u99C5\u524D\u30D3\u30EB", color: 14375526, label: [890, 1258] },
+        // 鮮明な赤(そねちかとの分離)
+        sonechika: { name: "\u305D\u306D\u3061\u304B", color: 4830916, label: [995, 1372] },
+        // シアン(隣接する駅前ビルの赤と対比)
         dotica: { name: "\u30C9\u30FC\u30B8\u30DE\u5730\u4E0B\u30BB\u30F3\u30BF\u30FC", color: 6270574, label: [630, 1480] }
       };
       var NODES = [
@@ -24877,6 +24879,9 @@
           el.className = "opt" + (n.type === "shop" ? " shop-opt" : "");
           el.dataset.id = n.id;
           el.textContent = `${n.name}\uFF08${n.floor}F\uFF09`;
+          if (n.zone && ZONES[n.zone]) {
+            el.style.setProperty("--zone-c", "#" + ZONES[n.zone].color.toString(16).padStart(6, "0"));
+          }
           el.addEventListener("pointerdown", (e) => {
             e.preventDefault();
             e.stopPropagation();

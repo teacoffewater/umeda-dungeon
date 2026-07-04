@@ -72,10 +72,11 @@
     max-height: 240px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
   }
   .picker.open .picker-list { display: block; }
-  .picker-list .opt { padding: 7px 10px; font-size: 13px; color: #dfe7f1; cursor: pointer; }
+  /* 候補の文字色は所属施設のカラーに連動(--zone-c はJSが設定) */
+  .picker-list .opt { padding: 7px 10px; font-size: 13px; color: var(--zone-c, #dfe7f1); cursor: pointer; }
   .picker-list .opt:hover { background: #22304a; }
-  .picker-list .opt.selected { color: #7dffce; background: #17293a; }
-  .picker-list .opt.shop-opt { font-size: 12px; color: #ffc7de; }
+  .picker-list .opt.selected { background: #17293a; }
+  .picker-list .opt.shop-opt { font-size: 12px; }
 
   .node-label.shop {
     font-size: 9px; padding: 1px 5px; color: #ffc7de;

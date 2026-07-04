@@ -27,8 +27,8 @@ const ZONES = {
   osaka_sta:   { name: 'JR大阪駅 / ルクア周辺',  color: 0x5f9fd9, label: [690, 850] },
   diamor:      { name: 'ディアモール大阪',      color: 0x45c8a8, label: [856, 1168] },
   nishi_umeda: { name: '西梅田 / ハービス',      color: 0xa07fd9, label: [470, 1245] },
-  ekimae:      { name: '大阪駅前ビル',          color: 0xd96f6f, label: [890, 1258] },
-  sonechika:   { name: 'そねちか',              color: 0xb0895f, label: [995, 1372] },
+  ekimae:      { name: '大阪駅前ビル',          color: 0xdb5a66, label: [890, 1258] },  // 鮮明な赤(そねちかとの分離)
+  sonechika:   { name: 'そねちか',              color: 0x49b6c4, label: [995, 1372] },  // シアン(隣接する駅前ビルの赤と対比)
   dotica:      { name: 'ドージマ地下センター',  color: 0x5fae6e, label: [630, 1480] },
 };
 
@@ -1557,6 +1557,10 @@ function makePicker(rootId) {
     el.className = 'opt' + (n.type === 'shop' ? ' shop-opt' : '');
     el.dataset.id = n.id;
     el.textContent = `${n.name}（${n.floor}F）`;
+    // 文字色は所属施設のカラーに連動(マップの色分けと同じ対応関係で覚えられる)
+    if (n.zone && ZONES[n.zone]) {
+      el.style.setProperty('--zone-c', '#' + ZONES[n.zone].color.toString(16).padStart(6, '0'));
+    }
     // clickだとinputのblurと競合するためpointerdownで確定
     el.addEventListener('pointerdown', e => {
       e.preventDefault();
