@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>梅田ダンジョン 3Dナビ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0e14; font-family: "Hiragino Sans", "Yu Gothic", system-ui, sans-serif; }
+  #app {
+    position: relative; width: 100%; height: 100%;
+    background: radial-gradient(ellipse 90% 70% at 50% 42%, #151d2c 0%, #0d1119 55%, #0b0e14 100%);
+  }
+  canvas { display: block; }
+
+  /* z-index:5 で独自のスタッキングコンテキストを作る。CSS2DRendererがラベル個々に
+     巨大なz-indexを振っても、この層(5)より上のUIパネル(10+)を突き抜けない */
+  #labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+  .node-label {
+    color: #cfd8e3; font-size: 11px; padding: 2px 7px; border-radius: 10px;
+    background: rgba(13, 18, 28, 0.75); border: 1px solid rgba(120, 150, 190, 0.35);
+    white-space: nowrap; transform: translateY(-16px);
+  }
+  .node-label.station { color: #ffd97a; border-color: rgba(255, 200, 90, 0.5); }
+  .node-label.on-route { color: #7dffce; border-color: rgba(90, 255, 190, 0.7); background: rgba(10, 40, 30, 0.85); }
+
+  .vert-badge {
+    font-size: 9px; font-weight: bold; letter-spacing: 0.5px;
+    padding: 1px 5px; border-radius: 6px; white-space: nowrap;
+  }
+  .vert-badge.ev { background: #7aa7ff; color: #0a1530; border: 1px solid #b9d2ff; }
+  .vert-badge.esc { background: #ffc23d; color: #3a2503; border: 1px solid #ffe1a0; }
+  .vert-badge.stairs { background: #7a8699; color: #10161f; border: 1px solid #aab6c9; }
+
+  .rail-label {
+    font-size: 9px; white-space: nowrap; opacity: 0.9;
+    padding: 1px 5px; border-radius: 8px;
+    background: rgba(13, 18, 28, 0.75); border: 1px solid rgba(120, 150, 190, 0.3);
+  }
+
+  .zone-label {
+    font-size: 13px; font-weight: bold; letter-spacing: 1px; white-space: nowrap;
+    text-shadow: 0 0 8px #000, 0 1px 3px #000;
+    transition: opacity 0.2s;
+  }
+  .zone-label.dimmed { opacity: 0.12; }
+
+  #panel {
+    position: absolute; top: 16px; left: 16px; width: 300px; z-index: 10;
+    background: rgba(13, 18, 28, 0.88); border: 1px solid rgba(120, 150, 190, 0.3);
+    border-radius: 12px; padding: 16px; color: #dfe7f1; backdrop-filter: blur(6px);
+  }
+  #panel h1 { font-size: 17px; letter-spacing: 1px; margin-bottom: 2px; color: #ffd97a; }
+  #panel .sub { font-size: 11px; color: #8fa3bb; margin-bottom: 12px; }
+  #panel label { display: block; font-size: 11px; color: #8fa3bb; margin: 8px 0 3px; }
+
+  .picker { position: relative; }
+  input.picker-value {
+    width: 100%; padding: 8px 10px; border-radius: 8px; font-size: 13px;
+    background: #141b28; color: #dfe7f1; border: 1px solid rgba(120,150,190,0.35);
+    font-family: inherit; outline: none; box-sizing: border-box;
+  }
+  input.picker-value::placeholder { color: #5d7089; }
+  .picker.open .picker-value { border-color: #2fbf8f; }
+  .picker-list {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 30;
+    background: #141b28; border: 1px solid rgba(120,150,190,0.45); border-radius: 8px;
+    max-height: 240px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  }
+  .picker.open .picker-list { display: block; }
+  .picker-list .opt { padding: 7px 10px; font-size: 13px; color: #dfe7f1; cursor: pointer; }
+  .picker-list .opt:hover { background: #22304a; }
+  .picker-list .opt.selected { color: #7dffce; background: #17293a; }
+  .picker-list .opt.shop-opt { font-size: 12px; color: #ffc7de; }
+
+  .node-label.shop {
+    font-size: 9px; padding: 1px 5px; color: #ffc7de;
+    border-color: rgba(255, 150, 190, 0.45); background: rgba(40, 15, 28, 0.85);
+  }
+  /* ルート経由店舗: 背景を施設カラーにして「どの施設エリアの店か」を地図の色と対応させる */
+  .node-label.route-shop {
+    position: relative; font-size: 10px; padding: 2px 7px; color: #ffffff; font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.75);
+    border-color: var(--zone-border, rgba(255,255,255,0.55));
+    background: var(--zone-bg, rgba(30, 45, 40, 0.92));
+  }
+  .node-label.route-shop::after { /* ドットを指す矢羽根 */
+    content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: var(--zone-bg, rgba(30, 45, 40, 0.92));
+  }
+
+  .bldg-label {
+    font-size: 9px; letter-spacing: 1px; color: #7488a8; white-space: nowrap;
+    opacity: 0.5; text-shadow: 0 0 6px #000, 0 1px 2px #000;
+  }
+  #panel button {
+    margin-top: 12px; width: 100%; padding: 9px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: bold; cursor: pointer;
+    background: linear-gradient(135deg, #2fbf8f, #1e8fbf); color: #06121c;
+  }
+  #panel button.secondary { background: #22304a; color: #aebfd6; font-weight: normal; font-size: 12px; margin-top: 6px; padding: 6px; }
+  #route-info { margin-top: 12px; font-size: 12px; line-height: 1.7; max-height: 34vh; overflow-y: auto; }
+  #route-info .summary { color: #7dffce; font-weight: bold; margin-bottom: 6px; font-size: 13px; }
+  #route-info .step { color: #c3d0e0; border-left: 2px solid #2fbf8f; padding-left: 8px; margin: 4px 0; }
+  #route-info .step.stairs { border-left-color: #ffd97a; color: #ffe9b0; }
+  #route-info .step.pass { border-left-color: #55708f; color: #9fb4cc; font-size: 11px; }
+  #route-info .step.turn { border-left-color: #ffb050; color: #ffd9a0; font-weight: bold; }
+  #route-info .step.zone { border-left-color: #8fa3bb; color: #8fa3bb; font-size: 11px; letter-spacing: 1px; }
+
+  /* 右上: 表示トグルは横一列のピル。ONは✓、OFFは減光＋"−"で状態が一目で分かる */
+  #floor-toggle {
+    position: absolute; right: 16px; top: 16px; z-index: 11; display: flex; flex-direction: row; gap: 6px;
+  }
+  #floor-toggle .chip {
+    background: rgba(13, 18, 28, 0.88); border: 1px solid rgba(120,150,190,0.35); color: #dfe7f1;
+    border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer; user-select: none;
+    text-align: center; white-space: nowrap;
+  }
+  #floor-toggle .chip::before { content: "✓ "; color: #7dffce; font-weight: bold; }
+  #floor-toggle .chip.off { opacity: 0.45; }
+  #floor-toggle .chip.off::before { content: "− "; color: #8fa3bb; }
+
+  /* 施設パネルはトグル列の下に。あふれる場合は内部スクロール（凡例と重ねない） */
+  #zone-panel {
+    position: absolute; right: 16px; top: 58px; z-index: 10; width: 190px;
+    max-height: calc(100vh - 74px - 180px); overflow-y: auto;
+    background: rgba(13, 18, 28, 0.88); border: 1px solid rgba(120,150,190,0.3);
+    border-radius: 10px; padding: 10px 12px; color: #dfe7f1; backdrop-filter: blur(6px);
+  }
+  #zone-panel .zp-title { font-size: 12px; color: #8fa3bb; margin-bottom: 6px; }
+  .zchip {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; padding: 4px 6px; border-radius: 6px; cursor: pointer; user-select: none;
+    border: 1px solid transparent; color: #c3d0e0;
+  }
+  .zchip:hover { background: #1a2536; }
+  .zchip.active { background: #17293a; border-color: rgba(90, 255, 190, 0.5); color: #7dffce; }
+  #zone-clear {
+    margin-top: 6px; font-size: 11px; color: #8fa3bb; text-align: center; cursor: pointer;
+    padding: 4px; border-radius: 6px; border: 1px solid rgba(120,150,190,0.25);
+  }
+  #zone-clear:hover { background: #1a2536; }
+  .node-label.dimmed { opacity: 0.12; }
+
+  #legend {
+    position: absolute; right: 16px; bottom: 16px; z-index: 10; font-size: 11px; color: #a9bacf;
+    background: rgba(13,18,28,0.85); border: 1px solid rgba(120,150,190,0.3); border-radius: 10px; padding: 10px 12px; line-height: 1.9;
+  }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+  #hint { position: absolute; bottom: 16px; left: 16px; z-index: 10; font-size: 11px; color: #6e819a; }
+
+  .btns { display: contents; } /* デスクトップは従来どおり縦積み */
+
+  /* ---- スマホ(〜640px): 上半分=地図 / 下半分=ルート入力・案内のボトムシート ---- */
+  @media (max-width: 640px) {
+    #floor-toggle {
+      top: 8px; left: 8px; right: 8px; gap: 4px; justify-content: space-between;
+    }
+    #floor-toggle .chip { flex: 1; padding: 6px 0; font-size: 11px; }
+    /* 入力状態: 中身ぶんの高さだけ使い、残りは全部マップ。案内用の余白は確保しない */
+    #panel {
+      top: auto; bottom: 0; left: 0; right: 0; width: auto; height: auto;
+      padding: 10px 14px calc(8px + env(safe-area-inset-bottom));
+      border-radius: 16px 16px 0 0; border-left: none; border-right: none; border-bottom: none;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    #panel h1 { font-size: 14px; }
+    #panel .sub { display: none; }
+    #panel label { margin: 5px 0 2px; }
+    .btns { display: flex; gap: 8px; align-items: stretch; margin-top: 10px; }
+    .btns #navigate { flex: 2; margin-top: 0; }
+    .btns #reset { flex: 1; margin-top: 0; font-size: 13px; padding: 9px 0; }
+    #route-info { display: none; } /* 入力状態では案内領域そのものを持たない */
+    #zone-panel, #legend, #hint { display: none; } /* 地図とルートに集中させる */
+
+    /* 案内状態(route-active): 入力欄を隠して案内に切り替え。シートは40vhまで */
+    body.route-active #panel { height: 40vh; }
+    body.route-active #panel h1,
+    body.route-active #panel label,
+    body.route-active .picker,
+    body.route-active #navigate { display: none; }
+    body.route-active .btns #reset { flex: 1; }
+    body.route-active #route-info {
+      display: block; flex: 1; min-height: 0; overflow-y: auto; margin-top: 2px;
+    }
+    /* 案内状態では「リセット」だけを下端に残す */
+    body.route-active .btns { order: 2; margin-top: 8px; }
+    body.route-active #route-info { order: 1; }
+    /* 候補リストは上向き(地図側)に開く: 下向きだと目的地入力やキーボードと重なる */
+    .picker-list {
+      top: auto; bottom: calc(100% + 6px); max-height: 38vh;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.6);
+    }
+    /* 入力中: シートを画面上部へ移動してキーボードから遠ざける。候補は下向きに開く */
+    body.picker-editing #panel {
+      top: 46px; bottom: auto; height: auto; max-height: 52vh;
+      border-radius: 12px; border: 1px solid rgba(120,150,190,0.3);
+      left: 8px; right: 8px;
+    }
+    body.picker-editing #route-info { display: none; }
+    body.picker-editing .picker-list {
+      top: calc(100% + 4px); bottom: auto; max-height: 34vh;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="labels"></div>
+
+  <div id="panel">
+    <h1>⚔ 梅田ダンジョン 3Dナビ</h1>
+    <div class="sub">日本一複雑と噂の梅田地下街を3Dマップで攻略</div>
+    <label>出発地（いま近くにある店を検索）</label>
+    <div class="picker" id="start">
+      <input class="picker-value" type="text" placeholder="店名で検索（例: マクド）" />
+      <div class="picker-list"></div>
+    </div>
+    <label>目的地</label>
+    <div class="picker" id="goal">
+      <input class="picker-value" type="text" placeholder="店名で検索（例: インディアンカレー）" />
+      <div class="picker-list"></div>
+    </div>
+    <div class="btns">
+      <button id="navigate">ルート案内スタート</button>
+      <button id="reset" class="secondary">リセット</button>
+    </div>
+    <div id="route-info"></div>
+  </div>
+
+  <div id="floor-toggle">
+    <div class="chip" id="chip-B1" data-floor="B1" title="地下1階の表示切替">B1F</div>
+    <div class="chip" id="chip-B2" data-floor="B2" title="地下2階の表示切替">B2F</div>
+    <div class="chip" id="chip-labels" title="施設名などの文字の表示切替">文字</div>
+    <div class="chip" id="chip-shops" title="店舗ドットの表示切替">店舗</div>
+    <div class="chip" id="chip-buildings" title="地上のビル・道路の表示切替">ビル</div>
+  </div>
+
+  <div id="zone-panel">
+    <div class="zp-title">施設レイヤー（クリックで強調）</div>
+    <div id="zone-chips"></div>
+    <div id="zone-clear">すべて表示に戻す</div>
+  </div>
+
+  <div id="legend">
+    <div><span class="dot" style="background:#ffa8cd"></span>店舗（施設色の小さな点）</div>
+    <div><span class="vert-badge ev">EV</span> エレベーター</div>
+    <div><span class="vert-badge esc">ESC</span> エスカレーター</div>
+    <div><span class="vert-badge stairs">階段</span> 階段</div>
+    <div><span class="dot" style="background:#ffffff"></span>案内ルート・経由店舗</div>
+    <div style="margin-top:4px; color:#6e819a">※ 位置関係はデフォルメした概略図です</div>
+  </div>
+
+  <div id="hint">ドラッグで回転 / ホイールでズーム / スポットをクリックで出発地・目的地を選択</div>
+</div>
+
+<script defer src="./app.js?v=2"></script>
+</body>
+</html>
