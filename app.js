@@ -24713,7 +24713,7 @@
         );
         routeGroup.add(tube);
         markers = [];
-        const markerCount = Math.max(2, Math.min(12, Math.round(total / 120)));
+        const markerCount = Math.max(2, Math.min(12, Math.round(total / 100)));
         const markerGeo = new SphereGeometry(3, 14, 14);
         const markerMat = new MeshStandardMaterial({ color: 16777215, emissive: 16777215, emissiveIntensity: 1.6 });
         for (let i = 0; i < markerCount; i++) {
