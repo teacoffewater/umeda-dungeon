@@ -24263,9 +24263,29 @@
       }
       var beamGeo = new CylinderGeometry(0.7, 0.7, FLOOR_Y.B1 - FLOOR_Y.B2, 8);
       var evPillarGeo = new BoxGeometry(3.2, 9, 3.2);
-      var escWedgeGeo = new BoxGeometry(7, 1.5, 3);
       var stairGeoA = new BoxGeometry(4.6, 1.4, 3);
       var stairGeoB = new BoxGeometry(2.3, 1.4, 3);
+      function makeEscGeo(descending) {
+        const steps = 4, sw = 1.9, sh = 1.35, landing = 2.8, depth = 5;
+        const s2 = new Shape();
+        s2.moveTo(0, 0);
+        let x = 0, y = 0;
+        for (let i = 0; i < steps; i++) {
+          s2.lineTo(x + sw, y);
+          x += sw;
+          s2.lineTo(x, y + sh);
+          y += sh;
+        }
+        s2.lineTo(x + landing, y);
+        s2.lineTo(x + landing, 0);
+        s2.lineTo(0, 0);
+        const geo = new ExtrudeGeometry(s2, { depth, bevelEnabled: false, steps: 1 });
+        geo.translate(-(x + landing) / 2, 0, -depth / 2);
+        if (descending) geo.scale(-1, 1, 1);
+        return geo;
+      }
+      var escGeoUp = makeEscGeo(false);
+      var escGeoDown = makeEscGeo(true);
       var concourseMat = new MeshStandardMaterial({ color: 3228511, emissive: 857378, roughness: 0.65 });
       neutralMats.push(concourseMat);
       var stubMat = new MeshStandardMaterial({ color: 3030876, emissive: 725536, roughness: 0.7 });
@@ -24309,9 +24329,8 @@
             m.position.set(x, y + 4.5, z);
             vertGroup.add(m);
           } else if (v.type === "esc") {
-            const m = new Mesh(escWedgeGeo, padMats.esc);
-            m.position.set(x, y + 2.4, z);
-            m.rotation.z = 0.5;
+            const m = new Mesh(y === yB1 ? escGeoDown : escGeoUp, padMats.esc);
+            m.position.set(x, y + 0.3, z);
             vertGroup.add(m);
           } else {
             const stepA = new Mesh(stairGeoA, padMats.stairs);

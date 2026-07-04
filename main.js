@@ -855,11 +855,29 @@ for (const [type, color] of Object.entries(VERT_COLORS)) {
   });
 }
 const beamGeo = new THREE.CylinderGeometry(0.7, 0.7, FLOOR_Y.B1 - FLOOR_Y.B2, 8);
-// EV=縦長ピラー / ESC=斜めウェッジ / 階段=2段ステップ
+// EV=縦長ピラー / ESC=ステップ状ウェッジ(下り・上り) / 階段=2段ステップ
 const evPillarGeo = new THREE.BoxGeometry(3.2, 9, 3.2);
-const escWedgeGeo = new THREE.BoxGeometry(7, 1.5, 3);
 const stairGeoA = new THREE.BoxGeometry(4.6, 1.4, 3);
 const stairGeoB = new THREE.BoxGeometry(2.3, 1.4, 3);
+
+// エスカレーターのアイコン: 側面が階段状のくさび形(上部に踊り場)を押し出して作る。
+// descending=false は左低→右高の「上り」、true は左高→右低の「下り」
+function makeEscGeo(descending) {
+  const steps = 4, sw = 1.9, sh = 1.35, landing = 2.8, depth = 5;
+  const s = new THREE.Shape();
+  s.moveTo(0, 0);
+  let x = 0, y = 0;
+  for (let i = 0; i < steps; i++) { s.lineTo(x + sw, y); x += sw; s.lineTo(x, y + sh); y += sh; } // 踏面→蹴上
+  s.lineTo(x + landing, y);  // 上部の踊り場
+  s.lineTo(x + landing, 0);  // 背面を下ろす
+  s.lineTo(0, 0);            // 底辺を戻す
+  const geo = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, steps: 1 });
+  geo.translate(-(x + landing) / 2, 0, -depth / 2); // 長さ・幅を中心に
+  if (descending) geo.scale(-1, 1, 1);              // 左右反転で下り向きに
+  return geo;
+}
+const escGeoUp = makeEscGeo(false);
+const escGeoDown = makeEscGeo(true);
 
 const concourseMat = new THREE.MeshStandardMaterial({ color: 0x31435f, emissive: 0x0d1522, roughness: 0.65 });
 neutralMats.push(concourseMat);
@@ -912,9 +930,9 @@ for (const v of VERTICALS) {
       m.position.set(x, y + 4.5, z);
       vertGroup.add(m);
     } else if (v.type === 'esc') {
-      const m = new THREE.Mesh(escWedgeGeo, padMats.esc);
-      m.position.set(x, y + 2.4, z);
-      m.rotation.z = 0.5;
+      // 上のフロア(B1)は下り、下のフロア(B2)は上りの形状にする
+      const m = new THREE.Mesh(y === yB1 ? escGeoDown : escGeoUp, padMats.esc);
+      m.position.set(x, y + 0.3, z);
       vertGroup.add(m);
     } else {
       const stepA = new THREE.Mesh(stairGeoA, padMats.stairs);
