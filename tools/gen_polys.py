@@ -57,13 +57,9 @@ for a, b, w, zone, fl in edges:
 
 NAME_ZONE = {'そねちか': ('sonechika', 'B1'), 'ガーデンアベニュー': ('nishi_umeda', 'B1')}
 # 多数決だと誤るway(駅前地下道・曽根崎地下歩道系はうめちか)
-SKIP_IDS = {1320007665, 1320007666, 1320007668, 1320007669, 1320007670,
+SKIP_IDS = {1320007664, 1320007665, 1320007666, 1320007668, 1320007669, 1320007670,
             1316299598, 1316299599, 1316299600}  # 泉の水まわりの微小断片(2〜6px)は飛地しか生まない
-ID_ZONE = {1010195567: ('_neutral', 'B1'),  # 御堂筋横断の連絡地下道(中立)
-           1010195572: ('osaka_sta', 'B1'),  # 駅コンコース南支線(重なる区間は先行ゾーンが取る)
-           1010195576: ('whity', 'B1'),     # プチシャン東(阪急東通り側)
-           747189969: ('sanban', 'B1'), 756534634: ('sanban', 'B1'), 885099466: ('sanban', 'B1'),
-           1010195556: ('umechika', 'B1'), 1010195558: ('umechika', 'B1'),
+ID_ZONE = {747189969: ('sanban', 'B1'), 756534634: ('sanban', 'B1'), 885099466: ('sanban', 'B1'),
            }
 OSM_SKIP_HW = {'steps', 'motorway_link', 'tertiary', 'unclassified', 'service', 'elevator'}
 osm_ways = []   # (LineString(px), zone, floor)
@@ -91,26 +87,34 @@ for e in osm['elements']:
     name = t.get('name', '')
     if name in NAME_ZONE:
         osm_ways.append((ls, *NAME_ZONE[name])); continue
-    # 線分を等間隔サンプルして最寄り自エッジのゾーンを多数決
-    votes = {}
-    n_samp = max(3, min(12, int(ls.length / 20)))
-    ok = 0
-    for i in range(n_samp + 1):
-        p = ls.interpolate(ls.length * i / n_samp)
+    # 25px区間ごとに最寄り自エッジのゾーンへ割り当てる(長いwayはゾーン境界で分割される)
+    n_seg = max(2, int(ls.length / 25))
+    seg_zone = []
+    for i in range(n_seg):
+        p = ls.interpolate(ls.length * (i + 0.5) / n_seg)
         best_d, best_z = 1e9, None
-        for g, z, fl in edge_geoms:
-            d = g.distance(p)
-            if d < best_d:
-                best_d, best_z = d, (z, fl)
-        if best_d < 35 and best_z:
-            votes[best_z] = votes.get(best_z, 0) + 1
-            ok += 1
-    if ok < (n_samp + 1) * 0.5:
-        continue  # グラフから遠い(範囲外)通路は捨てる
-    (zone, fl), _ = max(votes.items(), key=lambda kv: kv[1])
-    if zone in ('_neutral', 'bldg'):
-        continue
-    osm_ways.append((ls, zone, fl))
+        for gl, z, fl in edge_geoms:
+            dd = gl.distance(p)
+            if dd < best_d:
+                best_d, best_z = dd, (z, fl)
+        seg_zone.append(best_z if best_d < 35 else None)
+    # 連続する同一ゾーン区間をまとめて採用
+    i = 0
+    while i < n_seg:
+        if seg_zone[i] is None:
+            i += 1; continue
+        j = i
+        while j + 1 < n_seg and seg_zone[j + 1] == seg_zone[i]:
+            j += 1
+        zone, fl = seg_zone[i]
+        if zone != 'bldg':
+            t0 = ls.length * i / n_seg
+            t1 = ls.length * (j + 1) / n_seg
+            sub = [ls.interpolate(t0)] + [p for k, p in enumerate(
+                (ls.interpolate(ls.length * m2 / n_seg) for m2 in range(i + 1, j + 1)), 1)] + [ls.interpolate(t1)]
+            from shapely.geometry import LineString as _LS
+            osm_ways.append((_LS([(q.x, q.y) for q in sub]), zone, fl))
+        i = j + 1
 print(f'OSM ways adopted: {len(osm_ways)}')
 
 # OSM中心線に与えるゾーン既定の帯幅(マップpx)。自エッジは各エッジのwを使う
@@ -229,6 +233,8 @@ HAND_PLATES = [
     # (floor, zone, [[x,y],...])  ※検証しながら追加・調整する
     # 阪急百貨店前コンコース(公共歩行空間。ホワイティではなく梅田地下道系)
     ('B1', 'umechika', [[906, 702], [1002, 702], [1034, 746], [1034, 792], [954, 800], [906, 788]]),
+    # ディアモール マーケットストリート(阪神ビル外形の凹み部を通る。店3軒が実在)
+    ('B1', 'diamor', [[926, 1062], [965, 1062], [965, 1094], [926, 1094]]),
     # 阪神前広場〜うめちか本体(阪急百と阪神百の間、御堂筋直下の面)
     # 百貨店ビル内部はビルマスクが自動で除くため外形は広めに定義
     ('B1', 'umechika', [[840, 920], [1028, 920], [1028, 1010], [850, 1012]]),
@@ -294,6 +300,10 @@ for floor in ('B1', 'B2'):
         for p in polys:
             if p.area < min_area:
                 continue
+            if zone not in FACILITY_BLD and p.area < 120:
+                others = [q for q in polys if q is not p]
+                if not others or min(p.distance(q) for q in others) > 15:
+                    continue  # 施設に挟まれて残った微小な切れ端は捨てる
             ext = [[round(x, 1), round(y, 1)] for x, y in p.exterior.coords[:-1]]
             holes = [[[round(x, 1), round(y, 1)] for x, y in r.coords[:-1]] for r in p.interiors]
             e = {'floor': floor, 'zone': zone, 'pts': ext}

@@ -24,7 +24,7 @@ export const SHOP_AREAS = {
   whity_nomoka: { floor: 'B1', zone: 'whity', edges: [['izumi', 'izumi_ne']] },
   whity_pocket: { floor: 'B1', zone: 'whity', near: ['j_whity_x'], offset: 5, path: [[1069, 950], [1081, 945]] },
   whity_mikke:  { floor: 'B1', zone: 'whity', near: ['whity_w'], offset: 3, path: [[956, 946], [1040, 946]] },
-  whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_w', 'j_whity_x'], offset: 4, path: [[1035, 924], [1088, 907]] },
+  whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_w', 'j_whity_x'], offset: 4.0, path: [[1035, 926], [1088, 909]] },
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
   diamor_fashion: { floor: 'B1', zone: 'diamor',
     edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_fashion_e']] },        // 西→東

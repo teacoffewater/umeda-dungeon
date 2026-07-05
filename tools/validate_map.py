@@ -71,7 +71,8 @@ for fl, zone, poly in finals:
             problems.append(f"[食い込み] {fl} {zone} -> {fk} {inter.area:.0f}px² @({c.x:.0f},{c.y:.0f})")
 
 # 実在が確認できている孤立片(正当な飛地)
-KNOWN_EXCLAVES = [('B1', '_neutral', 797, 727)]  # ヨドバシ⇔ルクア間の高架下連絡路
+KNOWN_EXCLAVES = [('B1', '_neutral', 797, 727),      # ヨドバシ⇔ルクア間の高架下連絡路
+                  ('B1', 'nishi_umeda', 724, 1183)]  # ヒルトンW/E間の四つ橋筋通路(実在)
 
 # --- 3. 飛地 ---
 groups = {}
@@ -89,9 +90,46 @@ for (fl, zone), pieces in groups.items():
                 continue
             problems.append(f"[飛地] {fl} {zone} {p.area:.0f}px² @({c.x:.0f},{c.y:.0f}) 隔離{dmin:.0f}px")
 
+# --- 4. 縄張り外の塗り(本体と繋がったままゾーン外へ伸びる「舌」を検出) ---
+msrc = open(os.path.join(ROOT, 'main.js')).read()
+_nodes = {}
+for m in re.finditer(r"[SPJ]\('(\w+)',\s*(?:'[^']*',\s*'B[12]',\s*)?(-?[\d.]+),\s*(-?[\d.]+)", msrc):
+    _nodes[m.group(1)] = (float(m.group(2)), float(m.group(3)))
+_em = re.search(r"const EDGES = \[(.*?)\n\];", msrc, re.S)
+from shapely.geometry import LineString
+zone_src = {}
+def _zadd(zone, geom):
+    zone_src[zone] = zone_src[zone].union(geom) if zone in zone_src else geom
+for m in re.finditer(r"\['(\w+)',\s*'(\w+)',\s*([\d.]+)(?:,\s*'(\w+)')?\]", _em.group(1)):
+    a, b, w, z = m.group(1), m.group(2), float(m.group(3)), m.group(4) or '_neutral'
+    if a in _nodes and b in _nodes:
+        _zadd(z, LineString([_nodes[a], _nodes[b]]).buffer(w / 2 + 50))
+for zname, fp in FAC.items():
+    _zadd(zname, fp.buffer(10))
+_sta = json.load(open(os.path.join(ROOT, 'tools', 'data', 'osm_osaka_station.json')))['elements'][0]
+for mm in _sta['members']:
+    if mm.get('role') == 'outer' and len(mm.get('geometry', [])) >= 4:
+        _zadd('osaka_sta', Polygon([to_px(p['lat'], p['lon']) for p in mm['geometry']]).buffer(10))
+_zadd('osaka_sta', bp(1147394005).buffer(10))  # イノゲート
+gsrc = open(os.path.join(ROOT, 'tools', 'gen_polys.py')).read()
+hb = gsrc[gsrc.index('HAND_PLATES = ['):gsrc.index('# --- 円形の広場')]
+for m in re.finditer(r"\('B[12]', '(\w+)', (\[\[[^\]]*\](?:, \[[^\]]*\])*\])\)", hb):
+    _zadd(m.group(1), Polygon(json.loads(m.group(2))).buffer(20))
+for m in re.finditer(r"\('B[12]', '(\w+)', (\d+), (\d+), (\d+)\)", gsrc[gsrc.index('DISCS = ['):gsrc.index(']', gsrc.index('DISCS = ['))]):
+    _zadd(m.group(1), Point(float(m.group(2)), float(m.group(3))).buffer(float(m.group(4)) + 20))
+for fl, zone, poly in finals:
+    if zone not in zone_src:
+        continue
+    resid = poly.difference(zone_src[zone])
+    parts = list(resid.geoms) if resid.geom_type == 'MultiPolygon' else ([resid] if not resid.is_empty else [])
+    for p in parts:
+        if p.area > 150:
+            c = p.centroid
+            problems.append(f"[縄張り外] {fl} {zone} が発生源から離れて {p.area:.0f}px² @({c.x:.0f},{c.y:.0f})")
+
 if problems:
     print(f'NG: {len(problems)}件')
     for p in problems:
         print(' ', p)
     sys.exit(1)
-print('OK: 店舗位置・食い込み・飛地 すべて問題なし(既知の許容を除く)')
+print('OK: 店舗位置・食い込み・飛地・縄張り すべて問題なし(既知の許容を除く)')
