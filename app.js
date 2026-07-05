@@ -24457,7 +24457,7 @@
           s2.lineTo(-LB / 2, 0);
         } else {
           const r = 1.9;
-          const topRun = 1.76, botRun = 1.54;
+          const topRun = 1.76, botRun = 2.46;
           const H = 7;
           const xR = topRun + (H - 2 * r);
           const yV = xR - botRun;

@@ -940,10 +940,10 @@ function escPanelGeo(floorKey) {
     // 底辺(0°)は途中で45°に切り上がり、そのあと90°(垂直)で峰へ。
     // 0°(床に平行)の辺は従来の40%に短縮。半円中心をx=0に置いて構築し、最後に中央寄せ
     const r = 1.9;
-    const topRun = 1.76, botRun = 1.54;   // 0°の辺の長さ(従来4.4/3.85の40%)
+    const topRun = 1.76, botRun = 2.46;   // 底辺(地面側)は1.54の1.6倍
     const H = 7.0;                        // 峰の高さは維持
     const xR = topRun + (H - 2 * r);      // 45°で峰へ届く右端 = 4.96
-    const yV = xR - botRun;               // 垂直辺の下端 = 3.42
+    const yV = xR - botRun;               // 垂直辺の下端 = 2.50(底辺延長に合わせ調整)
     s.moveTo(xR, H);                                            // 峰の頂点(右上)
     s.lineTo(xR, yV);                                           // 90°: 垂直辺
     s.lineTo(botRun, 0);                                        // 45°: 底辺から切り上がり
