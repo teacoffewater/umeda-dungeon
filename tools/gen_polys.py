@@ -57,12 +57,14 @@ for a, b, w, zone, fl in edges:
 
 NAME_ZONE = {'そねちか': ('sonechika', 'B1'), 'ガーデンアベニュー': ('nishi_umeda', 'B1')}
 # 多数決だと誤るway(駅前地下道・曽根崎地下歩道系はうめちか)
+SKIP_IDS = {1320007665, 1320007666, 1320007668, 1320007669, 1320007670,
+            1316299598, 1316299599, 1316299600}  # 泉の水まわりの微小断片(2〜6px)は飛地しか生まない
 ID_ZONE = {1010195567: ('_neutral', 'B1'),  # 御堂筋横断の連絡地下道(中立)
+           1010195572: ('osaka_sta', 'B1'),  # 駅コンコース南支線(重なる区間は先行ゾーンが取る)
+           1010195576: ('whity', 'B1'),     # プチシャン東(阪急東通り側)
            747189969: ('sanban', 'B1'), 756534634: ('sanban', 'B1'), 885099466: ('sanban', 'B1'),
            1010195556: ('umechika', 'B1'), 1010195558: ('umechika', 'B1'),
-           1316299598: ('umechika', 'B1'), 1316299599: ('umechika', 'B1'),
-           1320007668: ('umechika', 'B1'), 1320007669: ('umechika', 'B1'),
-           1320007670: ('umechika', 'B1')}
+           }
 OSM_SKIP_HW = {'steps', 'motorway_link', 'tertiary', 'unclassified', 'service', 'elevator'}
 osm_ways = []   # (LineString(px), zone, floor)
 for e in osm['elements']:
@@ -82,6 +84,8 @@ for e in osm['elements']:
     if len(pts) < 2:
         continue
     ls = LineString(pts)
+    if e['id'] in SKIP_IDS:
+        continue
     if e['id'] in ID_ZONE:
         osm_ways.append((ls, *ID_ZONE[e['id']])); continue
     name = t.get('name', '')
@@ -142,6 +146,10 @@ def _edge_band(pred, extra=1.5):
 
 # 三番街ノードへの接続エッジは館内に入るので帯から除外(ビル壁で止める)
 _whity_pred = lambda a, b, w, z, fl: z == 'whity' and not (a.startswith('sanban') or b.startswith('sanban'))
+f40_pairs = {frozenset(('j_f40', 'j_diamor_e')), frozenset(('j_higashi_n', 'j_f40'))}
+_f40_pred = lambda a, b, w, z, fl: frozenset((a, b)) in f40_pairs
+f40_band = _edge_band(_f40_pred)              # 御堂筋沿い南北通路(阪神百の壁際・実在)
+f40_band_raw = _edge_band(_f40_pred, extra=0)
 whity_band = _edge_band(_whity_pred)          # マスク穴用(+1.5)
 whity_band_raw = _edge_band(_whity_pred, extra=0)  # 床削り用(描画と同寸)
 diamor_band = _edge_band(lambda a, b, w, z, fl: z == 'diamor' and not any(
@@ -163,10 +171,11 @@ FACILITY_BLD = {
     'ekimae': bpoly(70561756, 70561758, 135624699, 135624700),
 }
 # 床を削るのは阪急系×ホワイティのみ(描画と同寸)。駅前ビル×ディアモールは描画順で処理
-CARVE = {'sanban': whity_band_raw, 'hankyu_dept': whity_band_raw}
+CARVE = {'sanban': whity_band_raw, 'hankyu_dept': whity_band_raw,
+         'hanshin_dept': f40_band_raw}
 # 通路帯マスクの「穴」(帯がビル内でも生きる場所)は広め(+1.5)で開ける
 MASK_HOLES = {'sanban': whity_band, 'hankyu_dept': whity_band,
-              'ekimae': diamor_band, 'avanza': dotica_band}
+              'hanshin_dept': f40_band, 'ekimae': diamor_band, 'avanza': dotica_band}
 _fm_cache = {}
 def facility_mask_total():
     if 'm' not in _fm_cache:
@@ -215,10 +224,10 @@ BUILDING_PLATES = [
 HAND_PLATES = [
     # (floor, zone, [[x,y],...])  ※検証しながら追加・調整する
     # 阪急前広場〜ホワイティ広場(阪急百貨店北側の面的な広がり)
-    ('B1', 'whity', [[906, 706], [1002, 706], [1034, 748], [1034, 792], [954, 800], [906, 788]]),
+    ('B1', 'whity', [[906, 702], [1002, 702], [1034, 746], [1034, 792], [954, 800], [906, 788]]),
     # 阪神前広場〜うめちか本体(阪急百と阪神百の間、御堂筋直下の面)
     # 百貨店ビル内部はビルマスクが自動で除くため外形は広めに定義
-    ('B1', 'umechika', [[840, 920], [1045, 920], [1045, 1010], [850, 1012]]),
+    ('B1', 'umechika', [[840, 920], [1028, 920], [1028, 1010], [850, 1012]]),
 ]
 
 # --- 円形の広場(円は使用OK) ---
