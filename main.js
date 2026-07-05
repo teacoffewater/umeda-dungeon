@@ -858,7 +858,7 @@ const beamGeo = new THREE.CylinderGeometry(0.7, 0.7, FLOOR_Y.B1 - FLOOR_Y.B2, 8)
 // 階段: 側面が3段のステップ形(踏面→蹴上×3+上部の小さな踊り場)を押し出したソリッド。
 // ローカル+Xが「上り方向」
 const stairsGeo = (() => {
-  const steps = 3, sw = 1.9, sh = 1.3, landing = 1.5, depth = 3.6;
+  const steps = 3, sw = 1.24, sh = 1.3, landing = 1.5, depth = 3.6; // 踏面幅は1.9の65%
   const s = new THREE.Shape();
   s.moveTo(0, 0);
   let x = 0, y = 0;
