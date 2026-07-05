@@ -24229,12 +24229,12 @@
         kitte: { name: "KITTE\u5927\u962A", color: 3116963, label: [565, 1105] },
         // ダークターコイズ
         // 百貨店は濃色系(ブランドカラー): 公共地下道の中間色と階調で区別する
-        daimaru: { name: "\u5927\u4E38\u6885\u7530\u5E97", color: 3967582, label: [772, 1005] },
-        // 大丸グリーン
-        hankyu_dept: { name: "\u962A\u6025\u767E\u8CA8\u5E97", color: 9123144, label: [950, 900] },
-        // 阪急マルーン
-        hanshin_dept: { name: "\u962A\u795E\u767E\u8CA8\u5E97", color: 4153246, label: [905, 1120] },
-        // 阪神ネイビー
+        daimaru: { name: "\u5927\u4E38\u6885\u7530\u5E97", color: 3967582, label: [790, 990] },
+        // 大丸グリーン(床の重心)
+        hankyu_dept: { name: "\u962A\u6025\u767E\u8CA8\u5E97", color: 9123144, label: [975, 860] },
+        // 阪急マルーン(床の重心)
+        hanshin_dept: { name: "\u962A\u795E\u767E\u8CA8\u5E97", color: 4153246, label: [940, 1080] },
+        // 阪神ネイビー(床の重心)
         avanza: { name: "\u5802\u5CF6\u30A2\u30D0\u30F3\u30B6", color: 10129234, label: [772, 1582] },
         // オリーブ
         ekimae: { name: "\u5927\u962A\u99C5\u524D\u30D3\u30EB", color: 14375526, label: [890, 1258] },

@@ -32,9 +32,9 @@ const ZONES = {
   herbis:      { name: 'ハービス',              color: 0xaa4e66, label: [540, 1300] },  // ワイン(ENT/OSAKA)
   kitte:       { name: 'KITTE大阪',             color: 0x2f8fa3, label: [565, 1105] },  // ダークターコイズ
   // 百貨店は濃色系(ブランドカラー): 公共地下道の中間色と階調で区別する
-  daimaru:     { name: '大丸梅田店',            color: 0x3c8a5e, label: [772, 1005] },  // 大丸グリーン
-  hankyu_dept: { name: '阪急百貨店',            color: 0x8b3548, label: [950, 900] },   // 阪急マルーン
-  hanshin_dept:{ name: '阪神百貨店',            color: 0x3f5f9e, label: [905, 1120] },  // 阪神ネイビー
+  daimaru:     { name: '大丸梅田店',            color: 0x3c8a5e, label: [790, 990] },   // 大丸グリーン(床の重心)
+  hankyu_dept: { name: '阪急百貨店',            color: 0x8b3548, label: [975, 860] },   // 阪急マルーン(床の重心)
+  hanshin_dept:{ name: '阪神百貨店',            color: 0x3f5f9e, label: [940, 1080] },  // 阪神ネイビー(床の重心)
   avanza:      { name: '堂島アバンザ',          color: 0x9a8f52, label: [772, 1582] },  // オリーブ
   ekimae:      { name: '大阪駅前ビル',          color: 0xdb5a66, label: [890, 1258] },  // 鮮明な赤(そねちかとの分離)
   sonechika:   { name: 'そねちか',              color: 0x49b6c4, label: [995, 1372] },  // シアン(隣接する駅前ビルの赤と対比)
