@@ -972,8 +972,9 @@ function makeEscalator(floorKey, mat) {
 const concourseMat = new THREE.MeshStandardMaterial({ color: 0x31435f, emissive: 0x0d1522, roughness: 0.65 });
 neutralMats.push(concourseMat);
 for (const v of VERTICALS) {
-  // 駅ホーム内のEV・ESC・階段は描画しない（経路計算には引き続き使用）
-  if (nodeById[v.b].type === 'station') continue;
+  // 接続先が駅(ホーム=改札内・フロア未描画)の設備は、B2側のアイコンだけ省略する。
+  // EVシャフトはフロアを貫く柱なので常に描画(以前は丸ごとスキップしていてEVが1本も出ていなかった)
+  const bIsStation = nodeById[v.b].type === 'station';
 
   const [x, z] = M2W([v.mx, v.my]);
   const yB1 = FLOOR_Y.B1, yB2 = FLOOR_Y.B2;
@@ -1013,6 +1014,7 @@ for (const v of VERTICALS) {
     // 床スラブ(厚み3・中心が階の高さ+ジッタ最大0.375)の上面に着地させる
     const FLOOR_TOP = 1.9;
     for (const y of [yB1, yB2]) {
+      if (bIsStation && y === yB2) continue; // 駅構内(未描画)側は省略
       if (v.type === 'esc') {
         // 実際の勾配の向き(上り=aノード方向)+フロアごとの形(B1=下り/B2=上り)
         const m = makeEscalator(y === yB1 ? 'B1' : 'B2', padMats.esc);

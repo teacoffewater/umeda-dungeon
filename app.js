@@ -24486,7 +24486,7 @@
       var concourseMat = new MeshStandardMaterial({ color: 3228511, emissive: 857378, roughness: 0.65 });
       neutralMats.push(concourseMat);
       for (const v of VERTICALS) {
-        if (nodeById[v.b].type === "station") continue;
+        const bIsStation = nodeById[v.b].type === "station";
         const [x, z] = M2W([v.mx, v.my]);
         const yB1 = FLOOR_Y.B1, yB2 = FLOOR_Y.B2;
         if (SHOW_STATION_INTERIOR) {
@@ -24523,6 +24523,7 @@
           const rotY = Math.atan2(-dz, dx);
           const FLOOR_TOP = 1.9;
           for (const y of [yB1, yB2]) {
+            if (bIsStation && y === yB2) continue;
             if (v.type === "esc") {
               const m = makeEscalator(y === yB1 ? "B1" : "B2", padMats.esc);
               m.rotation.y = rotY;
