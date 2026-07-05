@@ -95,6 +95,13 @@ export const ALIASES = {
 // 手動配置の店舗（対象3施設の外だが、ランドマークとして重要な店）
 export const SHOPS_MANUAL = [
   { name: 'マクドナルド ルクア大阪店', floor: 'B1', mx: 696, my: 837, near: 'lucua', zone: 'lucua' },
+  // 百貨店は「1フロア=1店」で登録(デパ地下カウンター個別収録はしない方針・2026-07相談で決定)
+  { name: '大丸梅田店 B1F(デパ地下)',        floor: 'B1', mx: 800, my:  985, near: 'daimaru',      zone: 'umechika' },
+  { name: '大丸梅田店 B2F(食品・ベーカリー)', floor: 'B2', mx: 788, my: 1000, near: 'daimaru',      zone: 'umechika' },
+  { name: '阪急うめだ本店 B1F(デパ地下)',     floor: 'B1', mx: 990, my:  845, near: 'hankyu_dept',  zone: 'umechika' },
+  { name: '阪急うめだ本店 B2F(生鮮・惣菜)',   floor: 'B2', mx: 975, my:  872, near: 'hankyu_dept',  zone: 'umechika' },
+  { name: '阪神梅田本店 B1F(食品館)',         floor: 'B1', mx: 930, my: 1060, near: 'hanshin',      zone: 'umechika' },
+  { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 950, my: 1085, near: 'hanshin_home', zone: 'umechika' },
 ];
 
 // order: 公式マップ上の歩く順 / side: 通路のどちら側か（方角） / cell: 3×3グリッド位置
