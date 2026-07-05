@@ -24302,25 +24302,10 @@
       }
       var concourseMat = new MeshStandardMaterial({ color: 3228511, emissive: 857378, roughness: 0.65 });
       neutralMats.push(concourseMat);
-      var stubMat = new MeshStandardMaterial({ color: 4612234, emissive: 1582138, roughness: 0.6 });
-      neutralMats.push(stubMat);
       for (const v of VERTICALS) {
         if (nodeById[v.b].type === "station") continue;
         const [x, z] = M2W([v.mx, v.my]);
         const yB1 = FLOOR_Y.B1, yB2 = FLOOR_Y.B2;
-        for (const nodeId of [v.a, v.b]) {
-          const p = nodeById[nodeId];
-          const len = Math.hypot(p.x - x, p.z - z);
-          if (len <= 5) continue;
-          const stub = new Mesh(new BoxGeometry(len + 2, 1.8, 3.5), stubMat);
-          const y = FLOOR_Y[p.floor];
-          stub.position.set((p.x + x) / 2, y + jitterY() - 0.4, (p.z + z) / 2);
-          stub.quaternion.setFromUnitVectors(
-            new Vector3(1, 0, 0),
-            new Vector3(p.x - x, 0, p.z - z).normalize()
-          );
-          floorGroups[p.floor].add(stub);
-        }
         if (SHOW_STATION_INTERIOR) {
           const pb = posOf(nodeById[v.b]);
           const len = Math.hypot(pb.x - x, pb.z - z);

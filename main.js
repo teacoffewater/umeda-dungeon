@@ -904,31 +904,13 @@ function makeEscalator(floorKey, mat) {
 
 const concourseMat = new THREE.MeshStandardMaterial({ color: 0x31435f, emissive: 0x0d1522, roughness: 0.65 });
 neutralMats.push(concourseMat);
-// 設備パッドと通路ネットワークをつなぐ細い接続枝（設備が宙に浮かないように）
-// ※通路と同系の明るさにして「黒い謎の物体」に見えないようにする
-const stubMat = new THREE.MeshStandardMaterial({ color: 0x46608a, emissive: 0x18243a, roughness: 0.6 });
-neutralMats.push(stubMat);
 for (const v of VERTICALS) {
   // 駅ホーム内のEV・ESC・階段は描画しない（経路計算には引き続き使用）
   if (nodeById[v.b].type === 'station') continue;
 
   const [x, z] = M2W([v.mx, v.my]);
   const yB1 = FLOOR_Y.B1, yB2 = FLOOR_Y.B2;
-
-  // 両フロアで、接続先ノードまでの細い枝を描く
-  for (const nodeId of [v.a, v.b]) {
-    const p = nodeById[nodeId];
-    const len = Math.hypot(p.x - x, p.z - z);
-    if (len <= 5) continue;
-    const stub = new THREE.Mesh(new THREE.BoxGeometry(len + 2, 1.8, 3.5), stubMat);
-    const y = FLOOR_Y[p.floor];
-    stub.position.set((p.x + x) / 2, y + jitterY() - 0.4, (p.z + z) / 2);
-    stub.quaternion.setFromUnitVectors(
-      new THREE.Vector3(1, 0, 0),
-      new THREE.Vector3(p.x - x, 0, p.z - z).normalize()
-    );
-    floorGroups[p.floor].add(stub);
-  }
+  // ※設備と通路をつなぐ「接続枝」は廃止(床の上の謎の板に見えてノイズだったため)
 
   // B2側: 駅ノードから設備の足元までの改札内コンコース通路
   if (SHOW_STATION_INTERIOR) {
