@@ -57,7 +57,9 @@ for a, b, w, zone, fl in edges:
 
 NAME_ZONE = {'そねちか': ('sonechika', 'B1'), 'ガーデンアベニュー': ('nishi_umeda', 'B1')}
 # 多数決だと誤るway(駅前地下道・曽根崎地下歩道系はうめちか)
-ID_ZONE = {1010195556: ('umechika', 'B1'), 1010195558: ('umechika', 'B1'),
+ID_ZONE = {1010195567: ('_neutral', 'B1'),  # 御堂筋横断の連絡地下道(中立)
+           747189969: ('sanban', 'B1'), 756534634: ('sanban', 'B1'), 885099466: ('sanban', 'B1'),
+           1010195556: ('umechika', 'B1'), 1010195558: ('umechika', 'B1'),
            1316299598: ('umechika', 'B1'), 1316299599: ('umechika', 'B1'),
            1320007668: ('umechika', 'B1'), 1320007669: ('umechika', 'B1'),
            1320007670: ('umechika', 'B1')}
@@ -138,8 +140,10 @@ def _edge_band(pred, extra=1.5):
              for a, b, w, z, fl in edges if pred(a, b, w, z, fl)]
     return unary_union(parts).buffer(extra, join_style=2) if parts else None
 
-whity_band = _edge_band(lambda a, b, w, z, fl: z == 'whity')          # モールが阪急駅ビル/阪急百の縁を走る(マスク穴用+1.5)
-whity_band_raw = _edge_band(lambda a, b, w, z, fl: z == 'whity', extra=0)  # 床削り用(描画と同寸)
+# 三番街ノードへの接続エッジは館内に入るので帯から除外(ビル壁で止める)
+_whity_pred = lambda a, b, w, z, fl: z == 'whity' and not (a.startswith('sanban') or b.startswith('sanban'))
+whity_band = _edge_band(_whity_pred)          # マスク穴用(+1.5)
+whity_band_raw = _edge_band(_whity_pred, extra=0)  # 床削り用(描画と同寸)
 diamor_band = _edge_band(lambda a, b, w, z, fl: z == 'diamor' and not any(
     n.startswith(('ekimae1', 'ekimae2', 'ekimae3')) for n in (a, b)))  # 街路+バラエティ(第4ビル貫通)+北新地通路
 dotica_band = _edge_band(lambda a, b, w, z, fl: z == 'dotica')         # C-84のアバンザ接続を含む
@@ -257,6 +261,8 @@ for floor in ('B1', 'B2'):
         # クロージング(膨張→収縮)で幅違い合流部の欠けを均す
         u = u.buffer(1.6, join_style=2).buffer(-1.6, join_style=2)
         if zone in FACILITY_BLD:
+            if zone != 'ekimae':
+                u = u.intersection(FACILITY_BLD[zone].buffer(4, join_style=2))  # 施設色はビルの外に出さない
             cb = CARVE.get(zone)
             if floor == 'B1' and cb is not None:
                 u = u.difference(cb)  # 実在確認済みの公共帯だけビル床を削れる
@@ -269,8 +275,9 @@ for floor in ('B1', 'B2'):
         u = u.simplify(1.0, preserve_topology=True).buffer(0)
         polys = list(u.geoms) if u.geom_type == 'MultiPolygon' else [u]
         first = True
+        min_area = 250 if zone in FACILITY_BLD else 40
         for p in polys:
-            if p.area < 40:
+            if p.area < min_area:
                 continue
             ext = [[round(x, 1), round(y, 1)] for x, y in p.exterior.coords[:-1]]
             holes = [[[round(x, 1), round(y, 1)] for x, y in r.coords[:-1]] for r in p.interiors]
