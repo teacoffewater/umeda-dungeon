@@ -855,10 +855,12 @@ for (const [type, color] of Object.entries(VERT_COLORS)) {
   });
 }
 const beamGeo = new THREE.CylinderGeometry(0.7, 0.7, FLOOR_Y.B1 - FLOOR_Y.B2, 8);
-// EV=縦長ピラー / ESC=ステップ状ウェッジ(下り・上り) / 階段=2段ステップ
-const evPillarGeo = new THREE.BoxGeometry(3.2, 9, 3.2);
+// EV=直方体シャフト / ESC=手すりループ付き斜路 / 階段=2段ステップ
 const stairGeoA = new THREE.BoxGeometry(4.6, 1.4, 3);
 const stairGeoB = new THREE.BoxGeometry(2.3, 1.4, 3);
+
+// エレベーターのアイコン: B2からB1上空まで貫く1本のシンプルな直方体(シャフト)
+const evShaftGeo = new THREE.BoxGeometry(3.6, (FLOOR_Y.B1 - FLOOR_Y.B2) + 8, 3.6);
 
 // エスカレーターのアイコン: 斜めのデッキ+両サイドの手すりループ(欄干)。
 // 実物のエスカレーターを横から見たときの「輪になった手すり」を再現する
@@ -881,7 +883,8 @@ const escRailGeo = (() => {
   return geo;
 })();
 const escDeckGeo = new THREE.BoxGeometry(9.6, 0.55, 3.2);
-function makeEscalator(descending, mat) {
+function makeEscalator(mat) {
+  // ローカル+X方向が「上り(B1側)」になる向きで作る。実際の進行方向はrotation.yで合わせる
   const g = new THREE.Group();
   const H = 3.6;                          // アイコンとしての高低差
   const th = Math.atan2(H, 8.6);          // 勾配角
@@ -895,14 +898,14 @@ function makeEscalator(descending, mat) {
     rail.rotation.z = th;                 // デッキと同じ傾きで輪を寝かせる
     g.add(rail);
   }
-  if (descending) g.rotation.y = Math.PI; // 下りは向きを反転
   return g;
 }
 
 const concourseMat = new THREE.MeshStandardMaterial({ color: 0x31435f, emissive: 0x0d1522, roughness: 0.65 });
 neutralMats.push(concourseMat);
 // 設備パッドと通路ネットワークをつなぐ細い接続枝（設備が宙に浮かないように）
-const stubMat = new THREE.MeshStandardMaterial({ color: 0x2e3f5c, emissive: 0x0b1220, roughness: 0.7 });
+// ※通路と同系の明るさにして「黒い謎の物体」に見えないようにする
+const stubMat = new THREE.MeshStandardMaterial({ color: 0x46608a, emissive: 0x18243a, roughness: 0.6 });
 neutralMats.push(stubMat);
 for (const v of VERTICALS) {
   // 駅ホーム内のEV・ESC・階段は描画しない（経路計算には引き続き使用）
@@ -941,25 +944,39 @@ for (const v of VERTICALS) {
     }
   }
 
-  const beam = new THREE.Mesh(beamGeo, beamMats[v.type]);
-  beam.position.set(x, (yB1 + yB2) / 2, z);
-  vertGroup.add(beam);
-  for (const y of [yB1, yB2]) {
-    if (v.type === 'ev') {
-      const m = new THREE.Mesh(evPillarGeo, padMats.ev);
-      m.position.set(x, y + 4.5, z);
-      vertGroup.add(m);
-    } else if (v.type === 'esc') {
-      // 上のフロア(B1)は下り、下のフロア(B2)は上りの向きにする
-      const m = makeEscalator(y === yB1, padMats.esc);
-      m.position.set(x, y + 0.3, z);
-      vertGroup.add(m);
-    } else {
-      const stepA = new THREE.Mesh(stairGeoA, padMats.stairs);
-      stepA.position.set(x, y + 0.7, z);
-      const stepB = new THREE.Mesh(stairGeoB, padMats.stairs);
-      stepB.position.set(x + 1.15, y + 2.1, z);
-      vertGroup.add(stepA, stepB);
+  if (v.type === 'ev') {
+    // EV: フロアを貫く1本のシンプルな直方体(ビーム・パッドなし)
+    const m = new THREE.Mesh(evShaftGeo, padMats.ev);
+    m.position.set(x, yB2 + ((yB1 - yB2) + 8) / 2, z);
+    vertGroup.add(m);
+  } else {
+    const beam = new THREE.Mesh(beamGeo, beamMats[v.type]);
+    beam.position.set(x, (yB1 + yB2) / 2, z);
+    vertGroup.add(beam);
+    // エスカレーターの実際の進行方向: 下フロアのノード(b)から上フロアのノード(a)へ
+    // 向かう水平ベクトルを「上り」とみなす。同じ位置に重なる館内ESCは設備→aノード方向で代用
+    let escRotY = 0;
+    if (v.type === 'esc') {
+      const pa = nodeById[v.a], pb = nodeById[v.b];
+      let dx = pa.x - pb.x, dz = pa.z - pb.z;
+      if (Math.hypot(dx, dz) < 3) { dx = pa.x - x; dz = pa.z - z; }
+      if (Math.hypot(dx, dz) < 1) { dx = 1; dz = 0; }
+      escRotY = Math.atan2(-dz, dx);
+    }
+    for (const y of [yB1, yB2]) {
+      if (v.type === 'esc') {
+        // 両フロアとも実際の勾配の向き(上り=aノード方向)で置く
+        const m = makeEscalator(padMats.esc);
+        m.rotation.y = escRotY;
+        m.position.set(x, y + 0.3, z);
+        vertGroup.add(m);
+      } else {
+        const stepA = new THREE.Mesh(stairGeoA, padMats.stairs);
+        stepA.position.set(x, y + 0.7, z);
+        const stepB = new THREE.Mesh(stairGeoB, padMats.stairs);
+        stepB.position.set(x + 1.15, y + 2.1, z);
+        vertGroup.add(stepA, stepB);
+      }
     }
   }
 

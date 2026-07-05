@@ -24262,9 +24262,9 @@
         });
       }
       var beamGeo = new CylinderGeometry(0.7, 0.7, FLOOR_Y.B1 - FLOOR_Y.B2, 8);
-      var evPillarGeo = new BoxGeometry(3.2, 9, 3.2);
       var stairGeoA = new BoxGeometry(4.6, 1.4, 3);
       var stairGeoB = new BoxGeometry(2.3, 1.4, 3);
+      var evShaftGeo = new BoxGeometry(3.6, FLOOR_Y.B1 - FLOOR_Y.B2 + 8, 3.6);
       function stadiumOutline(PathClass, len, h) {
         const r = h / 2, half = Math.max(0.1, len / 2 - r);
         const p = new PathClass();
@@ -24283,7 +24283,7 @@
         return geo;
       })();
       var escDeckGeo = new BoxGeometry(9.6, 0.55, 3.2);
-      function makeEscalator(descending, mat) {
+      function makeEscalator(mat) {
         const g2 = new Group();
         const H = 3.6;
         const th = Math.atan2(H, 8.6);
@@ -24297,12 +24297,11 @@
           rail.rotation.z = th;
           g2.add(rail);
         }
-        if (descending) g2.rotation.y = Math.PI;
         return g2;
       }
       var concourseMat = new MeshStandardMaterial({ color: 3228511, emissive: 857378, roughness: 0.65 });
       neutralMats.push(concourseMat);
-      var stubMat = new MeshStandardMaterial({ color: 3030876, emissive: 725536, roughness: 0.7 });
+      var stubMat = new MeshStandardMaterial({ color: 4612234, emissive: 1582138, roughness: 0.6 });
       neutralMats.push(stubMat);
       for (const v of VERTICALS) {
         if (nodeById[v.b].type === "station") continue;
@@ -24334,24 +24333,41 @@
             floorGroups.B2.add(stub);
           }
         }
-        const beam = new Mesh(beamGeo, beamMats[v.type]);
-        beam.position.set(x, (yB1 + yB2) / 2, z);
-        vertGroup.add(beam);
-        for (const y of [yB1, yB2]) {
-          if (v.type === "ev") {
-            const m = new Mesh(evPillarGeo, padMats.ev);
-            m.position.set(x, y + 4.5, z);
-            vertGroup.add(m);
-          } else if (v.type === "esc") {
-            const m = makeEscalator(y === yB1, padMats.esc);
-            m.position.set(x, y + 0.3, z);
-            vertGroup.add(m);
-          } else {
-            const stepA = new Mesh(stairGeoA, padMats.stairs);
-            stepA.position.set(x, y + 0.7, z);
-            const stepB = new Mesh(stairGeoB, padMats.stairs);
-            stepB.position.set(x + 1.15, y + 2.1, z);
-            vertGroup.add(stepA, stepB);
+        if (v.type === "ev") {
+          const m = new Mesh(evShaftGeo, padMats.ev);
+          m.position.set(x, yB2 + (yB1 - yB2 + 8) / 2, z);
+          vertGroup.add(m);
+        } else {
+          const beam = new Mesh(beamGeo, beamMats[v.type]);
+          beam.position.set(x, (yB1 + yB2) / 2, z);
+          vertGroup.add(beam);
+          let escRotY = 0;
+          if (v.type === "esc") {
+            const pa = nodeById[v.a], pb = nodeById[v.b];
+            let dx = pa.x - pb.x, dz = pa.z - pb.z;
+            if (Math.hypot(dx, dz) < 3) {
+              dx = pa.x - x;
+              dz = pa.z - z;
+            }
+            if (Math.hypot(dx, dz) < 1) {
+              dx = 1;
+              dz = 0;
+            }
+            escRotY = Math.atan2(-dz, dx);
+          }
+          for (const y of [yB1, yB2]) {
+            if (v.type === "esc") {
+              const m = makeEscalator(padMats.esc);
+              m.rotation.y = escRotY;
+              m.position.set(x, y + 0.3, z);
+              vertGroup.add(m);
+            } else {
+              const stepA = new Mesh(stairGeoA, padMats.stairs);
+              stepA.position.set(x, y + 0.7, z);
+              const stepB = new Mesh(stairGeoB, padMats.stairs);
+              stepB.position.set(x + 1.15, y + 2.1, z);
+              vertGroup.add(stepA, stepB);
+            }
           }
         }
       }
