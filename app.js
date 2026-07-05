@@ -22890,9 +22890,9 @@
         { name: "\u30DE\u30AF\u30C9\u30CA\u30EB\u30C9 \u30EB\u30AF\u30A2\u5927\u962A\u5E97", floor: "B1", mx: 696, my: 837, near: "lucua", zone: "lucua" },
         // 百貨店は「1フロア=1店」で登録(デパ地下カウンター個別収録はしない方針・2026-07相談で決定)
         { name: "\u5927\u4E38\u6885\u7530\u5E97 B1F(\u30C7\u30D1\u5730\u4E0B)", floor: "B1", mx: 800, my: 985, near: "daimaru", zone: "daimaru" },
-        { name: "\u5927\u4E38\u6885\u7530\u5E97 B2F(\u98DF\u54C1\u30FB\u30D9\u30FC\u30AB\u30EA\u30FC)", floor: "B2", mx: 788, my: 1e3, near: "daimaru", zone: "daimaru" },
+        { name: "\u5927\u4E38\u6885\u7530\u5E97 B2F(\u98DF\u54C1\u30FB\u30D9\u30FC\u30AB\u30EA\u30FC)", floor: "B2", mx: 788, my: 1e3, near: "j_daimaru_b2", zone: "daimaru" },
         { name: "\u962A\u6025\u3046\u3081\u3060\u672C\u5E97 B1F(\u30C7\u30D1\u5730\u4E0B)", floor: "B1", mx: 990, my: 845, near: "hankyu_dept", zone: "hankyu_dept" },
-        { name: "\u962A\u6025\u3046\u3081\u3060\u672C\u5E97 B2F(\u751F\u9BAE\u30FB\u60E3\u83DC)", floor: "B2", mx: 975, my: 872, near: "hankyu_dept", zone: "hankyu_dept" },
+        { name: "\u962A\u6025\u3046\u3081\u3060\u672C\u5E97 B2F(\u751F\u9BAE\u30FB\u60E3\u83DC)", floor: "B2", mx: 975, my: 872, near: "j_hankyu_b2", zone: "hankyu_dept" },
         { name: "\u962A\u795E\u6885\u7530\u672C\u5E97 B1F(\u98DF\u54C1\u9928)", floor: "B1", mx: 930, my: 1060, near: "hanshin", zone: "hanshin_dept" },
         { name: "\u5802\u5CF6\u30A2\u30D0\u30F3\u30B6 B1F(\u30EC\u30B9\u30C8\u30E9\u30F3\u8857)", floor: "B1", mx: 775, my: 1565, near: "j_avz", zone: "avanza" },
         { name: "\u962A\u795E\u6885\u7530\u672C\u5E97 B2F(\u962A\u795E\u30D0\u30EB\u6A2A\u4E01)", floor: "B2", mx: 922, my: 1066, near: "hanshin_home", zone: "hanshin_dept" }
@@ -24350,8 +24350,12 @@
         // 西梅田 南西端(福島方面)
         J("j_avz", 752, 1580),
         // 堂島アバンザ館内(ドーチカC-84直結)
-        J("j_kitte_e", 672, 1096)
+        J("j_kitte_e", 672, 1096),
         // KITTE東側の通路屈曲点(ガーデンアベニュー北端)
+        J("j_hankyu_b2", 978, 866, "B2"),
+        // 阪急百貨店B2(生鮮・惣菜フロア)
+        J("j_daimaru_b2", 792, 993, "B2")
+        // 大丸B2(食品フロア)
       ];
       var EDGES = [
         // 北エリア

@@ -97,9 +97,9 @@ export const SHOPS_MANUAL = [
   { name: 'マクドナルド ルクア大阪店', floor: 'B1', mx: 696, my: 837, near: 'lucua', zone: 'lucua' },
   // 百貨店は「1フロア=1店」で登録(デパ地下カウンター個別収録はしない方針・2026-07相談で決定)
   { name: '大丸梅田店 B1F(デパ地下)',        floor: 'B1', mx: 800, my:  985, near: 'daimaru',      zone: 'daimaru' },
-  { name: '大丸梅田店 B2F(食品・ベーカリー)', floor: 'B2', mx: 788, my: 1000, near: 'daimaru',      zone: 'daimaru' },
+  { name: '大丸梅田店 B2F(食品・ベーカリー)', floor: 'B2', mx: 788, my: 1000, near: 'j_daimaru_b2', zone: 'daimaru' },
   { name: '阪急うめだ本店 B1F(デパ地下)',     floor: 'B1', mx: 990, my:  845, near: 'hankyu_dept',  zone: 'hankyu_dept' },
-  { name: '阪急うめだ本店 B2F(生鮮・惣菜)',   floor: 'B2', mx: 975, my:  872, near: 'hankyu_dept',  zone: 'hankyu_dept' },
+  { name: '阪急うめだ本店 B2F(生鮮・惣菜)',   floor: 'B2', mx: 975, my:  872, near: 'j_hankyu_b2', zone: 'hankyu_dept' },
   { name: '阪神梅田本店 B1F(食品館)',         floor: 'B1', mx: 930, my: 1060, near: 'hanshin',      zone: 'hanshin_dept' },
   { name: '堂島アバンザ B1F(レストラン街)',   floor: 'B1', mx: 775, my: 1565, near: 'j_avz',        zone: 'avanza' },
   { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 922, my: 1066, near: 'hanshin_home', zone: 'hanshin_dept' },
