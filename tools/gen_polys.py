@@ -59,7 +59,14 @@ PLATES = [
   ('B2','nishi_umeda',[[388,1202],[524,1202],[524,1332],[430,1332],[388,1290]]),
   ('B1','whity',[[1239,924],[1254,909],[1276,909],[1291,924],[1291,946],[1276,961],[1254,961],[1239,946]]),
   ('B1','umechika',[[868,902],[896,902],[896,976],[868,976]]),
+  # 広場(box)もゾーン面に統合する(独立スラブの段差をなくす)
+  ('B1','umechika',[[859,968],[901,968],[901,1002],[859,1002]]),
+  ('B1','osaka_sta',[[762.5,856],[817.5,856],[817.5,894],[762.5,894]]),
+  ('B1','nishi_umeda',[[455,1235],[485,1235],[485,1265],[455,1265]]),
+  ('B2','osaka_sta',[[627,810],[653,810],[653,830],[627,830]]),
 ]
+# 円形の広場は円で床を広げる(円は許可)
+DISCS = [('B1','diamor',855,1165,16),('B1','whity',1265,935,15)]
 
 # --- ゾーンごとに結合 ---
 groups = {}   # (floor, zone) -> [geoms]
@@ -69,6 +76,8 @@ for a, b, w, zone, floor in edges:
     groups.setdefault((floor, zone), []).append(seg.buffer(w / 2, cap_style=3, join_style=2))
 for floor, zone, pts in PLATES:
     groups.setdefault((floor, zone), []).append(Polygon(pts).buffer(0))
+for floor, zone, cx, cy, r in DISCS:
+    groups.setdefault((floor, zone), []).append(Point(cx, cy).buffer(r + 3, resolution=24))
 
 ORDER = ['sanban', 'whity', 'umechika', 'osaka_sta', 'diamor', 'nishi_umeda',
          'ekimae', 'sonechika', 'dotica', '_neutral']
@@ -84,10 +93,12 @@ for floor in ('B1', 'B2'):
         key = (floor, zone)
         if key not in groups: continue
         u = unary_union(groups[key]).buffer(0)
+        # クロージング(膨張→収縮)で通路幅の差が作る微小な段差・切欠きを均す
+        u = u.buffer(1.6, join_style=2).buffer(-1.6, join_style=2)
         if claimed is not None:
             u = u.difference(claimed.buffer(0.15))  # 先行ゾーン優先で重なり除去
         claimed = unary_union([claimed, u]) if claimed is not None else u
-        u = u.simplify(0.6, preserve_topology=True).buffer(0)
+        u = u.simplify(1.0, preserve_topology=True).buffer(0)
         polys = list(u.geoms) if u.geom_type == 'MultiPolygon' else [u]
         first = True
         for p in polys:
