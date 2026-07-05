@@ -70,8 +70,11 @@ const NODES = [
   // --- 西梅田・北新地・堂島 ---
   S('nishi',       '四つ橋線 西梅田駅',          'B2',  650, 1195),
   P('hilton',      'ヒルトンプラザ EAST/WEST',   'B1',  690, 1130, 'nishi_umeda'),
+  P('hilton_b2',   'ヒルトンプラザ (B2)',        'B2',  690, 1130, 'nishi_umeda'),
   P('garden',      '大阪ガーデンシティ',         'B1',  560, 1140, 'nishi_umeda'),
   P('herbis',      'ハービスENT / OSAKA',        'B1',  470, 1250, 'nishi_umeda'),
+  P('herbis_b2',   'ハービス (B2)',              'B2',  470, 1250, 'nishi_umeda'),
+  P('kitte',       'KITTE大阪 (うめよこ)',       'B1',  570, 1000, 'osaka_sta'),
   P('ritz',        'リッツ・カールトン前',       'B1',  300, 1385, 'nishi_umeda'),
   S('kitashinchi', 'JR東西線 北新地駅',          'B2',  880, 1425),
   P('dojima',      'ドージマ地下センター',       'B1',  635, 1500, 'dotica'),
@@ -166,6 +169,9 @@ const EDGES = [
   ['hilton', 'garden', 9, 'nishi_umeda'],
   ['j_c1', 'garden', 12, 'nishi_umeda'],
   ['garden', 'herbis', 12, 'nishi_umeda'],
+  ['garden', 'kitte', 8, 'nishi_umeda'],      // ガーデンシティ〜JR西口(KITTE)方面
+  ['daimaru', 'kitte', 9, 'osaka_sta'],        // 大阪駅前地下道の西延長(桜橋口方面)
+  ['hilton_b2', 'herbis_b2', 9, 'nishi_umeda'], // B2連絡通路(ガーデンアベニュー)
   ['herbis', 'j_nishi_x', 10, 'nishi_umeda'],
   ['herbis', 'ritz', 12, 'nishi_umeda'],
   ['ritz', 'sw_end', 9, 'nishi_umeda'],
@@ -221,6 +227,8 @@ const VERTICALS = [
   { type: 'esc',    a: 'sanban_s_b1', b: 'sanban_s_b2', mx:  960, my:  662, name: '三番街南館ESC' },
   { type: 'esc',    a: 'ekimae1',     b: 'ekimae1_b2',  mx:  733, my: 1288, name: '第1ビル館内ESC' },
   { type: 'esc',    a: 'ekimae2',     b: 'ekimae2_b2',  mx:  893, my: 1298, name: '第2ビル館内ESC' },
+  { type: 'esc',    a: 'hilton',      b: 'hilton_b2',   mx:  702, my: 1118, name: 'ヒルトン館内ESC' },
+  { type: 'esc',    a: 'herbis',      b: 'herbis_b2',   mx:  458, my: 1240, name: 'ハービス館内ESC' },
   { type: 'stairs', a: 'ekimae3',     b: 'ekimae3_b2',  mx: 1032, my: 1288, name: '第3ビル館内階段' },
   { type: 'stairs', a: 'ekimae4',     b: 'ekimae4_b2',  mx: 1018, my: 1188, name: '第4ビル館内階段' },
 ];
@@ -305,6 +313,40 @@ const FLOOR_POLYS = [
       [840, 1178], [652, 1178], [652, 1152],       // 西アーム（西梅田方面）
       [838, 1152], [842, 1145],                    // 円形広場北西→北アームへ
     ] },
+
+  // --- 施設のフロア面(建物形状に沿った多角形。ホール型店舗の床を兼ねる) ---
+  // 大阪駅前第1ビル(北西角が御堂筋側に斜め)
+  { floor: 'B1', zone: 'ekimae', pts: [[661, 1288], [678, 1276], [764, 1276], [764, 1339], [661, 1339]] },
+  { floor: 'B2', zone: 'ekimae', pts: [[661, 1288], [678, 1276], [764, 1276], [764, 1339], [661, 1339]] },
+  // 大阪駅前第2ビル
+  { floor: 'B1', zone: 'ekimae', pts: [[826, 1281], [929, 1281], [929, 1344], [826, 1344]] },
+  { floor: 'B2', zone: 'ekimae', pts: [[826, 1281], [929, 1281], [929, 1344], [826, 1344]] },
+  // 大阪駅前第3ビル
+  { floor: 'B1', zone: 'ekimae', pts: [[966, 1266], [1069, 1266], [1069, 1334], [966, 1334]] },
+  { floor: 'B2', zone: 'ekimae', pts: [[966, 1266], [1069, 1266], [1069, 1334], [966, 1334]] },
+  // 大阪駅前第4ビル(北東角が斜め)
+  { floor: 'B1', zone: 'ekimae', pts: [[956, 1166], [1048, 1166], [1054, 1186], [1054, 1229], [956, 1229]] },
+  { floor: 'B2', zone: 'ekimae', pts: [[956, 1166], [1048, 1166], [1054, 1186], [1054, 1229], [956, 1229]] },
+  // ルクアB2(バルチカ=東寄り/ルクアフードホール=西寄りの一体の床)
+  { floor: 'B2', zone: 'osaka_sta', pts: [[596, 788], [700, 788], [700, 862], [596, 862]] },
+  // LINKS UMEDA B1(LINKS MARCHE・おいしいもの横丁)
+  { floor: 'B1', zone: 'osaka_sta', pts: [[722, 592], [823, 592], [823, 692], [722, 692]] },
+  // KITTE大阪 B1(うめよこ)
+  { floor: 'B1', zone: 'osaka_sta', pts: [[531, 976], [612, 976], [612, 1062], [531, 1062]] },
+  // 阪神梅田本店B1 スナックパーク(百貨店北西の一角)
+  { floor: 'B1', zone: 'umechika', pts: [[878, 998], [928, 998], [928, 1030], [878, 1030]] },
+  // うめきた広場B1 UMEKITA CELLAR
+  { floor: 'B1', zone: 'osaka_sta', pts: [[342, 762], [420, 762], [420, 840], [342, 840]] },
+  // ヒルトンプラザ EAST/WEST(B1/B2)
+  { floor: 'B1', zone: 'nishi_umeda', pts: [[598, 1102], [684, 1102], [684, 1178], [598, 1178]] },
+  { floor: 'B2', zone: 'nishi_umeda', pts: [[598, 1102], [684, 1102], [684, 1178], [598, 1178]] },
+  // ハービスOSAKA/ENT(B1/B2。南西角が斜め)
+  { floor: 'B1', zone: 'nishi_umeda', pts: [[388, 1202], [524, 1202], [524, 1332], [430, 1332], [388, 1290]] },
+  { floor: 'B2', zone: 'nishi_umeda', pts: [[388, 1202], [524, 1202], [524, 1332], [430, 1332], [388, 1290]] },
+  // 泉の広場(八角形の広場)
+  { floor: 'B1', zone: 'whity', pts: [[1239, 924], [1254, 909], [1276, 909], [1291, 924], [1291, 946], [1276, 961], [1254, 961], [1239, 946]] },
+  // ekimo梅田(御堂筋線コンコース沿いの帯)
+  { floor: 'B1', zone: 'umechika', pts: [[868, 902], [896, 902], [896, 976], [868, 976]] },
 ];
 
 // ホール型フロア内部の見えない通路格子（経路探索・案内用。描画はしない）
@@ -915,8 +957,16 @@ const stairsGeo = (() => {
   return geo;
 })();
 
-// エレベーターのアイコン: B2からB1上空まで貫く1本のシンプルな直方体(シャフト)
+// エレベーター: 半透明のシャフト(直方体の枠)+中を上下する「かご」(立方体)で表現
 const evShaftGeo = new THREE.BoxGeometry(3.6, (FLOOR_Y.B1 - FLOOR_Y.B2) + 8, 3.6);
+const evShaftMat = new THREE.MeshBasicMaterial({
+  color: 0x9fe0ff, transparent: true, opacity: 0.12, depthWrite: false,
+});
+const evShaftEdgeMat = new THREE.LineBasicMaterial({ color: 0x9fe0ff, transparent: true, opacity: 0.45 });
+const evCageGeo = new THREE.BoxGeometry(3.2, 3.2, 3.2);
+const evCages = []; // { mesh, phase } — animate()でB2⇔B1を往復させる
+const EV_CAGE_LOW = FLOOR_Y.B2 + 1.9 + 1.6;   // 床上面+かご半分
+const EV_CAGE_HIGH = FLOOR_Y.B1 + 1.9 + 1.6;
 
 // エスカレーターの手すり(欄干): 中身の詰まったソリッドな側面パネル×2。
 // ローカル+Xが「上り方向」。フロアで形を変える:
@@ -996,10 +1046,16 @@ for (const v of VERTICALS) {
   }
 
   if (v.type === 'ev') {
-    // EV: フロアを貫く1本のシンプルな直方体(ビーム・パッドなし)
-    const m = new THREE.Mesh(evShaftGeo, padMats.ev);
-    m.position.set(x, yB2 + ((yB1 - yB2) + 8) / 2, z);
-    vertGroup.add(m);
+    // EV: 半透明シャフト+上下するかご
+    const shaftY = yB2 + ((yB1 - yB2) + 8) / 2;
+    const fill = new THREE.Mesh(evShaftGeo, evShaftMat);
+    fill.position.set(x, shaftY, z);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(evShaftGeo), evShaftEdgeMat);
+    edges.position.set(x, shaftY, z);
+    const cage = new THREE.Mesh(evCageGeo, padMats.ev);
+    cage.position.set(x, EV_CAGE_LOW, z);
+    vertGroup.add(fill, edges, cage);
+    evCages.push({ mesh: cage, phase: evCages.length * 1.73 });
   } else {
     const beam = new THREE.Mesh(beamGeo, beamMats[v.type]);
     beam.position.set(x, (yB1 + yB2) / 2, z);
@@ -1928,6 +1984,17 @@ function animate() {
       const u = (t * 0.06 + i / markers.length) % 1;
       m.position.copy(routeCurve.getPointAt(u));
     });
+  }
+  // EVのかご: B2⇔B1をゆっくり往復(各階で一瞬停止。位相をずらして同期させない)
+  for (const c of evCages) {
+    const tt = ((t + c.phase) % 7) / 7;
+    let u;
+    if (tt < 0.4) u = tt / 0.4;             // 上昇
+    else if (tt < 0.5) u = 1;               // B1で停止
+    else if (tt < 0.9) u = 1 - (tt - 0.5) / 0.4; // 下降
+    else u = 0;                             // B2で停止
+    const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+    c.mesh.position.y = EV_CAGE_LOW + (EV_CAGE_HIGH - EV_CAGE_LOW) * e;
   }
   // 現在地マーカー: 人型の浮遊＋足元のパルスリング
   if (startIcon) {

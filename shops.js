@@ -33,6 +33,41 @@ export const SHOP_AREAS = {
     edges: [['j_diamor_n', 'enkei'], ['enkei', 'j_diamor_s']] },                     // 北→南
   diamor_variety: { floor: 'B1', zone: 'diamor',
     edges: [['enkei', 'j_diamor_e'], ['j_diamor_e', 'ekimae4']] },                   // 北西→南東
+
+  // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
+  dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'avanza']] },
+  // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
+  ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], offset: 6, path: [[882, 905], [882, 973]] },
+  // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）
+  ekimae1_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae1'], rect: [712, 1307, 92, 56] },
+  ekimae1_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae1_b2'], rect: [712, 1307, 92, 56] },
+  ekimae2_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae2'], rect: [877, 1312, 94, 56] },
+  ekimae2_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae2_b2'], rect: [877, 1312, 94, 56] },
+  ekimae3_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae3'], rect: [1017, 1300, 94, 60] },
+  ekimae3_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae3_b2'], rect: [1017, 1300, 94, 60] },
+  ekimae4_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae4'], rect: [1004, 1197, 88, 56] },
+  ekimae4_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae4_b2'], rect: [1004, 1197, 88, 56] },
+  // ルクアB2（バルチカ=東寄り / ルクアフードホール=西寄り）
+  barchika: { floor: 'B2', zone: 'osaka_sta', near: ['lucua_b2'], rect: [672, 825, 50, 64] },
+  foodhall: { floor: 'B2', zone: 'osaka_sta', near: ['lucua_b2'], rect: [620, 825, 44, 64] },
+  // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
+  links_b1: { floor: 'B1', zone: 'osaka_sta', near: ['yodobashi'], rect: [772, 642, 90, 90] },
+  // 阪神梅田本店B1 スナックパーク
+  snackpark: { floor: 'B1', zone: 'umechika', near: ['hanshin'], rect: [903, 1014, 44, 26] },
+  // KITTE大阪B1 うめよこ
+  umeyoko: { floor: 'B1', zone: 'osaka_sta', near: ['kitte'], rect: [571, 1019, 72, 78] },
+  // うめきた広場B1 UMEKITA CELLAR
+  umekita_cellar: { floor: 'B1', zone: 'osaka_sta', near: ['grandfront'], rect: [381, 801, 70, 70] },
+  // ヒルトンプラザ（WEST=西棟 / EAST=東棟）
+  hilton_west_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['hilton'], rect: [620, 1140, 40, 68] },
+  hilton_west_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['hilton_b2'], rect: [620, 1140, 40, 68] },
+  hilton_east_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['hilton'], rect: [664, 1140, 40, 68] },
+  hilton_east_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['hilton_b2'], rect: [664, 1140, 40, 68] },
+  // ハービス（ENT=北棟 / PLAZA(OSAKA)=南棟）
+  herbis_ent_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['herbis'], rect: [456, 1234, 120, 52] },
+  herbis_ent_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['herbis_b2'], rect: [456, 1234, 120, 52] },
+  herbis_plaza_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['herbis'], rect: [456, 1290, 120, 76] },
+  herbis_plaza_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['herbis_b2'], rect: [456, 1290, 120, 76] },
 };
 
 // 検索用の別表記。店名にキーが含まれていたら候補語を追加
@@ -501,4 +536,58 @@ export const SHOPS_SCRAPED = [
   s('コキュリコット ディアモール店', 'diamor_variety', 16, '北東'),
   s('ディアモールチャンスセンター（宝くじ）', 'diamor_variety', 17, '北東'),
   s('ドコモショップ', 'diamor_variety', 18, '西'),
+  // ==== ドーチカ（公式マップ区画番号を突合・北端→南端の通し順・全53店 2026-07） ====
+  s('三菱UFJ銀行ATM', 'dotica', 1, '西'),
+  s('新梅田コクミン薬局', 'dotica', 2, '東'),
+  s('KIEFEL COFFEE', 'dotica', 3, '西'),
+  s('ファミリーマート ドーチカ店', 'dotica', 4, '東'),
+  s('plus on ドーチカ店', 'dotica', 5, '西'),
+  s('レオニダス 大阪梅田店', 'dotica', 6, '西'),
+  s('インデアンカレー 堂島店', 'dotica', 7, '東'),
+  s('東京油組総本店 ドーチカ組', 'dotica', 8, '西'),
+  s('newKOBE 堂島店', 'dotica', 9, '東'),
+  s('わたしのダイニング × SAKAGURA', 'dotica', 10, '西'),
+  s('みずほ銀行ATM', 'dotica', 11, '東'),
+  s('ダル食堂 堂島地下街店', 'dotica', 12, '西'),
+  s('ミスタークイックマン', 'dotica', 13, '東'),
+  s('りそな銀行ATM', 'dotica', 14, '東'),
+  s('コクミンドラッグ ドーチカ店', 'dotica', 15, '西'),
+  s('ほけん百花 梅田ドーチカ店', 'dotica', 16, '東'),
+  s('J・マーケット大阪ドーチカ店', 'dotica', 17, '東'),
+  s('文字の店 堂島', 'dotica', 18, '西'),
+  s('じゃんぱら大阪堂島店', 'dotica', 19, '東'),
+  s('BIG VISION', 'dotica', 20, '西'),
+  s('中央コンタクト', 'dotica', 21, '西'),
+  s('コクミンドラッグ 堂島店', 'dotica', 22, '東'),
+  s('ちぐさ大阪うめだ支店', 'dotica', 23, '西'),
+  s('リフレッシュ工房オズ 堂島店', 'dotica', 24, '西'),
+  s('セブン銀行ATM', 'dotica', 25, '東'),
+  s('時計修理工房 白金堂 大阪梅田ドーチカ店', 'dotica', 26, '西'),
+  s('西梅田眼科クリニック', 'dotica', 27, '東'),
+  s('青森・岩手えぇもんショップ', 'dotica', 28, '西'),
+  s('TRARIUM by ACE', 'dotica', 29, '東'),
+  s('Buena.', 'dotica', 30, '西'),
+  s('KENFORD堂島地下街店', 'dotica', 31, '東'),
+  s('梅田もりわき骨盤鍼灸整骨院', 'dotica', 32, '西'),
+  s('千鳥屋宗家 堂島店', 'dotica', 33, '東'),
+  s('Perfect Suit FActory', 'dotica', 34, '西'),
+  s('ダイソー', 'dotica', 35, '西'),
+  s('クックデリ御膳 ドーチカ店', 'dotica', 36, '東'),
+  s('三井住友銀行ATM', 'dotica', 37, '西'),
+  s('ドトールコーヒーショップドーチカ', 'dotica', 38, '東'),
+  s('おたからや梅田ドーチカ店', 'dotica', 39, '西'),
+  s('KUSELESS', 'dotica', 40, '西'),
+  s('吉野家', 'dotica', 41, '西'),
+  s('都由堂島店', 'dotica', 42, '東'),
+  s('かっぽうぎ ドーチカ店', 'dotica', 43, '西'),
+  s('Barber the GM 堂島', 'dotica', 44, '東'),
+  s('おきがる串家物語', 'dotica', 45, '西'),
+  s('お酒の美術館 ドーチカ店', 'dotica', 46, '東'),
+  s('おらが蕎麦', 'dotica', 47, '西'),
+  s('ドットミーティング堂島貸会議室', 'dotica', 48, '東'),
+  s('海鮮居酒屋あいち', 'dotica', 49, '西'),
+  s('中央軒 ドーチカ店', 'dotica', 50, '東'),
+  s('つけ麺専門店 三田製麺所 ドーチカ店', 'dotica', 51, '西'),
+  s('CAFÉ ONthe', 'dotica', 52, '西'),
+  s('自家製麺杵屋', 'dotica', 53, '東'),
 ];

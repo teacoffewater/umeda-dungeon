@@ -22923,8 +22923,42 @@
           floor: "B1",
           zone: "diamor",
           edges: [["enkei", "j_diamor_e"], ["j_diamor_e", "ekimae4"]]
-        }
+        },
         // 北西→南東
+        // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
+        dotica: { floor: "B1", zone: "dotica", edges: [["j_sone_w", "dojima"], ["dojima", "avanza"]] },
+        // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
+        ekimo: { floor: "B1", zone: "umechika", near: ["j_metro"], offset: 6, path: [[882, 905], [882, 973]] },
+        // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）
+        ekimae1_b1: { floor: "B1", zone: "ekimae", near: ["ekimae1"], rect: [712, 1307, 92, 56] },
+        ekimae1_b2: { floor: "B2", zone: "ekimae", near: ["ekimae1_b2"], rect: [712, 1307, 92, 56] },
+        ekimae2_b1: { floor: "B1", zone: "ekimae", near: ["ekimae2"], rect: [877, 1312, 94, 56] },
+        ekimae2_b2: { floor: "B2", zone: "ekimae", near: ["ekimae2_b2"], rect: [877, 1312, 94, 56] },
+        ekimae3_b1: { floor: "B1", zone: "ekimae", near: ["ekimae3"], rect: [1017, 1300, 94, 60] },
+        ekimae3_b2: { floor: "B2", zone: "ekimae", near: ["ekimae3_b2"], rect: [1017, 1300, 94, 60] },
+        ekimae4_b1: { floor: "B1", zone: "ekimae", near: ["ekimae4"], rect: [1004, 1197, 88, 56] },
+        ekimae4_b2: { floor: "B2", zone: "ekimae", near: ["ekimae4_b2"], rect: [1004, 1197, 88, 56] },
+        // ルクアB2（バルチカ=東寄り / ルクアフードホール=西寄り）
+        barchika: { floor: "B2", zone: "osaka_sta", near: ["lucua_b2"], rect: [672, 825, 50, 64] },
+        foodhall: { floor: "B2", zone: "osaka_sta", near: ["lucua_b2"], rect: [620, 825, 44, 64] },
+        // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
+        links_b1: { floor: "B1", zone: "osaka_sta", near: ["yodobashi"], rect: [772, 642, 90, 90] },
+        // 阪神梅田本店B1 スナックパーク
+        snackpark: { floor: "B1", zone: "umechika", near: ["hanshin"], rect: [903, 1014, 44, 26] },
+        // KITTE大阪B1 うめよこ
+        umeyoko: { floor: "B1", zone: "osaka_sta", near: ["kitte"], rect: [571, 1019, 72, 78] },
+        // うめきた広場B1 UMEKITA CELLAR
+        umekita_cellar: { floor: "B1", zone: "osaka_sta", near: ["grandfront"], rect: [381, 801, 70, 70] },
+        // ヒルトンプラザ（WEST=西棟 / EAST=東棟）
+        hilton_west_b1: { floor: "B1", zone: "nishi_umeda", near: ["hilton"], rect: [620, 1140, 40, 68] },
+        hilton_west_b2: { floor: "B2", zone: "nishi_umeda", near: ["hilton_b2"], rect: [620, 1140, 40, 68] },
+        hilton_east_b1: { floor: "B1", zone: "nishi_umeda", near: ["hilton"], rect: [664, 1140, 40, 68] },
+        hilton_east_b2: { floor: "B2", zone: "nishi_umeda", near: ["hilton_b2"], rect: [664, 1140, 40, 68] },
+        // ハービス（ENT=北棟 / PLAZA(OSAKA)=南棟）
+        herbis_ent_b1: { floor: "B1", zone: "nishi_umeda", near: ["herbis"], rect: [456, 1234, 120, 52] },
+        herbis_ent_b2: { floor: "B2", zone: "nishi_umeda", near: ["herbis_b2"], rect: [456, 1234, 120, 52] },
+        herbis_plaza_b1: { floor: "B1", zone: "nishi_umeda", near: ["herbis"], rect: [456, 1290, 120, 76] },
+        herbis_plaza_b2: { floor: "B2", zone: "nishi_umeda", near: ["herbis_b2"], rect: [456, 1290, 120, 76] }
       };
       ALIASES = {
         "\u30A4\u30F3\u30C7\u30A2\u30F3\u30AB\u30EC\u30FC": ["\u30A4\u30F3\u30C7\u30A3\u30A2\u30F3\u30AB\u30EC\u30FC", "\u30A4\u30F3\u30C7\u30A2\u30F3", "\u30AB\u30EC\u30FC"],
@@ -23385,7 +23419,61 @@
         s("\u30C0\u30D6\u30EA\u30E5\u30FC\u30C0\u30D6\u30EA\u30E5\u30FC\u30A8\u30B9", "diamor_variety", 15, "\u5357\u897F"),
         s("\u30B3\u30AD\u30E5\u30EA\u30B3\u30C3\u30C8 \u30C7\u30A3\u30A2\u30E2\u30FC\u30EB\u5E97", "diamor_variety", 16, "\u5317\u6771"),
         s("\u30C7\u30A3\u30A2\u30E2\u30FC\u30EB\u30C1\u30E3\u30F3\u30B9\u30BB\u30F3\u30BF\u30FC\uFF08\u5B9D\u304F\u3058\uFF09", "diamor_variety", 17, "\u5317\u6771"),
-        s("\u30C9\u30B3\u30E2\u30B7\u30E7\u30C3\u30D7", "diamor_variety", 18, "\u897F")
+        s("\u30C9\u30B3\u30E2\u30B7\u30E7\u30C3\u30D7", "diamor_variety", 18, "\u897F"),
+        // ==== ドーチカ（公式マップ区画番号を突合・北端→南端の通し順・全53店 2026-07） ====
+        s("\u4E09\u83F1UFJ\u9280\u884CATM", "dotica", 1, "\u897F"),
+        s("\u65B0\u6885\u7530\u30B3\u30AF\u30DF\u30F3\u85AC\u5C40", "dotica", 2, "\u6771"),
+        s("KIEFEL COFFEE", "dotica", 3, "\u897F"),
+        s("\u30D5\u30A1\u30DF\u30EA\u30FC\u30DE\u30FC\u30C8 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 4, "\u6771"),
+        s("plus on \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 5, "\u897F"),
+        s("\u30EC\u30AA\u30CB\u30C0\u30B9 \u5927\u962A\u6885\u7530\u5E97", "dotica", 6, "\u897F"),
+        s("\u30A4\u30F3\u30C7\u30A2\u30F3\u30AB\u30EC\u30FC \u5802\u5CF6\u5E97", "dotica", 7, "\u6771"),
+        s("\u6771\u4EAC\u6CB9\u7D44\u7DCF\u672C\u5E97 \u30C9\u30FC\u30C1\u30AB\u7D44", "dotica", 8, "\u897F"),
+        s("newKOBE \u5802\u5CF6\u5E97", "dotica", 9, "\u6771"),
+        s("\u308F\u305F\u3057\u306E\u30C0\u30A4\u30CB\u30F3\u30B0 \xD7 SAKAGURA", "dotica", 10, "\u897F"),
+        s("\u307F\u305A\u307B\u9280\u884CATM", "dotica", 11, "\u6771"),
+        s("\u30C0\u30EB\u98DF\u5802 \u5802\u5CF6\u5730\u4E0B\u8857\u5E97", "dotica", 12, "\u897F"),
+        s("\u30DF\u30B9\u30BF\u30FC\u30AF\u30A4\u30C3\u30AF\u30DE\u30F3", "dotica", 13, "\u6771"),
+        s("\u308A\u305D\u306A\u9280\u884CATM", "dotica", 14, "\u6771"),
+        s("\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 15, "\u897F"),
+        s("\u307B\u3051\u3093\u767E\u82B1 \u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 16, "\u6771"),
+        s("J\u30FB\u30DE\u30FC\u30B1\u30C3\u30C8\u5927\u962A\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 17, "\u6771"),
+        s("\u6587\u5B57\u306E\u5E97 \u5802\u5CF6", "dotica", 18, "\u897F"),
+        s("\u3058\u3083\u3093\u3071\u3089\u5927\u962A\u5802\u5CF6\u5E97", "dotica", 19, "\u6771"),
+        s("BIG VISION", "dotica", 20, "\u897F"),
+        s("\u4E2D\u592E\u30B3\u30F3\u30BF\u30AF\u30C8", "dotica", 21, "\u897F"),
+        s("\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u5802\u5CF6\u5E97", "dotica", 22, "\u6771"),
+        s("\u3061\u3050\u3055\u5927\u962A\u3046\u3081\u3060\u652F\u5E97", "dotica", 23, "\u897F"),
+        s("\u30EA\u30D5\u30EC\u30C3\u30B7\u30E5\u5DE5\u623F\u30AA\u30BA \u5802\u5CF6\u5E97", "dotica", 24, "\u897F"),
+        s("\u30BB\u30D6\u30F3\u9280\u884CATM", "dotica", 25, "\u6771"),
+        s("\u6642\u8A08\u4FEE\u7406\u5DE5\u623F \u767D\u91D1\u5802 \u5927\u962A\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 26, "\u897F"),
+        s("\u897F\u6885\u7530\u773C\u79D1\u30AF\u30EA\u30CB\u30C3\u30AF", "dotica", 27, "\u6771"),
+        s("\u9752\u68EE\u30FB\u5CA9\u624B\u3048\u3047\u3082\u3093\u30B7\u30E7\u30C3\u30D7", "dotica", 28, "\u897F"),
+        s("TRARIUM by ACE", "dotica", 29, "\u6771"),
+        s("Buena.", "dotica", 30, "\u897F"),
+        s("KENFORD\u5802\u5CF6\u5730\u4E0B\u8857\u5E97", "dotica", 31, "\u6771"),
+        s("\u6885\u7530\u3082\u308A\u308F\u304D\u9AA8\u76E4\u937C\u7078\u6574\u9AA8\u9662", "dotica", 32, "\u897F"),
+        s("\u5343\u9CE5\u5C4B\u5B97\u5BB6 \u5802\u5CF6\u5E97", "dotica", 33, "\u6771"),
+        s("Perfect Suit FActory", "dotica", 34, "\u897F"),
+        s("\u30C0\u30A4\u30BD\u30FC", "dotica", 35, "\u897F"),
+        s("\u30AF\u30C3\u30AF\u30C7\u30EA\u5FA1\u81B3 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 36, "\u6771"),
+        s("\u4E09\u4E95\u4F4F\u53CB\u9280\u884CATM", "dotica", 37, "\u897F"),
+        s("\u30C9\u30C8\u30FC\u30EB\u30B3\u30FC\u30D2\u30FC\u30B7\u30E7\u30C3\u30D7\u30C9\u30FC\u30C1\u30AB", "dotica", 38, "\u6771"),
+        s("\u304A\u305F\u304B\u3089\u3084\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 39, "\u897F"),
+        s("KUSELESS", "dotica", 40, "\u897F"),
+        s("\u5409\u91CE\u5BB6", "dotica", 41, "\u897F"),
+        s("\u90FD\u7531\u5802\u5CF6\u5E97", "dotica", 42, "\u6771"),
+        s("\u304B\u3063\u307D\u3046\u304E \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 43, "\u897F"),
+        s("Barber the GM \u5802\u5CF6", "dotica", 44, "\u6771"),
+        s("\u304A\u304D\u304C\u308B\u4E32\u5BB6\u7269\u8A9E", "dotica", 45, "\u897F"),
+        s("\u304A\u9152\u306E\u7F8E\u8853\u9928 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 46, "\u6771"),
+        s("\u304A\u3089\u304C\u854E\u9EA6", "dotica", 47, "\u897F"),
+        s("\u30C9\u30C3\u30C8\u30DF\u30FC\u30C6\u30A3\u30F3\u30B0\u5802\u5CF6\u8CB8\u4F1A\u8B70\u5BA4", "dotica", 48, "\u6771"),
+        s("\u6D77\u9BAE\u5C45\u9152\u5C4B\u3042\u3044\u3061", "dotica", 49, "\u897F"),
+        s("\u4E2D\u592E\u8ED2 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 50, "\u6771"),
+        s("\u3064\u3051\u9EBA\u5C02\u9580\u5E97 \u4E09\u7530\u88FD\u9EBA\u6240 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 51, "\u897F"),
+        s("CAF\xC9 ONthe", "dotica", 52, "\u897F"),
+        s("\u81EA\u5BB6\u88FD\u9EBA\u6775\u5C4B", "dotica", 53, "\u6771")
       ];
     }
   });
@@ -23454,8 +23542,11 @@
         // --- 西梅田・北新地・堂島 ---
         S("nishi", "\u56DB\u3064\u6A4B\u7DDA \u897F\u6885\u7530\u99C5", "B2", 650, 1195),
         P("hilton", "\u30D2\u30EB\u30C8\u30F3\u30D7\u30E9\u30B6 EAST/WEST", "B1", 690, 1130, "nishi_umeda"),
+        P("hilton_b2", "\u30D2\u30EB\u30C8\u30F3\u30D7\u30E9\u30B6 (B2)", "B2", 690, 1130, "nishi_umeda"),
         P("garden", "\u5927\u962A\u30AC\u30FC\u30C7\u30F3\u30B7\u30C6\u30A3", "B1", 560, 1140, "nishi_umeda"),
         P("herbis", "\u30CF\u30FC\u30D3\u30B9ENT / OSAKA", "B1", 470, 1250, "nishi_umeda"),
+        P("herbis_b2", "\u30CF\u30FC\u30D3\u30B9 (B2)", "B2", 470, 1250, "nishi_umeda"),
+        P("kitte", "KITTE\u5927\u962A (\u3046\u3081\u3088\u3053)", "B1", 570, 1e3, "osaka_sta"),
         P("ritz", "\u30EA\u30C3\u30C4\u30FB\u30AB\u30FC\u30EB\u30C8\u30F3\u524D", "B1", 300, 1385, "nishi_umeda"),
         S("kitashinchi", "JR\u6771\u897F\u7DDA \u5317\u65B0\u5730\u99C5", "B2", 880, 1425),
         P("dojima", "\u30C9\u30FC\u30B8\u30DE\u5730\u4E0B\u30BB\u30F3\u30BF\u30FC", "B1", 635, 1500, "dotica"),
@@ -23578,6 +23669,12 @@
         ["hilton", "garden", 9, "nishi_umeda"],
         ["j_c1", "garden", 12, "nishi_umeda"],
         ["garden", "herbis", 12, "nishi_umeda"],
+        ["garden", "kitte", 8, "nishi_umeda"],
+        // ガーデンシティ〜JR西口(KITTE)方面
+        ["daimaru", "kitte", 9, "osaka_sta"],
+        // 大阪駅前地下道の西延長(桜橋口方面)
+        ["hilton_b2", "herbis_b2", 9, "nishi_umeda"],
+        // B2連絡通路(ガーデンアベニュー)
         ["herbis", "j_nishi_x", 10, "nishi_umeda"],
         ["herbis", "ritz", 12, "nishi_umeda"],
         ["ritz", "sw_end", 9, "nishi_umeda"],
@@ -23631,6 +23728,8 @@
         { type: "esc", a: "sanban_s_b1", b: "sanban_s_b2", mx: 960, my: 662, name: "\u4E09\u756A\u8857\u5357\u9928ESC" },
         { type: "esc", a: "ekimae1", b: "ekimae1_b2", mx: 733, my: 1288, name: "\u7B2C1\u30D3\u30EB\u9928\u5185ESC" },
         { type: "esc", a: "ekimae2", b: "ekimae2_b2", mx: 893, my: 1298, name: "\u7B2C2\u30D3\u30EB\u9928\u5185ESC" },
+        { type: "esc", a: "hilton", b: "hilton_b2", mx: 702, my: 1118, name: "\u30D2\u30EB\u30C8\u30F3\u9928\u5185ESC" },
+        { type: "esc", a: "herbis", b: "herbis_b2", mx: 458, my: 1240, name: "\u30CF\u30FC\u30D3\u30B9\u9928\u5185ESC" },
         { type: "stairs", a: "ekimae3", b: "ekimae3_b2", mx: 1032, my: 1288, name: "\u7B2C3\u30D3\u30EB\u9928\u5185\u968E\u6BB5" },
         { type: "stairs", a: "ekimae4", b: "ekimae4_b2", mx: 1018, my: 1188, name: "\u7B2C4\u30D3\u30EB\u9928\u5185\u968E\u6BB5" }
       ];
@@ -23768,7 +23867,40 @@
             [842, 1145]
             // 円形広場北西→北アームへ
           ]
-        }
+        },
+        // --- 施設のフロア面(建物形状に沿った多角形。ホール型店舗の床を兼ねる) ---
+        // 大阪駅前第1ビル(北西角が御堂筋側に斜め)
+        { floor: "B1", zone: "ekimae", pts: [[661, 1288], [678, 1276], [764, 1276], [764, 1339], [661, 1339]] },
+        { floor: "B2", zone: "ekimae", pts: [[661, 1288], [678, 1276], [764, 1276], [764, 1339], [661, 1339]] },
+        // 大阪駅前第2ビル
+        { floor: "B1", zone: "ekimae", pts: [[826, 1281], [929, 1281], [929, 1344], [826, 1344]] },
+        { floor: "B2", zone: "ekimae", pts: [[826, 1281], [929, 1281], [929, 1344], [826, 1344]] },
+        // 大阪駅前第3ビル
+        { floor: "B1", zone: "ekimae", pts: [[966, 1266], [1069, 1266], [1069, 1334], [966, 1334]] },
+        { floor: "B2", zone: "ekimae", pts: [[966, 1266], [1069, 1266], [1069, 1334], [966, 1334]] },
+        // 大阪駅前第4ビル(北東角が斜め)
+        { floor: "B1", zone: "ekimae", pts: [[956, 1166], [1048, 1166], [1054, 1186], [1054, 1229], [956, 1229]] },
+        { floor: "B2", zone: "ekimae", pts: [[956, 1166], [1048, 1166], [1054, 1186], [1054, 1229], [956, 1229]] },
+        // ルクアB2(バルチカ=東寄り/ルクアフードホール=西寄りの一体の床)
+        { floor: "B2", zone: "osaka_sta", pts: [[596, 788], [700, 788], [700, 862], [596, 862]] },
+        // LINKS UMEDA B1(LINKS MARCHE・おいしいもの横丁)
+        { floor: "B1", zone: "osaka_sta", pts: [[722, 592], [823, 592], [823, 692], [722, 692]] },
+        // KITTE大阪 B1(うめよこ)
+        { floor: "B1", zone: "osaka_sta", pts: [[531, 976], [612, 976], [612, 1062], [531, 1062]] },
+        // 阪神梅田本店B1 スナックパーク(百貨店北西の一角)
+        { floor: "B1", zone: "umechika", pts: [[878, 998], [928, 998], [928, 1030], [878, 1030]] },
+        // うめきた広場B1 UMEKITA CELLAR
+        { floor: "B1", zone: "osaka_sta", pts: [[342, 762], [420, 762], [420, 840], [342, 840]] },
+        // ヒルトンプラザ EAST/WEST(B1/B2)
+        { floor: "B1", zone: "nishi_umeda", pts: [[598, 1102], [684, 1102], [684, 1178], [598, 1178]] },
+        { floor: "B2", zone: "nishi_umeda", pts: [[598, 1102], [684, 1102], [684, 1178], [598, 1178]] },
+        // ハービスOSAKA/ENT(B1/B2。南西角が斜め)
+        { floor: "B1", zone: "nishi_umeda", pts: [[388, 1202], [524, 1202], [524, 1332], [430, 1332], [388, 1290]] },
+        { floor: "B2", zone: "nishi_umeda", pts: [[388, 1202], [524, 1202], [524, 1332], [430, 1332], [388, 1290]] },
+        // 泉の広場(八角形の広場)
+        { floor: "B1", zone: "whity", pts: [[1239, 924], [1254, 909], [1276, 909], [1291, 924], [1291, 946], [1276, 961], [1254, 961], [1239, 946]] },
+        // ekimo梅田(御堂筋線コンコース沿いの帯)
+        { floor: "B1", zone: "umechika", pts: [[868, 902], [896, 902], [896, 976], [868, 976]] }
       ];
       var HALL_EDGES = [];
       (function placeShops() {
@@ -24445,6 +24577,17 @@
         return geo;
       })();
       var evShaftGeo = new BoxGeometry(3.6, FLOOR_Y.B1 - FLOOR_Y.B2 + 8, 3.6);
+      var evShaftMat = new MeshBasicMaterial({
+        color: 10477823,
+        transparent: true,
+        opacity: 0.12,
+        depthWrite: false
+      });
+      var evShaftEdgeMat = new LineBasicMaterial({ color: 10477823, transparent: true, opacity: 0.45 });
+      var evCageGeo = new BoxGeometry(3.2, 3.2, 3.2);
+      var evCages = [];
+      var EV_CAGE_LOW = FLOOR_Y.B2 + 1.9 + 1.6;
+      var EV_CAGE_HIGH = FLOOR_Y.B1 + 1.9 + 1.6;
       function escPanelGeo(floorKey) {
         const s2 = new Shape();
         if (floorKey === "B1") {
@@ -24503,9 +24646,15 @@
           }
         }
         if (v.type === "ev") {
-          const m = new Mesh(evShaftGeo, padMats.ev);
-          m.position.set(x, yB2 + (yB1 - yB2 + 8) / 2, z);
-          vertGroup.add(m);
+          const shaftY = yB2 + (yB1 - yB2 + 8) / 2;
+          const fill = new Mesh(evShaftGeo, evShaftMat);
+          fill.position.set(x, shaftY, z);
+          const edges = new LineSegments(new EdgesGeometry(evShaftGeo), evShaftEdgeMat);
+          edges.position.set(x, shaftY, z);
+          const cage = new Mesh(evCageGeo, padMats.ev);
+          cage.position.set(x, EV_CAGE_LOW, z);
+          vertGroup.add(fill, edges, cage);
+          evCages.push({ mesh: cage, phase: evCages.length * 1.73 });
         } else {
           const beam = new Mesh(beamGeo, beamMats[v.type]);
           beam.position.set(x, (yB1 + yB2) / 2, z);
@@ -25329,6 +25478,16 @@
             const u = (t * 0.06 + i / markers.length) % 1;
             m.position.copy(routeCurve.getPointAt(u));
           });
+        }
+        for (const c of evCages) {
+          const tt = (t + c.phase) % 7 / 7;
+          let u;
+          if (tt < 0.4) u = tt / 0.4;
+          else if (tt < 0.5) u = 1;
+          else if (tt < 0.9) u = 1 - (tt - 0.5) / 0.4;
+          else u = 0;
+          const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+          c.mesh.position.y = EV_CAGE_LOW + (EV_CAGE_HIGH - EV_CAGE_LOW) * e;
         }
         if (startIcon) {
           const a = startIcon.userData.anim;
