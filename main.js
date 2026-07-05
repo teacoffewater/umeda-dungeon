@@ -883,12 +883,14 @@ function escPanelGeo(floorKey) {
   const s = new THREE.Shape();
   if (floorKey === 'B1') {
     // 下り: 上辺が水平の台形。左辺が斜めのスロープ、右端(上り側)は全高の丸(R)
-    const H = 4.2, r = H / 2, xR = ESC_L / 2 - r, slant = 3.4;
-    s.moveTo(-ESC_L / 2, 0);                                    // 左下
+    // 0°(水平)の線が長すぎたため全長を短縮(上辺4.0→2.6 = 65%)
+    const LB = 8.1;
+    const H = 4.2, r = H / 2, xR = LB / 2 - r, slant = 3.4;
+    s.moveTo(-LB / 2, 0);                                       // 左下
     s.lineTo(xR, 0);                                            // 底辺
     s.absarc(xR, r, r, -Math.PI / 2, Math.PI / 2, false);       // 右端の丸(R)
-    s.lineTo(-ESC_L / 2 + slant, H);                            // 上辺(水平)
-    s.lineTo(-ESC_L / 2, 0);                                    // 左辺(斜めカット)
+    s.lineTo(-LB / 2 + slant, H);                               // 上辺(水平)
+    s.lineTo(-LB / 2, 0);                                       // 左辺(斜めカット)
   } else {
     // 上り: 半円(乗り口R)+直線は床に対して0°・45°・90°のみで構成。
     // 半円の上端に接続するのは0°(水平)の線

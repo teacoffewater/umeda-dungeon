@@ -24285,12 +24285,13 @@
       function escPanelGeo(floorKey) {
         const s2 = new Shape();
         if (floorKey === "B1") {
-          const H = 4.2, r = H / 2, xR = ESC_L / 2 - r, slant = 3.4;
-          s2.moveTo(-ESC_L / 2, 0);
+          const LB = 8.1;
+          const H = 4.2, r = H / 2, xR = LB / 2 - r, slant = 3.4;
+          s2.moveTo(-LB / 2, 0);
           s2.lineTo(xR, 0);
           s2.absarc(xR, r, r, -Math.PI / 2, Math.PI / 2, false);
-          s2.lineTo(-ESC_L / 2 + slant, H);
-          s2.lineTo(-ESC_L / 2, 0);
+          s2.lineTo(-LB / 2 + slant, H);
+          s2.lineTo(-LB / 2, 0);
         } else {
           const r = 1.9, xL = -ESC_L / 2 + r;
           const xR = ESC_L / 2;
