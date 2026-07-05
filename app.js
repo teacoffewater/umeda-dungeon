@@ -24490,6 +24490,8 @@
         { type: "ev", a: "sonechika", b: "kitashinchi", mx: 1013, my: 1414, name: "\u6771\u6539\u672DEV" },
         { type: "esc", a: "sonechika", b: "kitashinchi", mx: 981, my: 1410, name: "\u6771\u6539\u672DESC" },
         // 商業施設のB1⇔B2フロア間（館内ESC・階段）
+        { type: "esc", a: "hankyu_dept", b: "j_hankyu_b2", mx: 992, my: 852, name: "\u962A\u6025\u767E\u8CA8\u5E97 \u9928\u5185ESC" },
+        { type: "esc", a: "daimaru", b: "j_daimaru_b2", mx: 804, my: 982, name: "\u5927\u4E38 \u9928\u5185ESC" },
         { type: "esc", a: "lucua", b: "lucua_b2", mx: 733, my: 830, name: "\u30EB\u30AF\u30A2\u9928\u5185ESC" },
         { type: "esc", a: "sanban_n_b1", b: "sanban_n_b2", mx: 943, my: 542, name: "\u4E09\u756A\u8857\u5317\u9928ESC" },
         { type: "esc", a: "sanban_s_b1", b: "sanban_s_b2", mx: 967, my: 661, name: "\u4E09\u756A\u8857\u5357\u9928ESC" },

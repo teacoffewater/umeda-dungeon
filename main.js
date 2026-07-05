@@ -244,6 +244,8 @@ const VERTICALS = [
   { type: 'ev',     a: 'sonechika',   b: 'kitashinchi', mx: 1013, my: 1414, name: '東改札EV' },
   { type: 'esc',    a: 'sonechika',   b: 'kitashinchi', mx: 981, my: 1410, name: '東改札ESC' },
   // 商業施設のB1⇔B2フロア間（館内ESC・階段）
+  { type: 'esc',    a: 'hankyu_dept', b: 'j_hankyu_b2', mx: 992, my: 852, name: '阪急百貨店 館内ESC' },
+  { type: 'esc',    a: 'daimaru',     b: 'j_daimaru_b2', mx: 804, my: 982, name: '大丸 館内ESC' },
   { type: 'esc',    a: 'lucua',       b: 'lucua_b2',    mx: 733, my: 830, name: 'ルクア館内ESC' },
   { type: 'esc',    a: 'sanban_n_b1', b: 'sanban_n_b2', mx: 943, my: 542, name: '三番街北館ESC' },
   { type: 'esc',    a: 'sanban_s_b1', b: 'sanban_s_b2', mx: 967, my: 661, name: '三番街南館ESC' },
