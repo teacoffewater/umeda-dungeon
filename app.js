@@ -24301,7 +24301,6 @@
         return geo;
       })();
       var evShaftGeo = new BoxGeometry(3.6, FLOOR_Y.B1 - FLOOR_Y.B2 + 8, 3.6);
-      var ESC_L = 9.5;
       function escPanelGeo(floorKey) {
         const s2 = new Shape();
         if (floorKey === "B1") {
@@ -24313,22 +24312,21 @@
           s2.lineTo(-LB / 2 + slant, H);
           s2.lineTo(-LB / 2, 0);
         } else {
-          const r = 1.9, xL = -ESC_L / 2 + r;
-          const xR = ESC_L / 2;
-          const x45t = 1.55;
-          const x45b = 1;
-          const H = 2 * r + (xR - x45t);
-          const yV = xR - x45b;
+          const r = 1.9;
+          const topRun = 1.76, botRun = 1.54;
+          const H = 7;
+          const xR = topRun + (H - 2 * r);
+          const yV = xR - botRun;
           s2.moveTo(xR, H);
           s2.lineTo(xR, yV);
-          s2.lineTo(x45b, 0);
-          s2.lineTo(xL, 0);
-          s2.absarc(xL, r, r, -Math.PI / 2, Math.PI / 2, true);
-          s2.lineTo(x45t, 2 * r);
+          s2.lineTo(botRun, 0);
+          s2.lineTo(0, 0);
+          s2.absarc(0, r, r, -Math.PI / 2, Math.PI / 2, true);
+          s2.lineTo(topRun, 2 * r);
           s2.lineTo(xR, H);
         }
         const geo = new ExtrudeGeometry(s2, { depth: 0.55, bevelEnabled: false });
-        geo.translate(0, 0, -0.275);
+        geo.translate(floorKey === "B1" ? 0 : -1.53, 0, -0.275);
         return geo;
       }
       var escPanelGeos = { B1: escPanelGeo("B1"), B2: escPanelGeo("B2") };
