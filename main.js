@@ -870,18 +870,22 @@ const ESC_L = 9.5;
 function escPanelGeo(floorKey) {
   const s = new THREE.Shape();
   if (floorKey === 'B1') {
-    const H = 4.6, r = H / 2, xR = ESC_L / 2 - r;
-    s.moveTo(-ESC_L / 2, 0);                              // 下り先端(尖り)
-    s.lineTo(xR, 0);
-    s.absarc(xR, r, r, -Math.PI / 2, Math.PI / 2, false); // 丸い高台側(R)
-    s.lineTo(-ESC_L / 2, 0);                              // 斜面を先端へ
+    // 下り: 上辺が水平の台形。左辺が斜めのスロープ、右端(上り側)は全高の丸(R)
+    const H = 4.2, r = H / 2, xR = ESC_L / 2 - r, slant = 3.4;
+    s.moveTo(-ESC_L / 2, 0);                                    // 左下
+    s.lineTo(xR, 0);                                            // 底辺
+    s.absarc(xR, r, r, -Math.PI / 2, Math.PI / 2, false);       // 右端の丸(R)
+    s.lineTo(-ESC_L / 2 + slant, H);                            // 上辺(水平)
+    s.lineTo(-ESC_L / 2, 0);                                    // 左辺(斜めカット)
   } else {
-    const H = 5.4, r = 2.1, xL = -ESC_L / 2 + r;
-    s.moveTo(ESC_L / 2, H);                               // 頂部(尖り)
-    s.lineTo(ESC_L / 2, 0);
-    s.lineTo(xL, 0);
-    s.absarc(xL, r, r, -Math.PI / 2, Math.PI / 2, true);  // 丸い乗り口側(R)
-    s.lineTo(ESC_L / 2, H);                               // 斜面を頂部へ
+    // 上り: 左の大きな丸い塊(乗り口R)と、切れ込みを挟んで右上に立つ尖った峰
+    const H = 7.0, r = 2.3, xL = -ESC_L / 2 + r;
+    s.moveTo(ESC_L / 2, H);                                     // 峰の頂点(右上)
+    s.lineTo(ESC_L / 2, 0);                                     // 右辺(垂直)
+    s.lineTo(xL, 0);                                            // 底辺
+    s.absarc(xL, r, r, -Math.PI / 2, Math.PI / 2, true);        // 左端の丸(R)
+    s.lineTo(xL + 2.2, 2.6);                                    // 丸と峰の間の切れ込み
+    s.lineTo(ESC_L / 2, H);                                     // 峰へ立ち上がる斜辺
   }
   const geo = new THREE.ExtrudeGeometry(s, { depth: 0.55, bevelEnabled: false });
   geo.translate(0, 0, -0.275);
