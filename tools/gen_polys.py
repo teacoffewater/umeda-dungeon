@@ -48,11 +48,6 @@ for m in re.finditer(r"\['(\w+)',\s*'(\w+)',\s*([\d.]+)(?:,\s*'(\w+)')?\]", em.g
         print('!! unknown node', a, b, file=sys.stderr); continue
     edges.append((a, b, w, zone or '_neutral', nodes[a][2]))
 
-# ビル館内ノード同士を結ぶエッジは'bldg'扱い(床は館内グレー)
-BLDG_NODES = {'hilton', 'hilton_b2', 'herbis', 'herbis_b2'}
-edges = [(a, b, w, ('bldg' if (a in BLDG_NODES and b in BLDG_NODES) else z), fl)
-         for a, b, w, z, fl in edges]
-
 # --- OSM地下通路中心線: 最寄りの自エッジからゾーン/フロアを継承 ---
 osm = json.load(open(os.path.join(DATA, 'osm_umeda_underground.json')))
 edge_geoms = []
@@ -147,18 +142,18 @@ BUILDING_PLATES = [
     ('B2', 'sanban', bpoly(*byname['大阪梅田'])),
     # JR大阪駅構内+駅ビル(Googleでも赤=駅構内扱い)
     ('B1', 'osaka_sta', osaka_sta_poly),
-    ('B1', 'osaka_sta', bpoly(162183788)),           # ノースゲート(ルクア)
-    ('B2', 'osaka_sta', bpoly(162183788)),           # バルチカ/フードホール
+    ('B1', 'lucua', bpoly(162183788)),               # ルクア+ルクア1100(ノースゲート)
+    ('B2', 'lucua', bpoly(162183788)),               # バルチカ/フードホール
     ('B1', 'osaka_sta', bpoly(161450829)),           # サウスゲート(大丸)
     ('B1', 'osaka_sta', bpoly(1147394005)),          # イノゲート大阪
     # ビル館内経由(グレー補足): Googleでは白いが中を歩いて繋がっている
-    ('B1', 'bldg', bpoly(162158150)), ('B2', 'bldg', bpoly(162158150)),   # ヒルトンW
-    ('B1', 'bldg', bpoly(162158151)), ('B2', 'bldg', bpoly(162158151)),   # ヒルトンE
-    ('B1', 'bldg', bpoly(162158152)), ('B2', 'bldg', bpoly(162158152)),   # ハービスENT
-    ('B1', 'bldg', bpoly(162158418)), ('B2', 'bldg', bpoly(162158418)),   # ハービスOSAKA
+    ('B1', 'hilton', bpoly(162158150)), ('B2', 'hilton', bpoly(162158150)),   # ヒルトンW
+    ('B1', 'hilton', bpoly(162158151)), ('B2', 'hilton', bpoly(162158151)),   # ヒルトンE
+    ('B1', 'herbis', bpoly(162158152)), ('B2', 'herbis', bpoly(162158152)),   # ハービスENT
+    ('B1', 'herbis', bpoly(162158418)), ('B2', 'herbis', bpoly(162158418)),   # ハービスOSAKA
     ('B1', 'bldg', bpoly(588689735)),                # 阪急百貨店(ツインタワーズN)
     ('B1', 'bldg', bpoly(502411898)),                # 阪神百貨店(ツインタワーズS)
-    ('B1', 'bldg', bpoly(1146510724)),               # KITTE大阪(JPタワー)
+    ('B1', 'kitte', bpoly(1146510724)),              # KITTE大阪(JPタワー)
     ('B1', 'links', bpoly(*byname['ヨドバシ梅田タワー'])),       # ヨドバシ/リンクス梅田(独立施設)
     ('B1', 'bldg', bpoly(178958655)),                # 堂島アバンザ
     ('B1', 'grandfront', bpoly(178942581)),          # グランフロント大阪(南館)
@@ -196,8 +191,9 @@ for fl, zone, cx, cy, r in DISCS:
 
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
-ORDER = ['sanban', 'links', 'grandfront', 'whity', 'umechika', 'osaka_sta', 'ekimae', 'diamor',
-         'nishi_umeda', 'sonechika', 'dotica', 'bldg', '_neutral']
+ORDER = ['sanban', 'links', 'grandfront', 'lucua', 'hilton', 'herbis', 'kitte', 'whity',
+         'umechika', 'osaka_sta', 'ekimae', 'diamor', 'nishi_umeda', 'sonechika', 'dotica',
+         'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)
 covers_by_group = {}

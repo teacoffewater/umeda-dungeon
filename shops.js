@@ -48,26 +48,26 @@ export const SHOP_AREAS = {
   ekimae4_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae4'], rect: [990, 1213, 86, 69] },
   ekimae4_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae4_b2'], rect: [990, 1213, 86, 69] },
   // ルクアB2（バルチカ=東寄り / ルクアフードホール=西寄り）
-  barchika: { floor: 'B2', zone: 'osaka_sta', near: ['lucua_b2'], rect: [750, 820, 50, 64] },
-  foodhall: { floor: 'B2', zone: 'osaka_sta', near: ['lucua_b2'], rect: [698, 820, 44, 64] },
+  barchika: { floor: 'B2', zone: 'lucua', near: ['lucua_b2'], rect: [750, 820, 50, 64] },
+  foodhall: { floor: 'B2', zone: 'lucua', near: ['lucua_b2'], rect: [698, 820, 44, 64] },
   // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
   links_b1: { floor: 'B1', zone: 'links', near: ['yodobashi'], rect: [788, 650, 111, 126] },
   // 阪神梅田本店B1 スナックパーク
   snackpark: { floor: 'B1', zone: 'umechika', near: ['hanshin'], rect: [877, 1002, 44, 26] },
   // KITTE大阪B1 うめよこ
-  umeyoko: { floor: 'B1', zone: 'osaka_sta', near: ['kitte'], rect: [598, 1122, 98, 133] },
+  umeyoko: { floor: 'B1', zone: 'kitte', near: ['kitte'], rect: [598, 1122, 98, 133] },
   // うめきた広場B1 UMEKITA CELLAR
   umekita_cellar: { floor: 'B1', zone: 'grandfront', near: ['grandfront'], rect: [674, 657, 70, 70] },
   // ヒルトンプラザ（WEST=西棟 / EAST=東棟）
-  hilton_west_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['hilton'], rect: [689, 1205, 34, 62] },
-  hilton_west_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['hilton_b2'], rect: [689, 1205, 34, 62] },
-  hilton_east_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['hilton'], rect: [777, 1176, 56, 110] },
-  hilton_east_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['hilton_b2'], rect: [777, 1176, 56, 110] },
+  hilton_west_b1: { floor: 'B1', zone: 'hilton', near: ['hilton'], rect: [689, 1205, 34, 62] },
+  hilton_west_b2: { floor: 'B2', zone: 'hilton', near: ['hilton_b2'], rect: [689, 1205, 34, 62] },
+  hilton_east_b1: { floor: 'B1', zone: 'hilton', near: ['hilton'], rect: [777, 1176, 56, 110] },
+  hilton_east_b2: { floor: 'B2', zone: 'hilton', near: ['hilton_b2'], rect: [777, 1176, 56, 110] },
   // ハービス（ENT=北棟 / PLAZA(OSAKA)=南棟）
-  herbis_ent_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['herbis'], rect: [634, 1214, 74, 78] },
-  herbis_ent_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['herbis_b2'], rect: [634, 1214, 74, 78] },
-  herbis_plaza_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['herbis'], rect: [486, 1365, 117, 122] },
-  herbis_plaza_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['herbis_b2'], rect: [486, 1365, 117, 122] },
+  herbis_ent_b1: { floor: 'B1', zone: 'herbis', near: ['herbis'], rect: [634, 1214, 74, 78] },
+  herbis_ent_b2: { floor: 'B2', zone: 'herbis', near: ['herbis_b2'], rect: [634, 1214, 74, 78] },
+  herbis_plaza_b1: { floor: 'B1', zone: 'herbis', near: ['herbis'], rect: [486, 1365, 117, 122] },
+  herbis_plaza_b2: { floor: 'B2', zone: 'herbis', near: ['herbis_b2'], rect: [486, 1365, 117, 122] },
 };
 
 // 検索用の別表記。店名にキーが含まれていたら候補語を追加
@@ -94,7 +94,7 @@ export const ALIASES = {
 
 // 手動配置の店舗（対象3施設の外だが、ランドマークとして重要な店）
 export const SHOPS_MANUAL = [
-  { name: 'マクドナルド ルクア大阪店', floor: 'B1', mx: 618, my: 842, near: 'lucua', zone: 'osaka_sta' },
+  { name: 'マクドナルド ルクア大阪店', floor: 'B1', mx: 696, my: 837, near: 'lucua', zone: 'lucua' },
 ];
 
 // order: 公式マップ上の歩く順 / side: 通路のどちら側か（方角） / cell: 3×3グリッド位置
