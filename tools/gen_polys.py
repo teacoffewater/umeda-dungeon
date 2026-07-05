@@ -129,6 +129,10 @@ for e in bld['elements']:
 def bpoly(*ids):
     return unary_union([bgeo[i] for i in ids]).buffer(0)
 
+def plate(*ids):
+    # 床用: 壁の厚み分(+3.5px)広げて、隣接する通路の塗りと確実に重ねる
+    return bpoly(*ids).buffer(3.5, join_style=2)
+
 # 大阪駅(relation 17915329)はouterウェイ2本を結合して外形にする
 _sta = json.load(open(os.path.join(DATA, 'osm_osaka_station.json')))['elements'][0]
 osaka_sta_poly = unary_union([
@@ -192,39 +196,39 @@ def facility_mask_total():
 # (floor, zone, polygon)
 BUILDING_PLATES = [
     # 大阪駅前ビル1〜4 (地下街扱い: ゾーン色を維持)
-    ('B1', 'ekimae', bpoly(70561756).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561756).buffer(3, join_style=2)),
-    ('B1', 'ekimae', bpoly(70561758).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561758).buffer(3, join_style=2)),
-    ('B1', 'ekimae', bpoly(135624699).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624699).buffer(3, join_style=2)),
-    ('B1', 'ekimae', bpoly(135624700).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624700).buffer(3, join_style=2)),
+    ('B1', 'ekimae', plate(70561756)), ('B2', 'ekimae', plate(70561756)),
+    ('B1', 'ekimae', plate(70561758)), ('B2', 'ekimae', plate(70561758)),
+    ('B1', 'ekimae', plate(135624699)), ('B2', 'ekimae', plate(135624699)),
+    ('B1', 'ekimae', plate(135624700)), ('B2', 'ekimae', plate(135624700)),
     # 阪急三番街 = 阪急大阪梅田駅ビル直下。
     # B1は北館/南館が間の市道で分断(直結なし・B2経由)。B2「川の流れる街」は貫通
-    ('B1', 'sanban', bpoly(*byname['大阪梅田']).difference(
-        LineString([(915, 603), (1040, 577)]).buffer(6, cap_style=2))),
-    ('B2', 'sanban', bpoly(*byname['大阪梅田'])),
+    ('B1', 'sanban', plate(*byname['大阪梅田']).difference(
+        LineString([(915, 603), (1040, 577)]).buffer(8, cap_style=2))),
+    ('B2', 'sanban', plate(*byname['大阪梅田'])),
     # JR大阪駅構内+駅ビル(Googleでも赤=駅構内扱い)
-    ('B1', 'osaka_sta', osaka_sta_poly),
-    ('B1', 'lucua', bpoly(162183788)),               # ルクア+ルクア1100(ノースゲート)
-    ('B2', 'lucua', bpoly(162183788).buffer(3.5, join_style=2)),  # バルチカ/フードホール(壁際店舗の許容+3.5px)
-    ('B1', 'daimaru', bpoly(161450829)), ('B2', 'daimaru', bpoly(161450829)),   # 大丸梅田店(サウスゲート)
-    ('B1', 'osaka_sta', bpoly(1147394005)),          # イノゲート大阪
+    ('B1', 'osaka_sta', osaka_sta_poly.buffer(3.5, join_style=2)),
+    ('B1', 'lucua', plate(162183788)),               # ルクア+ルクア1100(ノースゲート)
+    ('B2', 'lucua', plate(162183788)),  # バルチカ/フードホール(壁際店舗の許容+3.5px)
+    ('B1', 'daimaru', plate(161450829)), ('B2', 'daimaru', plate(161450829)),   # 大丸梅田店(サウスゲート)
+    ('B1', 'osaka_sta', plate(1147394005)),          # イノゲート大阪
     # ビル館内経由(グレー補足): Googleでは白いが中を歩いて繋がっている
-    ('B1', 'hilton', bpoly(162158150)), ('B2', 'hilton', bpoly(162158150)),   # ヒルトンW
-    ('B1', 'hilton', bpoly(162158151)), ('B2', 'hilton', bpoly(162158151)),   # ヒルトンE
-    ('B1', 'herbis', bpoly(162158152)), ('B2', 'herbis', bpoly(162158152)),   # ハービスENT
-    ('B1', 'herbis', bpoly(162158418)), ('B2', 'herbis', bpoly(162158418)),   # ハービスOSAKA
-    ('B1', 'hankyu_dept', bpoly(588689735)), ('B2', 'hankyu_dept', bpoly(588689735)),   # 阪急百貨店
-    ('B1', 'hanshin_dept', bpoly(502411898)), ('B2', 'hanshin_dept', bpoly(502411898)),   # 阪神百貨店
-    ('B1', 'kitte', bpoly(1146510724)),              # KITTE大阪(JPタワー)
-    ('B1', 'links', bpoly(*byname['ヨドバシ梅田タワー'])),       # ヨドバシ/リンクス梅田(独立施設)
-    ('B1', 'avanza', bpoly(178958655)),              # 堂島アバンザ(ドーチカ直結)
-    ('B1', 'grandfront', bpoly(178942581)),          # グランフロント大阪(南館)
+    ('B1', 'hilton', plate(162158150)), ('B2', 'hilton', plate(162158150)),   # ヒルトンW
+    ('B1', 'hilton', plate(162158151)), ('B2', 'hilton', plate(162158151)),   # ヒルトンE
+    ('B1', 'herbis', plate(162158152)), ('B2', 'herbis', plate(162158152)),   # ハービスENT
+    ('B1', 'herbis', plate(162158418)), ('B2', 'herbis', plate(162158418)),   # ハービスOSAKA
+    ('B1', 'hankyu_dept', plate(588689735)), ('B2', 'hankyu_dept', plate(588689735)),   # 阪急百貨店
+    ('B1', 'hanshin_dept', plate(502411898)), ('B2', 'hanshin_dept', plate(502411898)),   # 阪神百貨店
+    ('B1', 'kitte', plate(1146510724)),              # KITTE大阪(JPタワー)
+    ('B1', 'links', plate(*byname['ヨドバシ梅田タワー'])),       # ヨドバシ/リンクス梅田(独立施設)
+    ('B1', 'avanza', plate(178958655)),              # 堂島アバンザ(ドーチカ直結)
+    ('B1', 'grandfront', plate(178942581)),          # グランフロント大阪(南館)
 ]
 
 # --- 手トレースの面(広場・モール)。スクショ校正済みマップpx ---
 HAND_PLATES = [
     # (floor, zone, [[x,y],...])  ※検証しながら追加・調整する
-    # 阪急前広場〜ホワイティ広場(阪急百貨店北側の面的な広がり)
-    ('B1', 'whity', [[906, 702], [1002, 702], [1034, 746], [1034, 792], [954, 800], [906, 788]]),
+    # 阪急百貨店前コンコース(公共歩行空間。ホワイティではなく梅田地下道系)
+    ('B1', 'umechika', [[906, 702], [1002, 702], [1034, 746], [1034, 792], [954, 800], [906, 788]]),
     # 阪神前広場〜うめちか本体(阪急百と阪神百の間、御堂筋直下の面)
     # 百貨店ビル内部はビルマスクが自動で除くため外形は広めに定義
     ('B1', 'umechika', [[840, 920], [1028, 920], [1028, 1010], [850, 1012]]),

@@ -25,6 +25,7 @@ def to_px(lat, lon):
 KNOWN_SHOP_OK = {"麺's room 神虎"}   # 第4ビル北縁×バラエティ帯の境界密着(2.4px)
 INTRUSION_WHITELIST = {('whity', 'sanban'), ('whity', 'hankyu_dept'), ('diamor', 'ekimae'),
                        ('diamor', 'hanshin_dept'),  # F-40系南北通路(御堂筋沿い・阪神百の壁際)
+                       ('hilton', 'herbis'),  # ヒルトンW⇔ハービスENTは直結(壁+3.5px床同士の継ぎ目)
                        ('dotica', 'avanza'), ('sonechika', 'ekimae'),
                        ('sanban', 'links')}  # 最後はOSMビル外形同士の重複(11m四方)由来
 
