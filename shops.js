@@ -10,10 +10,10 @@
 
 export const SHOP_AREAS = {
   // 阪急三番街（ホール型: 3×3グリッドで配置。rect=[中心mx, 中心my, 幅, 奥行] map px）
-  sanban_n_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b1'], rect: [928, 550, 64, 48] },
-  sanban_n_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_n_b2'], rect: [928, 550, 64, 48] },
-  sanban_s_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b1'], rect: [952, 656, 68, 56] },
-  sanban_s_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_s_b2'], rect: [952, 656, 68, 56] },
+  sanban_n_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b1'], rect: [948, 550, 64, 48] },
+  sanban_n_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_n_b2'], rect: [948, 550, 64, 48] },
+  sanban_s_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b1'], rect: [968, 656, 68, 56] },
+  sanban_s_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_s_b2'], rect: [968, 656, 68, 56] },
   // ホワイティうめだ（公式マップSVG座標から並び順・通路側を機械判定・OSM実座標で方位検証済み）
   whity_petit:  { floor: 'B1', zone: 'whity', edges: [['j_pchn', 'opa']] },                       // 南北通路（北→南）
   whity_north1: { floor: 'B1', zone: 'whity', edges: [['j_east1', 'j_nm1s'], ['j_nm1s', 'j_whity_x']] }, // 南北通路
@@ -23,8 +23,8 @@ export const SHOP_AREAS = {
   whity_east:   { floor: 'B1', zone: 'whity', edges: [['j_whity_x', 'izumi']] },
   whity_nomoka: { floor: 'B1', zone: 'whity', edges: [['izumi', 'izumi_ne']] },
   whity_pocket: { floor: 'B1', zone: 'whity', near: ['j_whity_x'], offset: 5, path: [[1069, 950], [1081, 945]] },
-  whity_mikke:  { floor: 'B1', zone: 'whity', near: ['whity_w'], offset: 6, path: [[956, 962], [1040, 962]] },
-  whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_w', 'j_whity_x'], offset: 6, path: [[1003, 920], [1056, 903]] },
+  whity_mikke:  { floor: 'B1', zone: 'whity', near: ['whity_w'], offset: 3, path: [[956, 946], [1040, 946]] },
+  whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_w', 'j_whity_x'], offset: 4, path: [[1035, 924], [1088, 907]] },
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
   diamor_fashion: { floor: 'B1', zone: 'diamor',
     edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_fashion_e']] },        // 西→東
@@ -37,37 +37,37 @@ export const SHOP_AREAS = {
   // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
   dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'avanza']] },
   // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
-  ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], offset: 6, path: [[906, 906], [906, 974]] },
+  ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], offset: 6, path: [[886, 918], [886, 986]] },
   // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）
-  ekimae1_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae1'], rect: [788, 1334, 94, 72] },
-  ekimae1_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae1_b2'], rect: [788, 1334, 94, 72] },
-  ekimae2_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae2'], rect: [916, 1344, 84, 81] },
-  ekimae2_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae2_b2'], rect: [916, 1344, 84, 81] },
+  ekimae1_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae1'], rect: [768, 1326, 85, 65] },
+  ekimae1_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae1_b2'], rect: [788, 1326, 94, 72] },
+  ekimae2_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae2'], rect: [890, 1360, 50, 39] },
+  ekimae2_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae2_b2'], rect: [912, 1344, 84, 81] },
   ekimae3_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae3'], rect: [1022, 1350, 84, 81] },
   ekimae3_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae3_b2'], rect: [1022, 1350, 84, 81] },
-  ekimae4_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae4'], rect: [990, 1213, 86, 69] },
+  ekimae4_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae4'], rect: [967, 1203, 52, 29] },
   ekimae4_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae4_b2'], rect: [990, 1213, 86, 69] },
   // ルクアB2（バルチカ=東寄り / ルクアフードホール=西寄り）
-  barchika: { floor: 'B2', zone: 'lucua', near: ['lucua_b2'], rect: [750, 820, 50, 64] },
+  barchika: { floor: 'B2', zone: 'lucua', near: ['lucua_b2'], rect: [742, 800, 50, 64] },
   foodhall: { floor: 'B2', zone: 'lucua', near: ['lucua_b2'], rect: [698, 820, 44, 64] },
   // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
   links_b1: { floor: 'B1', zone: 'links', near: ['yodobashi'], rect: [788, 650, 111, 126] },
   // 阪神梅田本店B1 スナックパーク
-  snackpark: { floor: 'B1', zone: 'hanshin_dept', near: ['hanshin'], rect: [877, 1002, 44, 26] },
+  snackpark: { floor: 'B1', zone: 'hanshin_dept', near: ['hanshin'], rect: [905, 1042, 31, 18] },
   // KITTE大阪B1 うめよこ
-  umeyoko: { floor: 'B1', zone: 'kitte', near: ['kitte'], rect: [598, 1122, 98, 133] },
+  umeyoko: { floor: 'B1', zone: 'kitte', near: ['kitte'], rect: [590, 1122, 59, 80] },
   // うめきた広場B1 UMEKITA CELLAR
   umekita_cellar: { floor: 'B1', zone: 'grandfront', near: ['grandfront'], rect: [674, 657, 70, 70] },
   // ヒルトンプラザ（WEST=西棟 / EAST=東棟）
   hilton_west_b1: { floor: 'B1', zone: 'hilton', near: ['hilton'], rect: [689, 1205, 34, 62] },
   hilton_west_b2: { floor: 'B2', zone: 'hilton', near: ['hilton_b2'], rect: [689, 1205, 34, 62] },
-  hilton_east_b1: { floor: 'B1', zone: 'hilton', near: ['hilton'], rect: [777, 1176, 56, 110] },
+  hilton_east_b1: { floor: 'B1', zone: 'hilton', near: ['hilton'], rect: [773, 1176, 45, 88] },
   hilton_east_b2: { floor: 'B2', zone: 'hilton', near: ['hilton_b2'], rect: [777, 1176, 56, 110] },
   // ハービス（ENT=北棟 / PLAZA(OSAKA)=南棟）
-  herbis_ent_b1: { floor: 'B1', zone: 'herbis', near: ['herbis'], rect: [634, 1214, 74, 78] },
-  herbis_ent_b2: { floor: 'B2', zone: 'herbis', near: ['herbis_b2'], rect: [634, 1214, 74, 78] },
-  herbis_plaza_b1: { floor: 'B1', zone: 'herbis', near: ['herbis'], rect: [486, 1365, 117, 122] },
-  herbis_plaza_b2: { floor: 'B2', zone: 'herbis', near: ['herbis_b2'], rect: [486, 1365, 117, 122] },
+  herbis_ent_b1: { floor: 'B1', zone: 'herbis', near: ['herbis'], rect: [646, 1226, 74, 78] },
+  herbis_ent_b2: { floor: 'B2', zone: 'herbis', near: ['herbis_b2'], rect: [634, 1218, 74, 78] },
+  herbis_plaza_b1: { floor: 'B1', zone: 'herbis', near: ['herbis'], rect: [466, 1391, 42, 58] },
+  herbis_plaza_b2: { floor: 'B2', zone: 'herbis', near: ['herbis_b2'], rect: [478, 1378, 42, 66] },
 };
 
 // 検索用の別表記。店名にキーが含まれていたら候補語を追加
@@ -102,7 +102,7 @@ export const SHOPS_MANUAL = [
   { name: '阪急うめだ本店 B2F(生鮮・惣菜)',   floor: 'B2', mx: 975, my:  872, near: 'hankyu_dept',  zone: 'hankyu_dept' },
   { name: '阪神梅田本店 B1F(食品館)',         floor: 'B1', mx: 930, my: 1060, near: 'hanshin',      zone: 'hanshin_dept' },
   { name: '堂島アバンザ B1F(レストラン街)',   floor: 'B1', mx: 775, my: 1565, near: 'j_avz',        zone: 'avanza' },
-  { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 950, my: 1085, near: 'hanshin_home', zone: 'hanshin_dept' },
+  { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 922, my: 1066, near: 'hanshin_home', zone: 'hanshin_dept' },
 ];
 
 // order: 公式マップ上の歩く順 / side: 通路のどちら側か（方角） / cell: 3×3グリッド位置

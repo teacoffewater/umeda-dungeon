@@ -130,6 +130,12 @@ osaka_sta_poly = unary_union([
     for mm in _sta['members'] if mm.get('role') == 'outer' and len(mm.get('geometry', [])) >= 4
 ]).buffer(0).buffer(2, join_style=2).buffer(-2, join_style=2)
 
+# ホワイティのモール帯(公共通路)はビル際を走るため、重なる分はビル床から差し引く
+whity_mask = unary_union([
+    LineString([(nodes[a][0], nodes[a][1]), (nodes[b][0], nodes[b][1])]).buffer(w / 2, cap_style=3, join_style=2)
+    for a, b, w, z, fl in edges if z == 'whity'
+]).buffer(0)
+
 # (floor, zone, polygon)
 BUILDING_PLATES = [
     # 大阪駅前ビル1〜4 (地下街扱い: ゾーン色を維持)
@@ -143,7 +149,7 @@ BUILDING_PLATES = [
     # JR大阪駅構内+駅ビル(Googleでも赤=駅構内扱い)
     ('B1', 'osaka_sta', osaka_sta_poly),
     ('B1', 'lucua', bpoly(162183788)),               # ルクア+ルクア1100(ノースゲート)
-    ('B2', 'lucua', bpoly(162183788)),               # バルチカ/フードホール
+    ('B2', 'lucua', bpoly(162183788).buffer(3.5, join_style=2)),  # バルチカ/フードホール(壁際店舗の許容+3.5px)
     ('B1', 'daimaru', bpoly(161450829)), ('B2', 'daimaru', bpoly(161450829)),   # 大丸梅田店(サウスゲート)
     ('B1', 'osaka_sta', bpoly(1147394005)),          # イノゲート大阪
     # ビル館内経由(グレー補足): Googleでは白いが中を歩いて繋がっている
@@ -192,8 +198,8 @@ for fl, zone, cx, cy, r in DISCS:
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
 ORDER = ['sanban', 'links', 'grandfront', 'lucua', 'hilton', 'herbis', 'kitte', 'daimaru',
-         'hankyu_dept', 'hanshin_dept', 'avanza', 'whity', 'umechika', 'osaka_sta', 'ekimae', 'diamor',
-         'nishi_umeda', 'sonechika', 'dotica', 'bldg', '_neutral']
+         'hankyu_dept', 'hanshin_dept', 'avanza', 'diamor', 'whity', 'umechika', 'osaka_sta',
+         'dotica', 'ekimae', 'sonechika', 'nishi_umeda', 'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)
 covers_by_group = {}
@@ -213,6 +219,8 @@ for floor in ('B1', 'B2'):
         u = unary_union(groups[key]).buffer(0)
         # クロージング(膨張→収縮)で幅違い合流部の欠けを均す
         u = u.buffer(1.6, join_style=2).buffer(-1.6, join_style=2)
+        if floor == 'B1' and zone in ('sanban', 'hankyu_dept'):
+            u = u.difference(whity_mask)  # ホワイティのモール帯はビル床から除く(クロージング後)
         if zone != 'bldg' and bldg_mask is not None:
             u = u.difference(bldg_mask)
         if claimed is not None:
