@@ -721,22 +721,64 @@ scene.add(groundGroup);
       addBldgLabel('JR大阪駅', 750, 855, GROUND_Y + 78);
     }
 
-    // JR線の高架橋（東西に貫通。橋脚つき）
-    const [vx1, vz1] = M2W([250, 836]);
-    const [vx2, vz2] = M2W([1330, 880]);
+    // JR線の高架橋: 航空写真に合わせて幅を変化させた帯で描く。
+    // 駅部分(11面のホーム群)で大きく膨らみ、東は新大阪方面へ北東カーブしながら、
+    // 西は塚本方面へ向かいながら細く収束する。地面の枠の端から端まで貫通させる
+    const VIADUCT = [
+      [30, 908, 16],    // 西端(マップ端)
+      [400, 884, 24],
+      [600, 862, 55],   // 駅の西端で急拡大
+      [760, 855, 63],   // 駅中心
+      [920, 850, 55],
+      [1080, 826, 28],  // 駅の東で収束
+      [1390, 770, 15],  // 東端(マップ端)
+    ];
     const deckTop = GROUND_Y + 13;
-    const deck = new THREE.BoxGeometry(Math.abs(vx2 - vx1), 6, Math.abs(vz2 - vz1));
-    const deckWire = new THREE.LineSegments(new THREE.EdgesGeometry(deck), stMat);
-    deckWire.position.set((vx1 + vx2) / 2, deckTop - 3, (vz1 + vz2) / 2);
-    groundGroup.add(deckWire);
-    const pierP = [];
-    for (let px = 290; px <= 1300; px += 85) {
-      const [wx] = M2W([px, 0]);
-      for (const pz of [vz1, vz2]) pierP.push(wx, GROUND_Y, pz, wx, deckTop - 6, pz);
+    const interpV = mx => {
+      for (let i = 0; i < VIADUCT.length - 1; i++) {
+        const a = VIADUCT[i], b = VIADUCT[i + 1];
+        if (mx >= a[0] && mx <= b[0]) {
+          const t = (mx - a[0]) / (b[0] - a[0]);
+          return [a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+        }
+      }
+      const e = VIADUCT[VIADUCT.length - 1];
+      return [e[1], e[2]];
+    };
+    {
+      // デッキ面(可変幅ポリゴン)と外周ライン
+      const upper = VIADUCT.map(([mx, my, hw]) => M2W([mx, my - hw]));
+      const lower = VIADUCT.map(([mx, my, hw]) => M2W([mx, my + hw]));
+      const shape = new THREE.Shape();
+      shape.moveTo(upper[0][0], -upper[0][1]);
+      for (let i = 1; i < upper.length; i++) shape.lineTo(upper[i][0], -upper[i][1]);
+      for (let i = lower.length - 1; i >= 0; i--) shape.lineTo(lower[i][0], -lower[i][1]);
+      const deckMesh = new THREE.Mesh(
+        new THREE.ShapeGeometry(shape),
+        new THREE.MeshBasicMaterial({ color: 0xbcd4ee, transparent: true, opacity: 0.07, depthWrite: false, side: THREE.DoubleSide })
+      );
+      deckMesh.rotation.x = -Math.PI / 2;
+      deckMesh.position.y = deckTop - 3;
+      deckMesh.renderOrder = 2;
+      groundGroup.add(deckMesh);
+      const ring = [...upper, ...lower.slice().reverse()];
+      const outlineGeo = new THREE.BufferGeometry().setFromPoints(
+        ring.map(([wx, wz]) => new THREE.Vector3(wx, deckTop - 3, wz))
+      );
+      groundGroup.add(new THREE.LineLoop(outlineGeo, stMat));
+      // 橋脚(帯の両縁に沿って)
+      const pierP = [];
+      for (let px = 70; px <= 1370; px += 85) {
+        const [my, hw] = interpV(px);
+        for (const py of [my - hw + 3, my + hw - 3]) {
+          const [wx, wz] = M2W([px, py]);
+          pierP.push(wx, GROUND_Y, wz, wx, deckTop - 6, wz);
+        }
+      }
+      const pierGeo = new THREE.BufferGeometry();
+      pierGeo.setAttribute('position', new THREE.Float32BufferAttribute(pierP, 3));
+      groundGroup.add(new THREE.LineSegments(pierGeo, stMat));
     }
-    const pierGeo = new THREE.BufferGeometry();
-    pierGeo.setAttribute('position', new THREE.Float32BufferAttribute(pierP, 3));
-    groundGroup.add(new THREE.LineSegments(pierGeo, stMat));
 
     // ホーム（高架デッキの上・大屋根の下）
     for (const [py1, py2] of [[840, 852], [862, 874]]) {
@@ -1799,12 +1841,14 @@ document.getElementById('zone-clear').addEventListener('click', () => {
 
 // 地図上の文字（施設名ラベル）の一括表示切替
 const labelsContainer = document.getElementById('labels');
-const labelChip = document.getElementById('chip-labels');
-let labelsShown = true;
-labelChip.addEventListener('click', () => {
-  labelsShown = !labelsShown;
-  labelsContainer.style.display = labelsShown ? '' : 'none';
-  labelChip.classList.toggle('off', !labelsShown);
+// 「詳細」= 文字(施設名などのラベル)+店舗ドットの一括切替
+const detailChip = document.getElementById('chip-detail');
+let detailShown = true;
+detailChip.addEventListener('click', () => {
+  detailShown = !detailShown;
+  labelsContainer.style.display = detailShown ? '' : 'none';
+  for (const m of shopMeshes) m.visible = detailShown;
+  detailChip.classList.toggle('off', !detailShown);
 });
 
 // 地上のビル・駅舎・高架の一括表示切替
@@ -1817,14 +1861,6 @@ bldgChip.addEventListener('click', () => {
   bldgChip.classList.toggle('off', !bldgShown);
 });
 
-// 店舗ドットの一括表示切替
-const shopChip = document.getElementById('chip-shops');
-let shopsShown = true;
-shopChip.addEventListener('click', () => {
-  shopsShown = !shopsShown;
-  for (const m of shopMeshes) m.visible = shopsShown;
-  shopChip.classList.toggle('off', !shopsShown);
-});
 
 for (const chip of document.querySelectorAll('#floor-toggle .chip')) {
   if (!chip.dataset.floor) continue;
