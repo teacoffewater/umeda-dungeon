@@ -24262,8 +24262,24 @@
         });
       }
       var beamGeo = new CylinderGeometry(0.7, 0.7, FLOOR_Y.B1 - FLOOR_Y.B2, 8);
-      var stairGeoA = new BoxGeometry(4.6, 1.4, 3);
-      var stairGeoB = new BoxGeometry(2.3, 1.4, 3);
+      var stairsGeo = (() => {
+        const steps = 3, sw = 1.9, sh = 1.3, landing = 1.5, depth = 3.6;
+        const s2 = new Shape();
+        s2.moveTo(0, 0);
+        let x = 0, y = 0;
+        for (let i = 0; i < steps; i++) {
+          s2.lineTo(x + sw, y);
+          x += sw;
+          s2.lineTo(x, y + sh);
+          y += sh;
+        }
+        s2.lineTo(x + landing, y);
+        s2.lineTo(x + landing, 0);
+        s2.lineTo(0, 0);
+        const geo = new ExtrudeGeometry(s2, { depth, bevelEnabled: false });
+        geo.translate(-(x + landing) / 2, 0, -depth / 2);
+        return geo;
+      })();
       var evShaftGeo = new BoxGeometry(3.6, FLOOR_Y.B1 - FLOOR_Y.B2 + 8, 3.6);
       var ESC_L = 9.5;
       function escPanelGeo(floorKey) {
@@ -24329,32 +24345,28 @@
           const beam = new Mesh(beamGeo, beamMats[v.type]);
           beam.position.set(x, (yB1 + yB2) / 2, z);
           vertGroup.add(beam);
-          let escRotY = 0;
-          if (v.type === "esc") {
-            const pa = nodeById[v.a], pb = nodeById[v.b];
-            let dx = pa.x - pb.x, dz = pa.z - pb.z;
-            if (Math.hypot(dx, dz) < 3) {
-              dx = pa.x - x;
-              dz = pa.z - z;
-            }
-            if (Math.hypot(dx, dz) < 1) {
-              dx = 1;
-              dz = 0;
-            }
-            escRotY = Math.atan2(-dz, dx);
+          const pa = nodeById[v.a], pb = nodeById[v.b];
+          let dx = pa.x - pb.x, dz = pa.z - pb.z;
+          if (Math.hypot(dx, dz) < 3) {
+            dx = pa.x - x;
+            dz = pa.z - z;
           }
+          if (Math.hypot(dx, dz) < 1) {
+            dx = 1;
+            dz = 0;
+          }
+          const rotY = Math.atan2(-dz, dx);
           for (const y of [yB1, yB2]) {
             if (v.type === "esc") {
               const m = makeEscalator(y === yB1 ? "B1" : "B2", padMats.esc);
-              m.rotation.y = escRotY;
+              m.rotation.y = rotY;
               m.position.set(x, y + 0.3, z);
               vertGroup.add(m);
             } else {
-              const stepA = new Mesh(stairGeoA, padMats.stairs);
-              stepA.position.set(x, y + 0.7, z);
-              const stepB = new Mesh(stairGeoB, padMats.stairs);
-              stepB.position.set(x + 1.15, y + 2.1, z);
-              vertGroup.add(stepA, stepB);
+              const m = new Mesh(stairsGeo, padMats.stairs);
+              m.rotation.y = rotY;
+              m.position.set(x, y + 0.3, z);
+              vertGroup.add(m);
             }
           }
         }

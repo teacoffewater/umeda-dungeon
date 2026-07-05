@@ -855,9 +855,21 @@ for (const [type, color] of Object.entries(VERT_COLORS)) {
   });
 }
 const beamGeo = new THREE.CylinderGeometry(0.7, 0.7, FLOOR_Y.B1 - FLOOR_Y.B2, 8);
-// EV=直方体シャフト / ESC=手すりループ付き斜路 / 階段=2段ステップ
-const stairGeoA = new THREE.BoxGeometry(4.6, 1.4, 3);
-const stairGeoB = new THREE.BoxGeometry(2.3, 1.4, 3);
+// 階段: 側面が3段のステップ形(踏面→蹴上×3+上部の小さな踊り場)を押し出したソリッド。
+// ローカル+Xが「上り方向」
+const stairsGeo = (() => {
+  const steps = 3, sw = 1.9, sh = 1.3, landing = 1.5, depth = 3.6;
+  const s = new THREE.Shape();
+  s.moveTo(0, 0);
+  let x = 0, y = 0;
+  for (let i = 0; i < steps; i++) { s.lineTo(x + sw, y); x += sw; s.lineTo(x, y + sh); y += sh; }
+  s.lineTo(x + landing, y);
+  s.lineTo(x + landing, 0);
+  s.lineTo(0, 0);
+  const geo = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false });
+  geo.translate(-(x + landing) / 2, 0, -depth / 2);
+  return geo;
+})();
 
 // エレベーターのアイコン: B2からB1上空まで貫く1本のシンプルな直方体(シャフト)
 const evShaftGeo = new THREE.BoxGeometry(3.6, (FLOOR_Y.B1 - FLOOR_Y.B2) + 8, 3.6);
@@ -940,29 +952,26 @@ for (const v of VERTICALS) {
     const beam = new THREE.Mesh(beamGeo, beamMats[v.type]);
     beam.position.set(x, (yB1 + yB2) / 2, z);
     vertGroup.add(beam);
-    // エスカレーターの実際の進行方向: 下フロアのノード(b)から上フロアのノード(a)へ
-    // 向かう水平ベクトルを「上り」とみなす。同じ位置に重なる館内ESCは設備→aノード方向で代用
-    let escRotY = 0;
-    if (v.type === 'esc') {
-      const pa = nodeById[v.a], pb = nodeById[v.b];
-      let dx = pa.x - pb.x, dz = pa.z - pb.z;
-      if (Math.hypot(dx, dz) < 3) { dx = pa.x - x; dz = pa.z - z; }
-      if (Math.hypot(dx, dz) < 1) { dx = 1; dz = 0; }
-      escRotY = Math.atan2(-dz, dx);
-    }
+    // 実際の進行方向: 下フロアのノード(b)から上フロアのノード(a)へ向かう
+    // 水平ベクトルを「上り」とみなす。同じ位置に重なる館内設備は設備→aノード方向で代用
+    const pa = nodeById[v.a], pb = nodeById[v.b];
+    let dx = pa.x - pb.x, dz = pa.z - pb.z;
+    if (Math.hypot(dx, dz) < 3) { dx = pa.x - x; dz = pa.z - z; }
+    if (Math.hypot(dx, dz) < 1) { dx = 1; dz = 0; }
+    const rotY = Math.atan2(-dz, dx);
     for (const y of [yB1, yB2]) {
       if (v.type === 'esc') {
         // 実際の勾配の向き(上り=aノード方向)+フロアごとの形(B1=下り/B2=上り)
         const m = makeEscalator(y === yB1 ? 'B1' : 'B2', padMats.esc);
-        m.rotation.y = escRotY;
+        m.rotation.y = rotY;
         m.position.set(x, y + 0.3, z);
         vertGroup.add(m);
       } else {
-        const stepA = new THREE.Mesh(stairGeoA, padMats.stairs);
-        stepA.position.set(x, y + 0.7, z);
-        const stepB = new THREE.Mesh(stairGeoB, padMats.stairs);
-        stepB.position.set(x + 1.15, y + 2.1, z);
-        vertGroup.add(stepA, stepB);
+        // 階段: 3段ステップのソリッド。上り方向へ向けて置く
+        const m = new THREE.Mesh(stairsGeo, padMats.stairs);
+        m.rotation.y = rotY;
+        m.position.set(x, y + 0.3, z);
+        vertGroup.add(m);
       }
     }
   }
