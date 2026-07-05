@@ -745,38 +745,27 @@ scene.add(groundGroup);
       return [e[1], e[2]];
     };
     {
-      // デッキ面(可変幅ポリゴン)と外周ライン
+      // 高架は「地面から立ち上がる一体の盛土状ボリューム」で描く(柱なし・下は埋める)
       const upper = VIADUCT.map(([mx, my, hw]) => M2W([mx, my - hw]));
       const lower = VIADUCT.map(([mx, my, hw]) => M2W([mx, my + hw]));
       const shape = new THREE.Shape();
       shape.moveTo(upper[0][0], -upper[0][1]);
       for (let i = 1; i < upper.length; i++) shape.lineTo(upper[i][0], -upper[i][1]);
       for (let i = lower.length - 1; i >= 0; i--) shape.lineTo(lower[i][0], -lower[i][1]);
-      const deckMesh = new THREE.Mesh(
-        new THREE.ShapeGeometry(shape),
-        new THREE.MeshBasicMaterial({ color: 0xbcd4ee, transparent: true, opacity: 0.07, depthWrite: false, side: THREE.DoubleSide })
+      const solid = new THREE.Mesh(
+        new THREE.ExtrudeGeometry(shape, { depth: deckTop - GROUND_Y, bevelEnabled: false }),
+        new THREE.MeshBasicMaterial({ color: 0xa9c4e2, transparent: true, opacity: 0.10, depthWrite: false })
       );
-      deckMesh.rotation.x = -Math.PI / 2;
-      deckMesh.position.y = deckTop - 3;
-      deckMesh.renderOrder = 2;
-      groundGroup.add(deckMesh);
+      solid.rotation.x = -Math.PI / 2;
+      solid.position.y = GROUND_Y;
+      solid.renderOrder = 3;
+      groundGroup.add(solid);
+      // 上端の輪郭線だけ残してエッジを立たせる
       const ring = [...upper, ...lower.slice().reverse()];
       const outlineGeo = new THREE.BufferGeometry().setFromPoints(
-        ring.map(([wx, wz]) => new THREE.Vector3(wx, deckTop - 3, wz))
+        ring.map(([wx, wz]) => new THREE.Vector3(wx, deckTop, wz))
       );
       groundGroup.add(new THREE.LineLoop(outlineGeo, stMat));
-      // 橋脚(帯の両縁に沿って)
-      const pierP = [];
-      for (let px = 70; px <= 1370; px += 85) {
-        const [my, hw] = interpV(px);
-        for (const py of [my - hw + 3, my + hw - 3]) {
-          const [wx, wz] = M2W([px, py]);
-          pierP.push(wx, GROUND_Y, wz, wx, deckTop - 6, wz);
-        }
-      }
-      const pierGeo = new THREE.BufferGeometry();
-      pierGeo.setAttribute('position', new THREE.Float32BufferAttribute(pierP, 3));
-      groundGroup.add(new THREE.LineSegments(pierGeo, stMat));
     }
 
     // ホーム（高架デッキの上・大屋根の下）
