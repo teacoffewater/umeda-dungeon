@@ -187,8 +187,10 @@ BUILDING_PLATES = [
     ('B1', 'ekimae', bpoly(70561758).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561758).buffer(3, join_style=2)),
     ('B1', 'ekimae', bpoly(135624699).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624699).buffer(3, join_style=2)),
     ('B1', 'ekimae', bpoly(135624700).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624700).buffer(3, join_style=2)),
-    # 阪急三番街 = 阪急大阪梅田駅ビル直下 B1/B2
-    ('B1', 'sanban', bpoly(*byname['大阪梅田'])),
+    # 阪急三番街 = 阪急大阪梅田駅ビル直下。
+    # B1は北館/南館が間の市道で分断(直結なし・B2経由)。B2「川の流れる街」は貫通
+    ('B1', 'sanban', bpoly(*byname['大阪梅田']).difference(
+        LineString([(915, 603), (1040, 577)]).buffer(6, cap_style=2))),
     ('B2', 'sanban', bpoly(*byname['大阪梅田'])),
     # JR大阪駅構内+駅ビル(Googleでも赤=駅構内扱い)
     ('B1', 'osaka_sta', osaka_sta_poly),
