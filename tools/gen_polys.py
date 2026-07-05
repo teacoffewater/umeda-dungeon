@@ -169,6 +169,9 @@ HAND_PLATES = [
     # (floor, zone, [[x,y],...])  ※検証しながら追加・調整する
     # 阪急前広場〜ホワイティ広場(阪急百貨店北側の面的な広がり)
     ('B1', 'whity', [[906, 706], [1002, 706], [1034, 748], [1034, 792], [954, 800], [906, 788]]),
+    # 阪神前広場〜うめちか本体(阪急百と阪神百の間、御堂筋直下の面)
+    # 百貨店ビル内部はビルマスクが自動で除くため外形は広めに定義
+    ('B1', 'umechika', [[840, 920], [1045, 920], [1045, 1010], [850, 1012]]),
 ]
 
 # --- 円形の広場(円は使用OK) ---
@@ -193,8 +196,8 @@ for fl, zone, cx, cy, r in DISCS:
 
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
-ORDER = ['sanban', 'whity', 'umechika', 'osaka_sta', 'diamor', 'nishi_umeda',
-         'ekimae', 'sonechika', 'dotica', 'bldg', '_neutral']
+ORDER = ['sanban', 'whity', 'umechika', 'osaka_sta', 'ekimae', 'diamor', 'nishi_umeda',
+         'sonechika', 'dotica', 'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)
 covers_by_group = {}
