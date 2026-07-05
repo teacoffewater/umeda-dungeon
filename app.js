@@ -24521,16 +24521,17 @@
             dz = 0;
           }
           const rotY = Math.atan2(-dz, dx);
+          const FLOOR_TOP = 1.9;
           for (const y of [yB1, yB2]) {
             if (v.type === "esc") {
               const m = makeEscalator(y === yB1 ? "B1" : "B2", padMats.esc);
               m.rotation.y = rotY;
-              m.position.set(x, y + 0.3, z);
+              m.position.set(x, y + FLOOR_TOP, z);
               vertGroup.add(m);
             } else {
               const m = new Mesh(stairsGeo, padMats.stairs);
               m.rotation.y = rotY;
-              m.position.set(x, y + 0.3, z);
+              m.position.set(x, y + FLOOR_TOP, z);
               vertGroup.add(m);
             }
           }

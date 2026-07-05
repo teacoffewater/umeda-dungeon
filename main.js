@@ -1010,18 +1010,20 @@ for (const v of VERTICALS) {
     if (Math.hypot(dx, dz) < 3) { dx = pa.x - x; dz = pa.z - z; }
     if (Math.hypot(dx, dz) < 1) { dx = 1; dz = 0; }
     const rotY = Math.atan2(-dz, dx);
+    // 床スラブ(厚み3・中心が階の高さ+ジッタ最大0.375)の上面に着地させる
+    const FLOOR_TOP = 1.9;
     for (const y of [yB1, yB2]) {
       if (v.type === 'esc') {
         // 実際の勾配の向き(上り=aノード方向)+フロアごとの形(B1=下り/B2=上り)
         const m = makeEscalator(y === yB1 ? 'B1' : 'B2', padMats.esc);
         m.rotation.y = rotY;
-        m.position.set(x, y + 0.3, z);
+        m.position.set(x, y + FLOOR_TOP, z);
         vertGroup.add(m);
       } else {
         // 階段: 3段ステップのソリッド。上り方向へ向けて置く
         const m = new THREE.Mesh(stairsGeo, padMats.stairs);
         m.rotation.y = rotY;
-        m.position.set(x, y + 0.3, z);
+        m.position.set(x, y + FLOOR_TOP, z);
         vertGroup.add(m);
       }
     }
