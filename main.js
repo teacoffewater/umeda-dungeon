@@ -904,17 +904,14 @@ function escPanelGeo(floorKey) {
   return geo;
 }
 const escPanelGeos = { B1: escPanelGeo('B1'), B2: escPanelGeo('B2') };
-const escPlateGeo = new THREE.BoxGeometry(ESC_L - 1.5, 0.5, 3.2);
 function makeEscalator(floorKey, mat) {
+  // 手すりパネルのみ(床板なし)
   const g = new THREE.Group();
-  for (const sgn of [-1, 1]) {           // 両サイドの手すりパネル
+  for (const sgn of [-1, 1]) {
     const rail = new THREE.Mesh(escPanelGeos[floorKey], mat);
     rail.position.z = sgn * 1.85;
     g.add(rail);
   }
-  const plate = new THREE.Mesh(escPlateGeo, mat); // パネル間の床板
-  plate.position.y = 0.25;
-  g.add(plate);
   return g;
 }
 

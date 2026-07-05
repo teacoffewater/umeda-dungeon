@@ -24305,7 +24305,6 @@
         return geo;
       }
       var escPanelGeos = { B1: escPanelGeo("B1"), B2: escPanelGeo("B2") };
-      var escPlateGeo = new BoxGeometry(ESC_L - 1.5, 0.5, 3.2);
       function makeEscalator(floorKey, mat) {
         const g2 = new Group();
         for (const sgn of [-1, 1]) {
@@ -24313,9 +24312,6 @@
           rail.position.z = sgn * 1.85;
           g2.add(rail);
         }
-        const plate = new Mesh(escPlateGeo, mat);
-        plate.position.y = 0.25;
-        g2.add(plate);
         return g2;
       }
       var concourseMat = new MeshStandardMaterial({ color: 3228511, emissive: 857378, roughness: 0.65 });
