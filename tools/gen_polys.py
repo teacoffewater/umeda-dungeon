@@ -159,9 +159,9 @@ BUILDING_PLATES = [
     ('B1', 'bldg', bpoly(588689735)),                # 阪急百貨店(ツインタワーズN)
     ('B1', 'bldg', bpoly(502411898)),                # 阪神百貨店(ツインタワーズS)
     ('B1', 'bldg', bpoly(1146510724)),               # KITTE大阪(JPタワー)
-    ('B1', 'bldg', bpoly(*byname['ヨドバシ梅田タワー'])),  # ヨドバシ/LINKS
+    ('B1', 'links', bpoly(*byname['ヨドバシ梅田タワー'])),       # ヨドバシ/リンクス梅田(独立施設)
     ('B1', 'bldg', bpoly(178958655)),                # 堂島アバンザ
-    ('B1', 'bldg', bpoly(178942581)),                # グランフロント南館
+    ('B1', 'grandfront', bpoly(178942581)),          # グランフロント大阪(南館)
 ]
 
 # --- 手トレースの面(広場・モール)。スクショ校正済みマップpx ---
@@ -196,8 +196,8 @@ for fl, zone, cx, cy, r in DISCS:
 
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
-ORDER = ['sanban', 'whity', 'umechika', 'osaka_sta', 'ekimae', 'diamor', 'nishi_umeda',
-         'sonechika', 'dotica', 'bldg', '_neutral']
+ORDER = ['sanban', 'links', 'grandfront', 'whity', 'umechika', 'osaka_sta', 'ekimae', 'diamor',
+         'nishi_umeda', 'sonechika', 'dotica', 'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)
 covers_by_group = {}

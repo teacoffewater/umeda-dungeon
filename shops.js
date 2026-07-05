@@ -51,13 +51,13 @@ export const SHOP_AREAS = {
   barchika: { floor: 'B2', zone: 'osaka_sta', near: ['lucua_b2'], rect: [750, 820, 50, 64] },
   foodhall: { floor: 'B2', zone: 'osaka_sta', near: ['lucua_b2'], rect: [698, 820, 44, 64] },
   // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
-  links_b1: { floor: 'B1', zone: 'osaka_sta', near: ['yodobashi'], rect: [788, 650, 111, 126] },
+  links_b1: { floor: 'B1', zone: 'links', near: ['yodobashi'], rect: [788, 650, 111, 126] },
   // 阪神梅田本店B1 スナックパーク
   snackpark: { floor: 'B1', zone: 'umechika', near: ['hanshin'], rect: [877, 1002, 44, 26] },
   // KITTE大阪B1 うめよこ
   umeyoko: { floor: 'B1', zone: 'osaka_sta', near: ['kitte'], rect: [598, 1122, 98, 133] },
   // うめきた広場B1 UMEKITA CELLAR
-  umekita_cellar: { floor: 'B1', zone: 'osaka_sta', near: ['grandfront'], rect: [674, 657, 70, 70] },
+  umekita_cellar: { floor: 'B1', zone: 'grandfront', near: ['grandfront'], rect: [674, 657, 70, 70] },
   // ヒルトンプラザ（WEST=西棟 / EAST=東棟）
   hilton_west_b1: { floor: 'B1', zone: 'nishi_umeda', near: ['hilton'], rect: [689, 1205, 34, 62] },
   hilton_west_b2: { floor: 'B2', zone: 'nishi_umeda', near: ['hilton_b2'], rect: [689, 1205, 34, 62] },
