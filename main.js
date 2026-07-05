@@ -862,42 +862,43 @@ const stairGeoB = new THREE.BoxGeometry(2.3, 1.4, 3);
 // エレベーターのアイコン: B2からB1上空まで貫く1本のシンプルな直方体(シャフト)
 const evShaftGeo = new THREE.BoxGeometry(3.6, (FLOOR_Y.B1 - FLOOR_Y.B2) + 8, 3.6);
 
-// エスカレーターのアイコン: 斜めのデッキ+両サイドの手すりループ(欄干)。
-// 実物のエスカレーターを横から見たときの「輪になった手すり」を再現する
-function stadiumOutline(PathClass, len, h) {
-  // 長円(スタジアム形)の輪郭。中心原点・長軸X
-  const r = h / 2, half = Math.max(0.1, len / 2 - r);
-  const p = new PathClass();
-  p.moveTo(-half, -r);
-  p.lineTo(half, -r);
-  p.absarc(half, 0, r, -Math.PI / 2, Math.PI / 2, false);
-  p.lineTo(-half, r);
-  p.absarc(-half, 0, r, Math.PI / 2, Math.PI * 1.5, false);
-  return p;
-}
-const escRailGeo = (() => {
-  const outer = stadiumOutline(THREE.Shape, 7.2, 3.4);
-  outer.holes.push(stadiumOutline(THREE.Path, 7.2 - 1.9, 3.4 - 1.9)); // 中を抜いて輪にする
-  const geo = new THREE.ExtrudeGeometry(outer, { depth: 0.55, bevelEnabled: false });
+// エスカレーターの手すり(欄干): 中身の詰まったソリッドな側面パネル×2。
+// ローカル+Xが「上り方向」。フロアで形を変える:
+//   B1(下り) = 上り側の端が丸い高台から、進行方向へ尖って下るくさび
+//   B2(上り) = 乗り口側の端が丸く、上り方向の頂部が尖って立ち上がる形
+const ESC_L = 9.5;
+function escPanelGeo(floorKey) {
+  const s = new THREE.Shape();
+  if (floorKey === 'B1') {
+    const H = 4.6, r = H / 2, xR = ESC_L / 2 - r;
+    s.moveTo(-ESC_L / 2, 0);                              // 下り先端(尖り)
+    s.lineTo(xR, 0);
+    s.absarc(xR, r, r, -Math.PI / 2, Math.PI / 2, false); // 丸い高台側(R)
+    s.lineTo(-ESC_L / 2, 0);                              // 斜面を先端へ
+  } else {
+    const H = 5.4, r = 2.1, xL = -ESC_L / 2 + r;
+    s.moveTo(ESC_L / 2, H);                               // 頂部(尖り)
+    s.lineTo(ESC_L / 2, 0);
+    s.lineTo(xL, 0);
+    s.absarc(xL, r, r, -Math.PI / 2, Math.PI / 2, true);  // 丸い乗り口側(R)
+    s.lineTo(ESC_L / 2, H);                               // 斜面を頂部へ
+  }
+  const geo = new THREE.ExtrudeGeometry(s, { depth: 0.55, bevelEnabled: false });
   geo.translate(0, 0, -0.275);
   return geo;
-})();
-const escDeckGeo = new THREE.BoxGeometry(9.6, 0.55, 3.2);
-function makeEscalator(mat) {
-  // ローカル+X方向が「上り(B1側)」になる向きで作る。実際の進行方向はrotation.yで合わせる
+}
+const escPanelGeos = { B1: escPanelGeo('B1'), B2: escPanelGeo('B2') };
+const escPlateGeo = new THREE.BoxGeometry(ESC_L - 1.5, 0.5, 3.2);
+function makeEscalator(floorKey, mat) {
   const g = new THREE.Group();
-  const H = 3.6;                          // アイコンとしての高低差
-  const th = Math.atan2(H, 8.6);          // 勾配角
-  const deck = new THREE.Mesh(escDeckGeo, mat);
-  deck.position.y = H / 2 + 0.3;
-  deck.rotation.z = th;
-  g.add(deck);
-  for (const s of [-1, 1]) {              // 両サイドの手すりループ
-    const rail = new THREE.Mesh(escRailGeo, mat);
-    rail.position.set(0, H / 2 + 1.9, s * 1.85);
-    rail.rotation.z = th;                 // デッキと同じ傾きで輪を寝かせる
+  for (const sgn of [-1, 1]) {           // 両サイドの手すりパネル
+    const rail = new THREE.Mesh(escPanelGeos[floorKey], mat);
+    rail.position.z = sgn * 1.85;
     g.add(rail);
   }
+  const plate = new THREE.Mesh(escPlateGeo, mat); // パネル間の床板
+  plate.position.y = 0.25;
+  g.add(plate);
   return g;
 }
 
@@ -965,8 +966,8 @@ for (const v of VERTICALS) {
     }
     for (const y of [yB1, yB2]) {
       if (v.type === 'esc') {
-        // 両フロアとも実際の勾配の向き(上り=aノード方向)で置く
-        const m = makeEscalator(padMats.esc);
+        // 実際の勾配の向き(上り=aノード方向)+フロアごとの形(B1=下り/B2=上り)
+        const m = makeEscalator(y === yB1 ? 'B1' : 'B2', padMats.esc);
         m.rotation.y = escRotY;
         m.position.set(x, y + 0.3, z);
         vertGroup.add(m);
