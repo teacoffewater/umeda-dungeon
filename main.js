@@ -890,14 +890,18 @@ function escPanelGeo(floorKey) {
     s.lineTo(-ESC_L / 2 + slant, H);                            // 上辺(水平)
     s.lineTo(-ESC_L / 2, 0);                                    // 左辺(斜めカット)
   } else {
-    // 上り: 左の大きな丸い塊(乗り口R)と、切れ込みを挟んで右上に立つ尖った峰
-    const H = 7.0, r = 2.3, xL = -ESC_L / 2 + r;
-    s.moveTo(ESC_L / 2, H);                                     // 峰の頂点(右上)
-    s.lineTo(ESC_L / 2, 0);                                     // 右辺(垂直)
-    s.lineTo(xL, 0);                                            // 底辺
-    s.absarc(xL, r, r, -Math.PI / 2, Math.PI / 2, true);        // 左端の丸(R)
-    s.lineTo(xL + 2.2, 2.6);                                    // 丸と峰の間の切れ込み
-    s.lineTo(ESC_L / 2, H);                                     // 峰へ立ち上がる斜辺
+    // 上り: 半円(乗り口R)+直線は床に対して0°・45°・90°のみで構成。
+    // 半円の上端に接続するのは0°(水平)の線
+    const r = 1.9, xL = -ESC_L / 2 + r;   // 左端の半円(高さ2r)
+    const xR = ESC_L / 2;
+    const x45 = 1.55;                     // 0°→45°の折れ点
+    const H = 2 * r + (xR - x45);         // 45°なので水平距離=垂直距離 → 峰の高さ7.0
+    s.moveTo(xR, H);                                            // 峰の頂点(右上)
+    s.lineTo(xR, 0);                                            // 90°: 右辺(垂直)
+    s.lineTo(xL, 0);                                            // 0°: 底辺
+    s.absarc(xL, r, r, -Math.PI / 2, Math.PI / 2, true);        // 半円(乗り口R)
+    s.lineTo(x45, 2 * r);                                       // 0°: 半円上端から水平
+    s.lineTo(xR, H);                                            // 45°: 峰へ
   }
   const geo = new THREE.ExtrudeGeometry(s, { depth: 0.55, bevelEnabled: false });
   geo.translate(0, 0, -0.275);

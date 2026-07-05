@@ -24292,13 +24292,16 @@
           s2.lineTo(-ESC_L / 2 + slant, H);
           s2.lineTo(-ESC_L / 2, 0);
         } else {
-          const H = 7, r = 2.3, xL = -ESC_L / 2 + r;
-          s2.moveTo(ESC_L / 2, H);
-          s2.lineTo(ESC_L / 2, 0);
+          const r = 1.9, xL = -ESC_L / 2 + r;
+          const xR = ESC_L / 2;
+          const x45 = 1.55;
+          const H = 2 * r + (xR - x45);
+          s2.moveTo(xR, H);
+          s2.lineTo(xR, 0);
           s2.lineTo(xL, 0);
           s2.absarc(xL, r, r, -Math.PI / 2, Math.PI / 2, true);
-          s2.lineTo(xL + 2.2, 2.6);
-          s2.lineTo(ESC_L / 2, H);
+          s2.lineTo(x45, 2 * r);
+          s2.lineTo(xR, H);
         }
         const geo = new ExtrudeGeometry(s2, { depth: 0.55, bevelEnabled: false });
         geo.translate(0, 0, -0.275);
