@@ -24265,27 +24265,41 @@
       var evPillarGeo = new BoxGeometry(3.2, 9, 3.2);
       var stairGeoA = new BoxGeometry(4.6, 1.4, 3);
       var stairGeoB = new BoxGeometry(2.3, 1.4, 3);
-      function makeEscGeo(descending) {
-        const steps = 4, sw = 1.9, sh = 1.35, landing = 2.8, depth = 5;
-        const s2 = new Shape();
-        s2.moveTo(0, 0);
-        let x = 0, y = 0;
-        for (let i = 0; i < steps; i++) {
-          s2.lineTo(x + sw, y);
-          x += sw;
-          s2.lineTo(x, y + sh);
-          y += sh;
-        }
-        s2.lineTo(x + landing, y);
-        s2.lineTo(x + landing, 0);
-        s2.lineTo(0, 0);
-        const geo = new ExtrudeGeometry(s2, { depth, bevelEnabled: false, steps: 1 });
-        geo.translate(-(x + landing) / 2, 0, -depth / 2);
-        if (descending) geo.scale(-1, 1, 1);
-        return geo;
+      function stadiumOutline(PathClass, len, h) {
+        const r = h / 2, half = Math.max(0.1, len / 2 - r);
+        const p = new PathClass();
+        p.moveTo(-half, -r);
+        p.lineTo(half, -r);
+        p.absarc(half, 0, r, -Math.PI / 2, Math.PI / 2, false);
+        p.lineTo(-half, r);
+        p.absarc(-half, 0, r, Math.PI / 2, Math.PI * 1.5, false);
+        return p;
       }
-      var escGeoUp = makeEscGeo(false);
-      var escGeoDown = makeEscGeo(true);
+      var escRailGeo = (() => {
+        const outer = stadiumOutline(Shape, 7.2, 3.4);
+        outer.holes.push(stadiumOutline(Path, 7.2 - 1.9, 3.4 - 1.9));
+        const geo = new ExtrudeGeometry(outer, { depth: 0.55, bevelEnabled: false });
+        geo.translate(0, 0, -0.275);
+        return geo;
+      })();
+      var escDeckGeo = new BoxGeometry(9.6, 0.55, 3.2);
+      function makeEscalator(descending, mat) {
+        const g2 = new Group();
+        const H = 3.6;
+        const th = Math.atan2(H, 8.6);
+        const deck = new Mesh(escDeckGeo, mat);
+        deck.position.y = H / 2 + 0.3;
+        deck.rotation.z = th;
+        g2.add(deck);
+        for (const s2 of [-1, 1]) {
+          const rail = new Mesh(escRailGeo, mat);
+          rail.position.set(0, H / 2 + 1.9, s2 * 1.85);
+          rail.rotation.z = th;
+          g2.add(rail);
+        }
+        if (descending) g2.rotation.y = Math.PI;
+        return g2;
+      }
       var concourseMat = new MeshStandardMaterial({ color: 3228511, emissive: 857378, roughness: 0.65 });
       neutralMats.push(concourseMat);
       var stubMat = new MeshStandardMaterial({ color: 3030876, emissive: 725536, roughness: 0.7 });
@@ -24329,7 +24343,7 @@
             m.position.set(x, y + 4.5, z);
             vertGroup.add(m);
           } else if (v.type === "esc") {
-            const m = new Mesh(y === yB1 ? escGeoDown : escGeoUp, padMats.esc);
+            const m = makeEscalator(y === yB1, padMats.esc);
             m.position.set(x, y + 0.3, z);
             vertGroup.add(m);
           } else {

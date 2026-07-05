@@ -860,24 +860,44 @@ const evPillarGeo = new THREE.BoxGeometry(3.2, 9, 3.2);
 const stairGeoA = new THREE.BoxGeometry(4.6, 1.4, 3);
 const stairGeoB = new THREE.BoxGeometry(2.3, 1.4, 3);
 
-// エスカレーターのアイコン: 側面が階段状のくさび形(上部に踊り場)を押し出して作る。
-// descending=false は左低→右高の「上り」、true は左高→右低の「下り」
-function makeEscGeo(descending) {
-  const steps = 4, sw = 1.9, sh = 1.35, landing = 2.8, depth = 5;
-  const s = new THREE.Shape();
-  s.moveTo(0, 0);
-  let x = 0, y = 0;
-  for (let i = 0; i < steps; i++) { s.lineTo(x + sw, y); x += sw; s.lineTo(x, y + sh); y += sh; } // 踏面→蹴上
-  s.lineTo(x + landing, y);  // 上部の踊り場
-  s.lineTo(x + landing, 0);  // 背面を下ろす
-  s.lineTo(0, 0);            // 底辺を戻す
-  const geo = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, steps: 1 });
-  geo.translate(-(x + landing) / 2, 0, -depth / 2); // 長さ・幅を中心に
-  if (descending) geo.scale(-1, 1, 1);              // 左右反転で下り向きに
-  return geo;
+// エスカレーターのアイコン: 斜めのデッキ+両サイドの手すりループ(欄干)。
+// 実物のエスカレーターを横から見たときの「輪になった手すり」を再現する
+function stadiumOutline(PathClass, len, h) {
+  // 長円(スタジアム形)の輪郭。中心原点・長軸X
+  const r = h / 2, half = Math.max(0.1, len / 2 - r);
+  const p = new PathClass();
+  p.moveTo(-half, -r);
+  p.lineTo(half, -r);
+  p.absarc(half, 0, r, -Math.PI / 2, Math.PI / 2, false);
+  p.lineTo(-half, r);
+  p.absarc(-half, 0, r, Math.PI / 2, Math.PI * 1.5, false);
+  return p;
 }
-const escGeoUp = makeEscGeo(false);
-const escGeoDown = makeEscGeo(true);
+const escRailGeo = (() => {
+  const outer = stadiumOutline(THREE.Shape, 7.2, 3.4);
+  outer.holes.push(stadiumOutline(THREE.Path, 7.2 - 1.9, 3.4 - 1.9)); // 中を抜いて輪にする
+  const geo = new THREE.ExtrudeGeometry(outer, { depth: 0.55, bevelEnabled: false });
+  geo.translate(0, 0, -0.275);
+  return geo;
+})();
+const escDeckGeo = new THREE.BoxGeometry(9.6, 0.55, 3.2);
+function makeEscalator(descending, mat) {
+  const g = new THREE.Group();
+  const H = 3.6;                          // アイコンとしての高低差
+  const th = Math.atan2(H, 8.6);          // 勾配角
+  const deck = new THREE.Mesh(escDeckGeo, mat);
+  deck.position.y = H / 2 + 0.3;
+  deck.rotation.z = th;
+  g.add(deck);
+  for (const s of [-1, 1]) {              // 両サイドの手すりループ
+    const rail = new THREE.Mesh(escRailGeo, mat);
+    rail.position.set(0, H / 2 + 1.9, s * 1.85);
+    rail.rotation.z = th;                 // デッキと同じ傾きで輪を寝かせる
+    g.add(rail);
+  }
+  if (descending) g.rotation.y = Math.PI; // 下りは向きを反転
+  return g;
+}
 
 const concourseMat = new THREE.MeshStandardMaterial({ color: 0x31435f, emissive: 0x0d1522, roughness: 0.65 });
 neutralMats.push(concourseMat);
@@ -930,8 +950,8 @@ for (const v of VERTICALS) {
       m.position.set(x, y + 4.5, z);
       vertGroup.add(m);
     } else if (v.type === 'esc') {
-      // 上のフロア(B1)は下り、下のフロア(B2)は上りの形状にする
-      const m = new THREE.Mesh(y === yB1 ? escGeoDown : escGeoUp, padMats.esc);
+      // 上のフロア(B1)は下り、下のフロア(B2)は上りの向きにする
+      const m = makeEscalator(y === yB1, padMats.esc);
       m.position.set(x, y + 0.3, z);
       vertGroup.add(m);
     } else {
