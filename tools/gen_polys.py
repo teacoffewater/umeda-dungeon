@@ -144,15 +144,15 @@ BUILDING_PLATES = [
     ('B1', 'osaka_sta', osaka_sta_poly),
     ('B1', 'lucua', bpoly(162183788)),               # ルクア+ルクア1100(ノースゲート)
     ('B2', 'lucua', bpoly(162183788)),               # バルチカ/フードホール
-    ('B1', 'bldg', bpoly(161450829)), ('B2', 'bldg', bpoly(161450829)),   # 大丸/サウスゲート(百貨店=通り抜けグレー)
+    ('B1', 'daimaru', bpoly(161450829)), ('B2', 'daimaru', bpoly(161450829)),   # 大丸梅田店(サウスゲート)
     ('B1', 'osaka_sta', bpoly(1147394005)),          # イノゲート大阪
     # ビル館内経由(グレー補足): Googleでは白いが中を歩いて繋がっている
     ('B1', 'hilton', bpoly(162158150)), ('B2', 'hilton', bpoly(162158150)),   # ヒルトンW
     ('B1', 'hilton', bpoly(162158151)), ('B2', 'hilton', bpoly(162158151)),   # ヒルトンE
     ('B1', 'herbis', bpoly(162158152)), ('B2', 'herbis', bpoly(162158152)),   # ハービスENT
     ('B1', 'herbis', bpoly(162158418)), ('B2', 'herbis', bpoly(162158418)),   # ハービスOSAKA
-    ('B1', 'bldg', bpoly(588689735)), ('B2', 'bldg', bpoly(588689735)),   # 阪急百貨店(ツインタワーズN)
-    ('B1', 'bldg', bpoly(502411898)), ('B2', 'bldg', bpoly(502411898)),   # 阪神百貨店(ツインタワーズS)
+    ('B1', 'hankyu_dept', bpoly(588689735)), ('B2', 'hankyu_dept', bpoly(588689735)),   # 阪急百貨店
+    ('B1', 'hanshin_dept', bpoly(502411898)), ('B2', 'hanshin_dept', bpoly(502411898)),   # 阪神百貨店
     ('B1', 'kitte', bpoly(1146510724)),              # KITTE大阪(JPタワー)
     ('B1', 'links', bpoly(*byname['ヨドバシ梅田タワー'])),       # ヨドバシ/リンクス梅田(独立施設)
     ('B1', 'bldg', bpoly(178958655)),                # 堂島アバンザ
@@ -191,9 +191,9 @@ for fl, zone, cx, cy, r in DISCS:
 
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
-ORDER = ['sanban', 'links', 'grandfront', 'lucua', 'hilton', 'herbis', 'kitte', 'whity',
-         'umechika', 'osaka_sta', 'ekimae', 'diamor', 'nishi_umeda', 'sonechika', 'dotica',
-         'bldg', '_neutral']
+ORDER = ['sanban', 'links', 'grandfront', 'lucua', 'hilton', 'herbis', 'kitte', 'daimaru',
+         'hankyu_dept', 'hanshin_dept', 'whity', 'umechika', 'osaka_sta', 'ekimae', 'diamor',
+         'nishi_umeda', 'sonechika', 'dotica', 'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)
 covers_by_group = {}

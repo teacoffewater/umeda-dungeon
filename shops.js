@@ -53,7 +53,7 @@ export const SHOP_AREAS = {
   // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
   links_b1: { floor: 'B1', zone: 'links', near: ['yodobashi'], rect: [788, 650, 111, 126] },
   // 阪神梅田本店B1 スナックパーク
-  snackpark: { floor: 'B1', zone: 'umechika', near: ['hanshin'], rect: [877, 1002, 44, 26] },
+  snackpark: { floor: 'B1', zone: 'hanshin_dept', near: ['hanshin'], rect: [877, 1002, 44, 26] },
   // KITTE大阪B1 うめよこ
   umeyoko: { floor: 'B1', zone: 'kitte', near: ['kitte'], rect: [598, 1122, 98, 133] },
   // うめきた広場B1 UMEKITA CELLAR
@@ -96,12 +96,12 @@ export const ALIASES = {
 export const SHOPS_MANUAL = [
   { name: 'マクドナルド ルクア大阪店', floor: 'B1', mx: 696, my: 837, near: 'lucua', zone: 'lucua' },
   // 百貨店は「1フロア=1店」で登録(デパ地下カウンター個別収録はしない方針・2026-07相談で決定)
-  { name: '大丸梅田店 B1F(デパ地下)',        floor: 'B1', mx: 800, my:  985, near: 'daimaru',      zone: 'umechika' },
-  { name: '大丸梅田店 B2F(食品・ベーカリー)', floor: 'B2', mx: 788, my: 1000, near: 'daimaru',      zone: 'umechika' },
-  { name: '阪急うめだ本店 B1F(デパ地下)',     floor: 'B1', mx: 990, my:  845, near: 'hankyu_dept',  zone: 'umechika' },
-  { name: '阪急うめだ本店 B2F(生鮮・惣菜)',   floor: 'B2', mx: 975, my:  872, near: 'hankyu_dept',  zone: 'umechika' },
-  { name: '阪神梅田本店 B1F(食品館)',         floor: 'B1', mx: 930, my: 1060, near: 'hanshin',      zone: 'umechika' },
-  { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 950, my: 1085, near: 'hanshin_home', zone: 'umechika' },
+  { name: '大丸梅田店 B1F(デパ地下)',        floor: 'B1', mx: 800, my:  985, near: 'daimaru',      zone: 'daimaru' },
+  { name: '大丸梅田店 B2F(食品・ベーカリー)', floor: 'B2', mx: 788, my: 1000, near: 'daimaru',      zone: 'daimaru' },
+  { name: '阪急うめだ本店 B1F(デパ地下)',     floor: 'B1', mx: 990, my:  845, near: 'hankyu_dept',  zone: 'hankyu_dept' },
+  { name: '阪急うめだ本店 B2F(生鮮・惣菜)',   floor: 'B2', mx: 975, my:  872, near: 'hankyu_dept',  zone: 'hankyu_dept' },
+  { name: '阪神梅田本店 B1F(食品館)',         floor: 'B1', mx: 930, my: 1060, near: 'hanshin',      zone: 'hanshin_dept' },
+  { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 950, my: 1085, near: 'hanshin_home', zone: 'hanshin_dept' },
 ];
 
 // order: 公式マップ上の歩く順 / side: 通路のどちら側か（方角） / cell: 3×3グリッド位置
