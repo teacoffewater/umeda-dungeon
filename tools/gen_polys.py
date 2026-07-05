@@ -130,6 +130,19 @@ osaka_sta_poly = unary_union([
     for mm in _sta['members'] if mm.get('role') == 'outer' and len(mm.get('geometry', [])) >= 4
 ]).buffer(0).buffer(2, join_style=2).buffer(-2, join_style=2)
 
+# 駅前ビル4棟: ディアモールの「接続の槍」だけビルから除去する。
+# モール帯(ファッショナブルストリート等)はビル北縁に実在するので残す
+EKIMAE_IDS = (70561756, 70561758, 135624699, 135624700)
+_ekimae_bldgs = unary_union([bgeo[i] for i in EKIMAE_IDS])
+_diamor_mall_band = unary_union([
+    LineString([(nodes[a][0], nodes[a][1]), (nodes[b][0], nodes[b][1])]).buffer(w / 2, cap_style=3, join_style=2)
+    for a, b, w, z, fl in edges
+    # 第4ビルへの斜め通路(バラエティストリート)は実在する貫通通路なので帯を残す。
+    # 第1〜3ビルへは入口接続のみ(槍は描かない)
+    if z == 'diamor' and not any(n.startswith(('ekimae1', 'ekimae2', 'ekimae3')) for n in (a, b))
+]).buffer(1.5, join_style=2)
+ekimae_mask = _ekimae_bldgs.buffer(3, join_style=2).difference(_diamor_mall_band)
+
 # ホワイティのモール帯(公共通路)はビル際を走るため、重なる分はビル床から差し引く
 whity_mask = unary_union([
     LineString([(nodes[a][0], nodes[a][1]), (nodes[b][0], nodes[b][1])]).buffer(w / 2, cap_style=3, join_style=2)
@@ -139,10 +152,10 @@ whity_mask = unary_union([
 # (floor, zone, polygon)
 BUILDING_PLATES = [
     # 大阪駅前ビル1〜4 (地下街扱い: ゾーン色を維持)
-    ('B1', 'ekimae', bpoly(70561756)), ('B2', 'ekimae', bpoly(70561756)),
-    ('B1', 'ekimae', bpoly(70561758)), ('B2', 'ekimae', bpoly(70561758)),
-    ('B1', 'ekimae', bpoly(135624699)), ('B2', 'ekimae', bpoly(135624699)),
-    ('B1', 'ekimae', bpoly(135624700)), ('B2', 'ekimae', bpoly(135624700)),
+    ('B1', 'ekimae', bpoly(70561756).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561756)),
+    ('B1', 'ekimae', bpoly(70561758).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561758)),
+    ('B1', 'ekimae', bpoly(135624699).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624699)),
+    ('B1', 'ekimae', bpoly(135624700).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624700)),
     # 阪急三番街 = 阪急大阪梅田駅ビル直下 B1/B2
     ('B1', 'sanban', bpoly(*byname['大阪梅田'])),
     ('B2', 'sanban', bpoly(*byname['大阪梅田'])),
@@ -221,6 +234,8 @@ for floor in ('B1', 'B2'):
         u = u.buffer(1.6, join_style=2).buffer(-1.6, join_style=2)
         if floor == 'B1' and zone in ('sanban', 'hankyu_dept'):
             u = u.difference(whity_mask)  # ホワイティのモール帯はビル床から除く(クロージング後)
+        if floor == 'B1' and zone == 'diamor':
+            u = u.difference(ekimae_mask)  # 接続の槍はビルから除去(モール帯は残す)
         if zone != 'bldg' and bldg_mask is not None:
             u = u.difference(bldg_mask)
         if claimed is not None:
