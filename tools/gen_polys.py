@@ -130,32 +130,59 @@ osaka_sta_poly = unary_union([
     for mm in _sta['members'] if mm.get('role') == 'outer' and len(mm.get('geometry', [])) >= 4
 ]).buffer(0).buffer(2, join_style=2).buffer(-2, join_style=2)
 
-# 駅前ビル4棟: ディアモールの「接続の槍」だけビルから除去する。
-# モール帯(ファッショナブルストリート等)はビル北縁に実在するので残す
-EKIMAE_IDS = (70561756, 70561758, 135624699, 135624700)
-_ekimae_bldgs = unary_union([bgeo[i] for i in EKIMAE_IDS])
-_diamor_mall_band = unary_union([
-    LineString([(nodes[a][0], nodes[a][1]), (nodes[b][0], nodes[b][1])]).buffer(w / 2, cap_style=3, join_style=2)
-    for a, b, w, z, fl in edges
-    # 第4ビルへの斜め通路(バラエティストリート)は実在する貫通通路なので帯を残す。
-    # 第1〜3ビルへは入口接続のみ(槍は描かない)
-    if z == 'diamor' and not any(n.startswith(('ekimae1', 'ekimae2', 'ekimae3')) for n in (a, b))
-]).buffer(1.5, join_style=2)
-ekimae_mask = _ekimae_bldgs.buffer(3, join_style=2).difference(_diamor_mall_band)
+# --- 汎用: 通路帯とビル床の関係(確定版) ---
+# 原則: 通路系ゾーンの帯はビル壁(+3px)で止める(抽象接続の槍を根絶)。
+# 例外(CARVE) = 実在が確認できている「ビル際・ビル貫通の公共帯」だけがビル床を削れる。
+def _edge_band(pred, extra=1.5):
+    parts = [LineString([(nodes[a][0], nodes[a][1]), (nodes[b][0], nodes[b][1])]).buffer(w / 2, cap_style=3, join_style=2)
+             for a, b, w, z, fl in edges if pred(a, b, w, z, fl)]
+    return unary_union(parts).buffer(extra, join_style=2) if parts else None
 
-# ホワイティのモール帯(公共通路)はビル際を走るため、重なる分はビル床から差し引く
-whity_mask = unary_union([
-    LineString([(nodes[a][0], nodes[a][1]), (nodes[b][0], nodes[b][1])]).buffer(w / 2, cap_style=3, join_style=2)
-    for a, b, w, z, fl in edges if z == 'whity'
-]).buffer(0)
+whity_band = _edge_band(lambda a, b, w, z, fl: z == 'whity')          # モールが阪急駅ビル/阪急百の縁を走る(マスク穴用+1.5)
+whity_band_raw = _edge_band(lambda a, b, w, z, fl: z == 'whity', extra=0)  # 床削り用(描画と同寸)
+diamor_band = _edge_band(lambda a, b, w, z, fl: z == 'diamor' and not any(
+    n.startswith(('ekimae1', 'ekimae2', 'ekimae3')) for n in (a, b)))  # 街路+バラエティ(第4ビル貫通)+北新地通路
+dotica_band = _edge_band(lambda a, b, w, z, fl: z == 'dotica')         # C-84のアバンザ接続を含む
+
+FACILITY_BLD = {
+    'sanban': bpoly(*byname['大阪梅田']),
+    'links': bpoly(*byname['ヨドバシ梅田タワー']),
+    'grandfront': bpoly(178942581),
+    'lucua': bpoly(162183788),
+    'hilton': bpoly(162158150, 162158151),
+    'herbis': bpoly(162158152, 162158418),
+    'kitte': bpoly(1146510724),
+    'daimaru': bpoly(161450829),
+    'hankyu_dept': bpoly(588689735),
+    'hanshin_dept': bpoly(502411898),
+    'avanza': bpoly(178958655),
+    'ekimae': bpoly(70561756, 70561758, 135624699, 135624700),
+}
+# 床を削るのは阪急系×ホワイティのみ(描画と同寸)。駅前ビル×ディアモールは描画順で処理
+CARVE = {'sanban': whity_band_raw, 'hankyu_dept': whity_band_raw}
+# 通路帯マスクの「穴」(帯がビル内でも生きる場所)は広め(+1.5)で開ける
+MASK_HOLES = {'sanban': whity_band, 'hankyu_dept': whity_band,
+              'ekimae': diamor_band, 'avanza': dotica_band}
+_fm_cache = {}
+def facility_mask_total():
+    if 'm' not in _fm_cache:
+        parts = []
+        for z, p in FACILITY_BLD.items():
+            m = p.buffer(3, join_style=2)
+            hb = MASK_HOLES.get(z)
+            if hb is not None:
+                m = m.difference(hb)
+            parts.append(m)
+        _fm_cache['m'] = unary_union(parts)
+    return _fm_cache['m']
 
 # (floor, zone, polygon)
 BUILDING_PLATES = [
     # 大阪駅前ビル1〜4 (地下街扱い: ゾーン色を維持)
-    ('B1', 'ekimae', bpoly(70561756).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561756)),
-    ('B1', 'ekimae', bpoly(70561758).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561758)),
-    ('B1', 'ekimae', bpoly(135624699).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624699)),
-    ('B1', 'ekimae', bpoly(135624700).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624700)),
+    ('B1', 'ekimae', bpoly(70561756).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561756).buffer(3, join_style=2)),
+    ('B1', 'ekimae', bpoly(70561758).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(70561758).buffer(3, join_style=2)),
+    ('B1', 'ekimae', bpoly(135624699).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624699).buffer(3, join_style=2)),
+    ('B1', 'ekimae', bpoly(135624700).buffer(3, join_style=2)), ('B2', 'ekimae', bpoly(135624700).buffer(3, join_style=2)),
     # 阪急三番街 = 阪急大阪梅田駅ビル直下 B1/B2
     ('B1', 'sanban', bpoly(*byname['大阪梅田'])),
     ('B2', 'sanban', bpoly(*byname['大阪梅田'])),
@@ -222,9 +249,6 @@ for a, b, w, zone, fl in edges:
 out_entries = []
 for floor in ('B1', 'B2'):
     claimed = None
-    bldg_mask = None
-    if (floor, 'bldg') in groups:
-        bldg_mask = unary_union(groups[(floor, 'bldg')]).buffer(0).buffer(-7, join_style=2)
     for zone in ORDER:
         key = (floor, zone)
         if key not in groups:
@@ -232,12 +256,12 @@ for floor in ('B1', 'B2'):
         u = unary_union(groups[key]).buffer(0)
         # クロージング(膨張→収縮)で幅違い合流部の欠けを均す
         u = u.buffer(1.6, join_style=2).buffer(-1.6, join_style=2)
-        if floor == 'B1' and zone in ('sanban', 'hankyu_dept'):
-            u = u.difference(whity_mask)  # ホワイティのモール帯はビル床から除く(クロージング後)
-        if floor == 'B1' and zone == 'diamor':
-            u = u.difference(ekimae_mask)  # 接続の槍はビルから除去(モール帯は残す)
-        if zone != 'bldg' and bldg_mask is not None:
-            u = u.difference(bldg_mask)
+        if zone in FACILITY_BLD:
+            cb = CARVE.get(zone)
+            if floor == 'B1' and cb is not None:
+                u = u.difference(cb)  # 実在確認済みの公共帯だけビル床を削れる
+        else:
+            u = u.difference(facility_mask_total())  # 通路帯はビル壁(+3px)で止める
         if claimed is not None:
             u = u.difference(claimed.buffer(0.15))
         claimed = unary_union([claimed, u]) if claimed is not None else u
