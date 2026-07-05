@@ -23872,26 +23872,46 @@
       {
         const GROUND_Y = 46;
         const GROUND_BUILDINGS = [
-          { r: [880, 440, 1015, 660], h: 35, name: "\u962A\u6025 \u5927\u962A\u6885\u7530\u99C5", lm: true },
-          { r: [900, 755, 1010, 875], h: 95, name: "\u962A\u6025\u767E\u8CA8\u5E97", lm: true },
-          { r: [1025, 775, 1090, 855], h: 120, name: "\u962A\u6025\u30B0\u30E9\u30F3\u30C9\u30D3\u30EB" },
-          { r: [1130, 640, 1205, 705], h: 80, name: "HEP FIVE", lm: true },
-          { r: [830, 990, 935, 1080], h: 90, name: "\u962A\u795E\u767E\u8CA8\u5E97", lm: true },
-          { r: [590, 735, 760, 800], h: 85, name: "\u30EB\u30AF\u30A2 / \u30CE\u30FC\u30B9\u30B2\u30FC\u30C8", lm: true },
-          { r: [700, 905, 830, 990], h: 85, name: "\u5927\u4E38 / \u30B5\u30A6\u30B9\u30B2\u30FC\u30C8", lm: true },
-          { r: [715, 585, 830, 700], h: 60, name: "\u30E8\u30C9\u30D0\u30B7\u6885\u7530 / LINKS", lm: true },
-          { r: [840, 900, 905, 975], h: 78, name: "\u30A4\u30CE\u30B2\u30FC\u30C8\u5927\u962A" },
-          { r: [330, 700, 480, 835], h: 110, name: "\u30B0\u30E9\u30F3\u30D5\u30ED\u30F3\u30C8\u5357\u9928", lm: true },
-          { r: [370, 480, 520, 660], h: 125, name: "\u30B0\u30E9\u30F3\u30D5\u30ED\u30F3\u30C8\u5317\u9928", lm: true },
-          { r: [230, 590, 335, 700], h: 70, name: "\u30B0\u30E9\u30F3\u30B0\u30EA\u30FC\u30F3\u5927\u962A" },
-          { r: [520, 975, 620, 1070], h: 95, name: "KITTE\u5927\u962A" },
-          { r: [655, 1270, 770, 1345], h: 70, name: "\u99C5\u524D\u7B2C1\u30D3\u30EB" },
-          { r: [820, 1275, 935, 1350], h: 70, name: "\u99C5\u524D\u7B2C2\u30D3\u30EB" },
-          { r: [960, 1260, 1075, 1340], h: 90, name: "\u99C5\u524D\u7B2C3\u30D3\u30EB" },
-          { r: [950, 1160, 1060, 1235], h: 80, name: "\u99C5\u524D\u7B2C4\u30D3\u30EB" },
-          { r: [590, 1095, 690, 1185], h: 90, name: "\u30D2\u30EB\u30C8\u30F3\u30D7\u30E9\u30B6", lm: true },
-          { r: [380, 1195, 530, 1340], h: 105, name: "\u30CF\u30FC\u30D3\u30B9OSAKA / ENT", lm: true },
-          { r: [445, 1085, 525, 1165], h: 115, name: "\u30D6\u30EA\u30FC\u30BC\u30BF\u30EF\u30FC" }
+          { r: [880, 440, 1015, 660], h: 24, name: "\u962A\u6025 \u5927\u962A\u6885\u7530\u99C5", lm: true },
+          // 高架ホーム大屋根 ~30m
+          { r: [900, 755, 1010, 875], h: 140, name: "\u962A\u6025\u767E\u8CA8\u5E97", lm: true },
+          // 梅田阪急ビル 187m
+          { r: [1025, 775, 1090, 855], h: 95, name: "\u962A\u6025\u30B0\u30E9\u30F3\u30C9\u30D3\u30EB" },
+          // 127m
+          { r: [1130, 640, 1205, 705], h: 47, name: "HEP FIVE", lm: true },
+          // 建物63m(観覧車の方が大きい)
+          { r: [830, 990, 935, 1080], h: 141, name: "\u962A\u795E\u767E\u8CA8\u5E97", lm: true },
+          // ツインタワーズ・サウス 188m
+          { r: [590, 735, 760, 800], h: 48, name: "\u30EB\u30AF\u30A2 / \u30CE\u30FC\u30B9\u30B2\u30FC\u30C8", lm: true },
+          // 低層大型 ~60m
+          { r: [700, 905, 830, 990], h: 92, name: "\u5927\u4E38 / \u30B5\u30A6\u30B9\u30B2\u30FC\u30C8", lm: true },
+          // 122m
+          { r: [715, 585, 830, 700], h: 85, name: "\u30E8\u30C9\u30D0\u30B7\u6885\u7530 / LINKS", lm: true },
+          // タワー部 ~150m(街区平均で圧縮)
+          { r: [840, 900, 905, 975], h: 75, name: "\u30A4\u30CE\u30B2\u30FC\u30C8\u5927\u962A" },
+          // ~100m
+          { r: [330, 700, 480, 835], h: 135, name: "\u30B0\u30E9\u30F3\u30D5\u30ED\u30F3\u30C8\u5357\u9928", lm: true },
+          // タワーA 180m
+          { r: [370, 480, 520, 660], h: 131, name: "\u30B0\u30E9\u30F3\u30D5\u30ED\u30F3\u30C8\u5317\u9928", lm: true },
+          // タワーB 175m
+          { r: [230, 590, 335, 700], h: 32, name: "\u30B0\u30E9\u30F3\u30B0\u30EA\u30FC\u30F3\u5927\u962A" },
+          // 低層 ~40m
+          { r: [520, 975, 620, 1070], h: 130, name: "KITTE\u5927\u962A" },
+          // JPタワー大阪 ~170m
+          { r: [655, 1270, 770, 1345], h: 38, name: "\u99C5\u524D\u7B2C1\u30D3\u30EB" },
+          // ~50m
+          { r: [820, 1275, 935, 1350], h: 53, name: "\u99C5\u524D\u7B2C2\u30D3\u30EB" },
+          // ~70m
+          { r: [960, 1260, 1075, 1340], h: 107, name: "\u99C5\u524D\u7B2C3\u30D3\u30EB" },
+          // 142m(4棟で最も高い)
+          { r: [950, 1160, 1060, 1235], h: 68, name: "\u99C5\u524D\u7B2C4\u30D3\u30EB" },
+          // ~90m
+          { r: [590, 1095, 690, 1185], h: 110, name: "\u30D2\u30EB\u30C8\u30F3\u30D7\u30E9\u30B6", lm: true },
+          // WESTタワー 167m
+          { r: [380, 1195, 530, 1340], h: 135, name: "\u30CF\u30FC\u30D3\u30B9OSAKA / ENT", lm: true },
+          // ハービスOSAKA 190m
+          { r: [445, 1085, 525, 1165], h: 131, name: "\u30D6\u30EA\u30FC\u30BC\u30BF\u30EF\u30FC" }
+          // 175m
         ];
         const FILLER_BUILDINGS = [
           [1060, 390, 1130, 460, 40],
@@ -23961,7 +23981,7 @@
         }
         for (const [x1, y1, x2, y2, h] of FILLER_BUILDINGS) addBox([x1, y1, x2, y2], h, edgeMatFill);
         {
-          const H = 140;
+          const H = 130;
           addBox([70, 485, 115, 595], H, edgeMat, true);
           addBox([125, 485, 170, 595], H, edgeMat, true);
           const [cx, cz] = M2W([120, 540]);
@@ -23976,11 +23996,11 @@
         }
         {
           const [wx, wz] = M2W([1167, 672]);
-          const wy = GROUND_Y + 80 + 8;
-          const R = 17;
+          const wy = GROUND_Y + 51;
+          const R = 28;
           const wheelMat = new LineBasicMaterial({ color: 13623541, transparent: true, opacity: 0.3 });
           const rim = new Mesh(
-            new TorusGeometry(R, 0.7, 6, 40),
+            new TorusGeometry(R, 1, 6, 48),
             new MeshBasicMaterial({ color: 13623541, transparent: true, opacity: 0.22, depthWrite: false })
           );
           rim.position.set(wx, wy, wz);
