@@ -657,20 +657,51 @@ scene.add(groundGroup);
   }
   for (const [x1, y1, x2, y2, h] of FILLER_BUILDINGS) addBox([x1, y1, x2, y2], h, edgeMatFill);
 
-  // --- 梅田スカイビル: ツインタワー＋頂部の空中庭園リング（シルエットで一発で分かる） ---
+  // --- 梅田スカイビル: OSM実外形のツインタワー+空中庭園(円形開口つき頂部スラブ+斜行シャフト) ---
   {
     const H = 130; // 173m ×0.75
-    addBox([70, 485, 115, 595], H, edgeMat, true);
-    addBox([125, 485, 170, 595], H, edgeMat, true);
-    const [cx, cz] = M2W([120, 540]);
+    // タワー実外形(吹き抜け側の円弧を含む)
+    const TOWER_W = [[290, 478], [266, 475], [262, 537], [286, 541], [286, 530], [275, 523], [271, 507], [277, 494], [283, 490], [289, 489]];
+    const TOWER_E = [[289, 489], [301, 497], [304, 512], [298, 525], [293, 529], [286, 530], [286, 541], [309, 543], [314, 481], [290, 478]];
+    addPolyBldg(TOWER_W, H, edgeMat, true);
+    addPolyBldg(TOWER_E, H, edgeMat, true);
+    // 空中庭園: 両塔頂部を繋ぐスラブ(建物全体外形)に円形開口
+    const DECK = [[242, 472], [339, 485], [334, 546], [237, 534]];
+    const shape = new THREE.Shape();
+    DECK.forEach(([mx, my], i) => {
+      const [x, z] = M2W([mx, my]);
+      if (i === 0) shape.moveTo(x, z); else shape.lineTo(x, z);
+    });
+    const [ox, oz] = M2W([288, 509]);
+    const holePath = new THREE.Path();
+    holePath.absarc(ox, oz, 10, 0, Math.PI * 2, true);
+    shape.holes.push(holePath);
+    const deckGeo = new THREE.ExtrudeGeometry(shape, { depth: 10, bevelEnabled: false });
+    deckGeo.rotateX(Math.PI / 2);
+    deckGeo.translate(0, GROUND_Y + H, 0);
+    const deck = new THREE.Mesh(deckGeo, faceMatLm);
+    deck.renderOrder = 3;
+    groundGroup.add(deck, new THREE.LineSegments(new THREE.EdgesGeometry(deckGeo, 30), edgeMat));
+    // 展望リング(開口の縁)
     const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(14, 1.1, 6, 36),
+      new THREE.TorusGeometry(11, 0.9, 6, 40),
       new THREE.MeshBasicMaterial({ color: 0xcfe0f5, transparent: true, opacity: 0.35, depthWrite: false })
     );
     ring.rotation.x = Math.PI / 2;
-    ring.position.set(cx, GROUND_Y + H - 3, cz);
+    ring.position.set(ox, GROUND_Y + H + 1, oz);
     groundGroup.add(ring);
-    addBldgLabel('梅田スカイビル', 120, 540, GROUND_Y + H + 9);
+    // 斜行エスカレーターシャフト(吹き抜けを渡る2本、上部で交差)
+    const tube = [];
+    const seg = (m1, y1, m2, y2) => {
+      const [ax, az] = M2W(m1); const [bx, bz] = M2W(m2);
+      tube.push(ax, y1, az, bx, y2, bz);
+    };
+    seg([270, 521], GROUND_Y + H * 0.52, [300, 500], GROUND_Y + H - 4);
+    seg([305, 505], GROUND_Y + H * 0.52, [276, 516], GROUND_Y + H - 4);
+    const tubeGeo = new THREE.BufferGeometry();
+    tubeGeo.setAttribute('position', new THREE.Float32BufferAttribute(tube, 3));
+    groundGroup.add(new THREE.LineSegments(tubeGeo, edgeMat));
+    addBldgLabel('梅田スカイビル', 288, 509, GROUND_Y + H + 9);
   }
 
   // --- HEP FIVE: 赤い観覧車（梅田の目印） ---
