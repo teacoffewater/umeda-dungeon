@@ -575,7 +575,10 @@ scene.add(groundGroup);
     { r: [969, 1299, 1074, 1400], h: 107, name: '駅前第3ビル' },             // 142m(4棟で最も高い)
     { r: [937, 1170, 1044, 1256], h: 68, name: '駅前第4ビル' },              // ~90m
     { r: [668, 1107, 812, 1244], h: 110, name: 'ヒルトンプラザ', lm: true }, // WESTタワー 167m
-    { r: [402, 1158, 687, 1452], h: 135, name: 'ハービスOSAKA / ENT', lm: true }, // ハービスOSAKA 190m
+    { poly: [[608, 1206], [607, 1213], [582, 1237], [581, 1263], [585, 1263], [585, 1267], [602, 1269], [618, 1262], [624, 1251], [639, 1254], [667, 1245], [671, 1173], [687, 1166], [687, 1162], [672, 1159], [657, 1164]],
+      h: 75, name: 'ハービスENT', lm: true },   // 約100m ×0.75。斜め形状のため実外形で描画
+    { poly: [[540, 1282], [542, 1285], [548, 1279], [561, 1282], [565, 1278], [569, 1283], [513, 1347], [515, 1350], [508, 1357], [510, 1361], [501, 1371], [500, 1379], [493, 1378], [476, 1395], [473, 1413], [465, 1423], [426, 1452], [402, 1413], [410, 1405], [408, 1403], [421, 1390], [423, 1393], [447, 1367], [450, 1375], [453, 1362], [460, 1363], [477, 1347], [477, 1341], [482, 1342], [497, 1322], [499, 1326]],
+      h: 135, name: 'ハービスOSAKA', lm: true }, // 190m ×0.75。同上
     { r: [544, 1301, 611, 1399], h: 131, name: 'ブリーゼタワー' },           // 175m
   ];
   // 街の地: 名もなきビル群（低層〜中層）で市街の質感を足す
@@ -622,7 +625,32 @@ scene.add(groundGroup);
     groundGroup.add(solid, wire);
   };
 
+  // 斜めに建つビルは軸平行の箱だと実際の2倍近く膨らむため、実外形ポリゴンで押し出す
+  const addPolyBldg = (pts, h, mats, lm) => {
+    const shape = new THREE.Shape();
+    pts.forEach(([mx, my], i) => {
+      const [x, z] = M2W([mx, my]);
+      if (i === 0) shape.moveTo(x, z); else shape.lineTo(x, z);
+    });
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
+    geo.rotateX(Math.PI / 2);
+    geo.translate(0, GROUND_Y + h, 0);
+    const solid = new THREE.Mesh(geo, lm ? faceMatLm : faceMat);
+    solid.renderOrder = 3;
+    const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), mats);
+    groundGroup.add(solid, wire);
+  };
+
   for (const b of GROUND_BUILDINGS) {
+    if (b.poly) {
+      addPolyBldg(b.poly, b.h, b.lm ? edgeMat : edgeMatSoft, b.lm);
+      if (b.name && b.lm) {
+        const cx = b.poly.reduce((s, p) => s + p[0], 0) / b.poly.length;
+        const cy = b.poly.reduce((s, p) => s + p[1], 0) / b.poly.length;
+        addBldgLabel(b.name, cx, cy, GROUND_Y + b.h + 7);
+      }
+      continue;
+    }
     addBox(b.r, b.h, b.lm ? edgeMat : edgeMatSoft, b.lm);
     // 名前はランドマークのみ（全ビルに付けると引きの視点で文字が渋滞する）
     if (b.name && b.lm) addBldgLabel(b.name, (b.r[0] + b.r[2]) / 2, (b.r[1] + b.r[3]) / 2, GROUND_Y + b.h + 7);
@@ -648,7 +676,7 @@ scene.add(groundGroup);
   // --- HEP FIVE: 赤い観覧車（梅田の目印） ---
   // 実物は直径75m・頂部106mで、ビル(63m)より観覧車の方が大きい。×0.75で統一
   {
-    const [wx, wz] = M2W([1167, 672]);
+    const [wx, wz] = M2W([1122, 698]);  // HEP FIVEビル実外形の中心(実座標化に追従)
     const wy = GROUND_Y + 51;   // 車輪中心 ~68m
     const R = 28;               // 半径 37.5m
     const wheelMat = new THREE.LineBasicMaterial({ color: 0xcfe0f5, transparent: true, opacity: 0.30 });
