@@ -158,6 +158,21 @@ f40_pairs = {frozenset(('j_f40', 'j_diamor_e')), frozenset(('j_higashi_n', 'j_f4
 _f40_pred = lambda a, b, w, z, fl: frozenset((a, b)) in f40_pairs
 f40_band = _edge_band(_f40_pred)              # 御堂筋沿い南北通路(阪神百の壁際・実在)
 f40_band_raw = _edge_band(_f40_pred, extra=0)
+mido_pairs = {frozenset(('j_shibata', 'j_sun')), frozenset(('j_sun', 'j_mido_n')), frozenset(('j_mido_n', 'j_metro'))}
+_mido_pred = lambda a, b, w, z, fl: frozenset((a, b)) in mido_pairs
+mido_band = _edge_band(_mido_pred)            # 御堂筋コンコース(阪急百の西壁沿い・実在)
+mido_band_raw = _edge_band(_mido_pred, extra=0)
+dai_pairs = {frozenset(('jr_osaka', 'daimaru')), frozenset(('daimaru', 'j_c1')),
+             frozenset(('daimaru', 'j_metro')), frozenset(('daimaru', 'kitte'))}
+_dai_pred = lambda a, b, w, z, fl: frozenset((a, b)) in dai_pairs
+dai_band = _edge_band(_dai_pred)              # 大丸前を通る駅コンコース(壁沿い・実在)
+dai_band_raw = _edge_band(_dai_pred, extra=0)
+yotsu_pairs = {frozenset(('j_nishi_x', 'j_sone_w'))}
+_yotsu_pred = lambda a, b, w, z, fl: frozenset((a, b)) in yotsu_pairs
+yotsu_band = _edge_band(_yotsu_pred)          # 四つ橋筋沿い(ハービスENT東壁・実在)
+yotsu_band_raw = _edge_band(_yotsu_pred, extra=0)
+umekita_pairs = {frozenset(('lucua', 'grandfront'))}
+umekita_band = _edge_band(lambda a, b, w, z, fl: frozenset((a, b)) in umekita_pairs)  # うめきた地下道
 whity_band = _edge_band(_whity_pred)          # マスク穴用(+1.5)
 whity_band_raw = _edge_band(_whity_pred, extra=0)  # 床削り用(描画と同寸)
 diamor_band = _edge_band(lambda a, b, w, z, fl: z == 'diamor' and not any(
@@ -179,11 +194,16 @@ FACILITY_BLD = {
     'ekimae': bpoly(70561756, 70561758, 135624699, 135624700),
 }
 # 床を削るのは阪急系×ホワイティのみ(描画と同寸)。駅前ビル×ディアモールは描画順で処理
-CARVE = {'sanban': whity_band_raw, 'hankyu_dept': whity_band_raw,
-         'hanshin_dept': f40_band_raw}
+CARVE = {'sanban': whity_band_raw,
+         'hankyu_dept': unary_union([whity_band_raw, mido_band_raw]),
+         'hanshin_dept': f40_band_raw,
+         'daimaru': dai_band_raw, 'herbis': yotsu_band_raw}
 # 通路帯マスクの「穴」(帯がビル内でも生きる場所)は広め(+1.5)で開ける
-MASK_HOLES = {'sanban': whity_band, 'hankyu_dept': whity_band,
-              'hanshin_dept': f40_band, 'ekimae': diamor_band, 'avanza': dotica_band}
+MASK_HOLES = {'sanban': whity_band,
+              'hankyu_dept': unary_union([whity_band, mido_band]),
+              'hanshin_dept': f40_band, 'ekimae': diamor_band, 'avanza': dotica_band,
+              'daimaru': dai_band, 'herbis': yotsu_band,
+              'lucua': umekita_band, 'grandfront': umekita_band}
 _fm_cache = {}
 def facility_mask_total():
     if 'm' not in _fm_cache:
@@ -300,6 +320,8 @@ for floor in ('B1', 'B2'):
         for p in polys:
             if p.area < min_area:
                 continue
+            if zone in FACILITY_BLD and p.buffer(-1.6, join_style=2).is_empty:
+                continue  # 幅3px級の薄皮(通路沿いの残骸)は捨てる
             if zone not in FACILITY_BLD and p.area < 120:
                 others = [q for q in polys if q is not p]
                 if not others or min(p.distance(q) for q in others) > 15:

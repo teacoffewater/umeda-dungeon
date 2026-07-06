@@ -26,6 +26,9 @@ KNOWN_SHOP_OK = {"麺's room 神虎"}   # 第4ビル北縁×バラエティ帯�
 INTRUSION_WHITELIST = {('whity', 'sanban'), ('whity', 'hankyu_dept'), ('diamor', 'ekimae'),
                        ('diamor', 'hanshin_dept'),  # F-40系南北通路(御堂筋沿い・阪神百の壁際)
                        ('hilton', 'herbis'),  # ヒルトンW⇔ハービスENTは直結(壁+3.5px床同士の継ぎ目)
+                       ('umechika', 'hankyu_dept'),  # 御堂筋コンコース(阪急百の西壁沿い・実在)
+                       ('osaka_sta', 'daimaru'), ('umechika', 'daimaru'),  # 大丸前コンコース(壁沿い・実在)
+                       ('nishi_umeda', 'herbis'),  # 四つ橋筋沿い(ハービスENT東壁・実在)
                        ('dotica', 'avanza'), ('sonechika', 'ekimae'),
                        ('sanban', 'links')}  # 最後はOSMビル外形同士の重複(11m四方)由来
 
