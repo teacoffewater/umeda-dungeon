@@ -253,6 +253,8 @@ HAND_PLATES = [
     # (floor, zone, [[x,y],...])  ※検証しながら追加・調整する
     # 阪急百貨店前コンコース(公共歩行空間。ホワイティではなく梅田地下道系)
     ('B1', 'umechika', [[906, 702], [1002, 702], [1034, 746], [1034, 792], [954, 800], [906, 788]]),
+    # うめきた広場(OSM way 549066320のサンクン広場。B1でうめきたセラー・地下道と接続)
+    ('B1', 'umekita', [[658, 723], [652, 721], [639, 725], [626, 743], [623, 784], [628, 788], [636, 789], [643, 784], [654, 768], [661, 747], [662, 737]]),
     # ディアモール マーケットストリート(阪神ビル外形の凹み部を通る。店3軒が実在)
     ('B1', 'diamor', [[926, 1062], [965, 1062], [965, 1094], [926, 1094]]),
     # 阪神前広場〜うめちか本体(阪急百と阪神百の間、御堂筋直下の面)
@@ -282,7 +284,7 @@ for fl, zone, cx, cy, r in DISCS:
 
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
-ORDER = ['sanban', 'links', 'grandfront', 'lucua', 'hilton', 'herbis', 'kitte', 'daimaru',
+ORDER = ['sanban', 'links', 'grandfront', 'umekita', 'lucua', 'hilton', 'herbis', 'kitte', 'daimaru',
          'hankyu_dept', 'hanshin_dept', 'avanza', 'diamor', 'whity', 'umechika', 'osaka_sta',
          'dotica', 'ekimae', 'sonechika', 'nishi_umeda', 'bldg', '_neutral']
 
