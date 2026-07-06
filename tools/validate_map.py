@@ -130,9 +130,61 @@ for fl, zone, poly in finals:
             c = p.centroid
             problems.append(f"[縄張り外] {fl} {zone} が発生源から離れて {p.area:.0f}px² @({c.x:.0f},{c.y:.0f})")
 
+# --- 5. フロア連続性(ユーザールール2026-07-06: 連続していないフロアは原則禁止) ---
+# B1: 全ゾーン合算で1つの連結成分であること(ギャップ8px以内=連続)
+# B2: 各島が昇降設備(EV/ESC/階段)のB2側ノードを含むこと
+# 例外は理由と根拠を明記して登録する
+B1_EXCLAVE_REGISTRY = []  # 現在ゼロ(B1は完全連結)
+B2_ISLAND_REGISTRY = [
+    # (x, y, 名称, 理由と根拠)
+    (946, 1072, '阪神百貨店B2(阪神バル横丁)',
+     '公式フロアガイドにB2バル横丁実在。昇降は阪神大阪梅田駅のEV/ESC'
+     '(hanshin⇔hanshin_home)経由で接続済みだが、ホーム側B2ノードが島の西縁の外'
+     '(駅ホーム上)にあるため島内に設備アイコンが載らない'),
+    (478, 1368, 'ハービスOSAKA B2',
+     '公式フロアガイドに売場あり(実在)。昇降はENT側の館内ESCノードに集約しているため'
+     '島内に設備アイコンがないが、館内でENT B2と接続している'),
+]
+_verts = []
+for m in re.finditer(r"type: '(?:ev|esc|stairs)',\s*a: '(\w+)',\s*b: '(\w+)'", msrc):
+    _verts.extend([m.group(1), m.group(2)])
+_b2_anchors = [ _nodes[nid] for nid in set(_verts)
+                if nid in _nodes and re.search(r"'%s'[^\n]*'B2'" % nid, msrc) ]
+# フロア別に連結成分を計算
+for FL in ('B1', 'B2'):
+    fl_pieces = [(zone, poly) for f, zone, poly in finals if f == FL]
+    n = len(fl_pieces)
+    parent = list(range(n))
+    def _find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]; i = parent[i]
+        return i
+    for i in range(n):
+        for j in range(i + 1, n):
+            if fl_pieces[i][1].distance(fl_pieces[j][1]) <= 8:
+                parent[_find(i)] = _find(j)
+    from collections import defaultdict
+    comps = defaultdict(list)
+    for i in range(n):
+        comps[_find(i)].append(i)
+    ordered = sorted(comps.values(), key=lambda c: -sum(fl_pieces[i][1].area for i in c))
+    for ci, comp in enumerate(ordered):
+        if ci == 0:
+            continue  # 主成分
+        cu = unary_union([fl_pieces[i][1] for i in comp])
+        c = cu.centroid
+        if FL == 'B1':
+            if not any(abs(c.x-kx) < 20 and abs(c.y-ky) < 20 for kx, ky, *_ in B1_EXCLAVE_REGISTRY):
+                problems.append(f"[連続性] B1に未登録の飛地成分 {cu.area:.0f}px² @({c.x:.0f},{c.y:.0f})")
+        else:
+            anchored = any(cu.buffer(6).contains(Point(px, py)) for px, py in _b2_anchors)
+            registered = any(abs(c.x-kx) < 25 and abs(c.y-ky) < 25 for kx, ky, *_ in B2_ISLAND_REGISTRY)
+            if not anchored and not registered:
+                problems.append(f"[連続性] B2の島に昇降設備がなく未登録 {cu.area:.0f}px² @({c.x:.0f},{c.y:.0f})")
+
 if problems:
     print(f'NG: {len(problems)}件')
     for p in problems:
         print(' ', p)
     sys.exit(1)
-print('OK: 店舗位置・食い込み・飛地・縄張り すべて問題なし(既知の許容を除く)')
+print('OK: 店舗位置・食い込み・飛地・縄張り・フロア連続性 すべて問題なし(既知の許容・登録済み例外を除く)')
