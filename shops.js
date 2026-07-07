@@ -10,10 +10,10 @@
 
 export const SHOP_AREAS = {
   // 阪急三番街（ホール型: 3×3グリッドで配置。rect=[中心mx, 中心my, 幅, 奥行] map px）
-  sanban_n_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b1'], rect: [948, 550, 64, 48] },
-  sanban_n_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_n_b2'], rect: [948, 550, 64, 48] },
-  sanban_s_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b1'], rect: [968, 656, 68, 56] },
-  sanban_s_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_s_b2'], rect: [968, 656, 68, 56] },
+  sanban_n_b1: { floor: 'B2', zone: 'sanban', near: ['sanban_n_b1'], rect: [948, 550, 64, 48] },
+  sanban_n_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b2'], rect: [948, 550, 64, 48] },
+  sanban_s_b1: { floor: 'B2', zone: 'sanban', near: ['sanban_s_b1'], rect: [968, 656, 68, 56] },
+  sanban_s_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b2'], rect: [968, 656, 68, 56] },
   // ホワイティうめだ（公式マップSVG座標から並び順・通路側を機械判定・OSM実座標で方位検証済み）
   whity_petit:  { floor: 'B1', zone: 'whity', edges: [['j_pchn', 'opa']] },                       // 南北通路（北→南）
   whity_north1: { floor: 'B1', zone: 'whity', edges: [['j_east1', 'j_nm1s'], ['j_nm1s', 'j_whity_x']] }, // 南北通路
