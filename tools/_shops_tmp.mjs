@@ -10,10 +10,11 @@
 
 export const SHOP_AREAS = {
   // 阪急三番街（ホール型: 3×3グリッドで配置。rect=[中心mx, 中心my, 幅, 奥行] map px）
-  sanban_n_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b1'], rect: [948, 550, 64, 48] },
-  sanban_n_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_n_b2'], rect: [948, 550, 64, 48] },
-  sanban_s_b1: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b1'], rect: [968, 656, 68, 56] },
-  sanban_s_b2: { floor: 'B2', zone: 'sanban', near: ['sanban_s_b2'], rect: [968, 656, 68, 56] },
+  // merged: 店舗の形状は将来対応。それまで個別ドットは描かず館ごとに1点へ集約(検索・ルート案内はそのまま)
+  sanban_n_b1: { floor: 'S1', zone: 'sanban', near: ['sanban_n_b1'], rect: [948, 550, 64, 48], merged: true }, // 北館B1F=浅層
+  sanban_n_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b2'], rect: [948, 550, 64, 48], merged: true }, // 北館B2F=中枢層
+  sanban_s_b1: { floor: 'S1', zone: 'sanban', near: ['sanban_s_b1'], rect: [968, 656, 68, 56], merged: true }, // 南館B1F=浅層
+  sanban_s_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b2'], rect: [968, 656, 68, 56], merged: true }, // 南館B2F=中枢層
   // ホワイティうめだ（公式マップSVG座標から並び順・通路側を機械判定・OSM実座標で方位検証済み）
   whity_petit:  { floor: 'B1', zone: 'whity', edges: [['j_pchn', 'opa']] },                       // 南北通路（北→南）
   whity_north1: { floor: 'B1', zone: 'whity', edges: [['j_east1', 'j_nm1s'], ['j_nm1s', 'j_whity_x']] }, // 南北通路
@@ -32,32 +33,34 @@ export const SHOP_AREAS = {
   diamor_casual: { floor: 'B1', zone: 'diamor',
     edges: [['j_diamor_n', 'enkei'], ['enkei', 'j_diamor_s']] },                     // 北→南
   diamor_variety: { floor: 'B1', zone: 'diamor',
-    edges: [['enkei', 'j_diamor_e'], ['j_diamor_e', 'ekimae4']] },                   // 北西→南東
+    edges: [['enkei', 'j_variety'], ['j_variety', 'j_diamor_e']] },  // バラエティST本通り(OSMカーブ追従)。第4ビルへの枝には店を置かない
 
   // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
   dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'avanza']] },
   // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
   ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], offset: 6, path: [[886, 918], [886, 986]] },
   // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）
-  ekimae1_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae1'], rect: [768, 1326, 85, 65] },
-  ekimae1_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae1_b2'], rect: [788, 1326, 94, 72] },
-  ekimae2_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae2'], rect: [890, 1360, 50, 39] },
-  ekimae2_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae2_b2'], rect: [912, 1344, 84, 81] },
-  ekimae3_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae3'], rect: [1022, 1350, 84, 81] },
-  ekimae3_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae3_b2'], rect: [1022, 1350, 84, 81] },
-  ekimae4_b1: { floor: 'B1', zone: 'ekimae', near: ['ekimae4'], rect: [967, 1203, 52, 29] },
-  ekimae4_b2: { floor: 'B2', zone: 'ekimae', near: ['ekimae4_b2'], rect: [990, 1213, 86, 69] },
+  ekimae1_b1: { floor: 'S1', zone: 'ekimae', near: ['ekimae1'], rect: [768, 1326, 85, 65] },
+  ekimae1_b2: { floor: 'B1', zone: 'ekimae', near: ['ekimae1_b2'], rect: [788, 1326, 94, 72] },
+  ekimae2_b1: { floor: 'S1', zone: 'ekimae', near: ['ekimae2'], rect: [890, 1360, 50, 39] },
+  ekimae2_b2: { floor: 'B1', zone: 'ekimae', near: ['ekimae2_b2'], rect: [912, 1344, 84, 81] },
+  ekimae3_b1: { floor: 'S1', zone: 'ekimae', near: ['ekimae3'], rect: [1022, 1350, 84, 81] },
+  ekimae3_b2: { floor: 'B1', zone: 'ekimae', near: ['ekimae3_b2'], rect: [1022, 1350, 84, 81] },
+  ekimae4_b1: { floor: 'S1', zone: 'ekimae', near: ['ekimae4'], rect: [967, 1203, 52, 29] },
+  ekimae4_b2: { floor: 'B1', zone: 'ekimae', near: ['ekimae4_b2'], rect: [990, 1213, 86, 69] },
   // ルクアB2（バルチカ=東寄り / ルクアフードホール=西寄り）
-  barchika: { floor: 'B2', zone: 'lucua', near: ['lucua_b2'], rect: [742, 800, 50, 64] },
-  foodhall: { floor: 'B2', zone: 'lucua', near: ['lucua_b2'], rect: [698, 820, 44, 64] },
+  barchika: { floor: 'B1', zone: 'lucua', near: ['lucua_b2'], rect: [742, 800, 50, 64] }, // ルクアB2F=中枢層
+  foodhall: { floor: 'B1', zone: 'lucua', near: ['lucua_b2'], rect: [698, 820, 44, 64] }, // ルクアB2F=中枢層
   // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
-  links_b1: { floor: 'B1', zone: 'links', near: ['yodobashi'], rect: [788, 650, 111, 126] },
+  links_b1: { floor: 'S1', zone: 'links', near: ['yodobashi'], rect: [788, 650, 111, 126] }, // リンクスB1F=浅層
   // 阪神梅田本店B1 スナックパーク
   snackpark: { floor: 'B1', zone: 'hanshin_dept', near: ['hanshin'], rect: [905, 1042, 31, 18] },
   // KITTE大阪B1 うめよこ
   umeyoko: { floor: 'B1', zone: 'kitte', near: ['kitte'], rect: [590, 1122, 59, 80] },
   // うめきた広場B1 UMEKITA CELLAR
-  umekita_cellar: { floor: 'B1', zone: 'grandfront', near: ['grandfront'], rect: [674, 657, 70, 70] },
+  umekita_cellar: { floor: 'S1', zone: 'grandfront', near: ['grandfront'], rect: [674, 657, 70, 70] }, // 北西クラスタ=浅層
+  // イーマ(E-MA)。地下接続はB1のみなので全館の店を1エリアに集約(merged=1点表示)。cellは館内フロア別の目安
+  ema_all: { floor: 'B1', zone: 'ema', near: ['ema'], rect: [966, 1123, 30, 54], merged: true },
   // ヒルトンプラザ（WEST=西棟 / EAST=東棟）
   hilton_west_b1: { floor: 'B1', zone: 'hilton', near: ['hilton'], rect: [689, 1205, 34, 62] },
   hilton_west_b2: { floor: 'B2', zone: 'hilton', near: ['hilton_b2'], rect: [689, 1205, 34, 62] },
@@ -1387,6 +1390,47 @@ export const SHOPS_SCRAPED = [
   g('ミルク＆パフェ よつ葉ホワイトコージ', 'umeyoko', '東'),
   g('スギ薬局', 'umeyoko', '東'),
   g('タリーズコーヒー', 'umeyoko', '南東'),
+  // ==== イーマ E-MA（公式サイトフロアガイド・全32店 2026-07。地下接続はB1のみ→全館1点集約） ====
+  // B2F
+  g('スターバックス コーヒー 梅田イーマ店', 'ema_all', '中央'),
+  g('MIO CLINIC', 'ema_all', '中央'),
+  g('HIROGINZA BARBER SHOP 大阪本店', 'ema_all', '中央'),
+  g('select SIMイーマ梅田店', 'ema_all', '中央'),
+  g('スマプロ 梅田店', 'ema_all', '中央'),
+  // B1F
+  g('café & books bibliothéque', 'ema_all', '中央'),
+  g("LOFTMANCOOP / LOFTMANCOOP 'Ohana", 'ema_all', '中央'),
+  g('G.B. Gafas', 'ema_all', '中央'),
+  g('投資信託相談プラザ 梅田イーマ店', 'ema_all', '中央'),
+  g('ゴッド ラッシュ大阪駅前梅田イーマ店', 'ema_all', '中央'),
+  g('着物レンタルVASARA大阪梅田店', 'ema_all', '中央'),
+  // 1F
+  g('ストレスレス ショールーム大阪', 'ema_all', '中央'),
+  g('EXクリニック 大阪梅田院', 'ema_all', '中央'),
+  // 2F
+  g('オープンハウス 梅田営業センター', 'ema_all', '中央'),
+  g('オープンハウス・アーキテクト LIFE DESIGN PARK', 'ema_all', '中央'),
+  // 3F
+  g('オキュロフェイシャルクリニック大阪', 'ema_all', '中央'),
+  g('ビーウェイブ', 'ema_all', '中央'),
+  g('梅田E-MA川崎クリニック', 'ema_all', '中央'),
+  g('エミナルクリニック梅田院', 'ema_all', '中央'),
+  // 4F
+  g('Qilt+LIM', 'ema_all', '中央'),
+  g('atelier+LIM', 'ema_all', '中央'),
+  g('même+LIM', 'ema_all', '中央'),
+  g('LIM NAIL SCHOOL', 'ema_all', '中央'),
+  g('トキコクリニック梅田院', 'ema_all', '中央'),
+  g('大阪ブレストクリニック 梅田イーマ', 'ema_all', '中央'),
+  // 5F
+  g('但馬屋', 'ema_all', '中央'),
+  g('カッシーワ', 'ema_all', '中央'),
+  g('ONEPERSON 梅田', 'ema_all', '中央'),
+  g('大阪梅田さいとう矯正歯科', 'ema_all', '中央'),
+  // 6F
+  g('カトレア歯科・美容クリニック', 'ema_all', '中央'),
+  g('馬渕教室 東進衛星予備校', 'ema_all', '中央'),
+  g('メンズエミナル', 'ema_all', '中央'),
   // ==== うめきた広場B1F UMEKITA CELLAR（公式マップ・方位確認済み・全18店 2026-07） ====
   g('おにぎりこんが', 'umekita_cellar', '中央'),
   g('Umi&Yama Kitchen', 'umekita_cellar', '中央'),

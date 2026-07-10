@@ -34,11 +34,11 @@ def to_px(lat, lon):
 
 # --- NODES / EDGES (main.jsから) ---
 nodes = {}
-for m in re.finditer(r"S\('(\w+)',\s*'[^']*',\s*'(B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+)\)", src):
+for m in re.finditer(r"S\('(\w+)',\s*'[^']*',\s*'(S1|B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+)\)", src):
     nodes[m.group(1)] = (float(m.group(3)), float(m.group(4)), m.group(2))
-for m in re.finditer(r"P\('(\w+)',\s*'[^']*',\s*'(B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+),\s*'(\w+)'\)", src):
+for m in re.finditer(r"P\('(\w+)',\s*'[^']*',\s*'(S1|B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+),\s*'(\w+)'\)", src):
     nodes[m.group(1)] = (float(m.group(3)), float(m.group(4)), m.group(2))
-for m in re.finditer(r"J\('(\w+)',\s*(-?[\d.]+),\s*(-?[\d.]+)(?:,\s*'(B1|B2)')?\)", src):
+for m in re.finditer(r"J\('(\w+)',\s*(-?[\d.]+),\s*(-?[\d.]+)(?:,\s*'(S1|B1|B2)')?\)", src):
     nodes[m.group(1)] = (float(m.group(2)), float(m.group(3)), m.group(4) or 'B1')
 em = re.search(r"const EDGES = \[(.*?)\n\];", src, re.S)
 edges = []
@@ -46,12 +46,15 @@ for m in re.finditer(r"\['(\w+)',\s*'(\w+)',\s*([\d.]+)(?:,\s*'(\w+)')?\]", em.g
     a, b, w, zone = m.group(1), m.group(2), float(m.group(3)), m.group(4)
     if a not in nodes or b not in nodes:
         print('!! unknown node', a, b, file=sys.stderr); continue
-    edges.append((a, b, w, zone or '_neutral', nodes[a][2]))
+    # (a, b, 幅, ゾーン, aのフロア, bのフロア)。フロアまたぎエッジ(fa≠fb)は昇降接続なので床帯を作らない
+    edges.append((a, b, w, zone or '_neutral', nodes[a][2], nodes[b][2]))
 
 # --- OSM地下通路中心線: 最寄りの自エッジからゾーン/フロアを継承 ---
 osm = json.load(open(os.path.join(DATA, 'osm_umeda_underground.json')))
 edge_geoms = []
-for a, b, w, zone, fl in edges:
+for a, b, w, zone, fl, fb in edges:
+    if fl != fb:
+        continue  # フロアまたぎはOSM継承の基準にしない
     ax, ay, _ = nodes[a]; bx, by, _ = nodes[b]
     edge_geoms.append((LineString([(ax, ay), (bx, by)]), zone, fl))
 
@@ -59,8 +62,8 @@ NAME_ZONE = {'そねちか': ('sonechika', 'B1'), 'ガーデンアベニュー':
 # 多数決だと誤るway(駅前地下道・曽根崎地下歩道系はうめちか)
 SKIP_IDS = {1320007664, 1320007665, 1320007666, 1320007668, 1320007669, 1320007670,
             1316299598, 1316299599, 1316299600}  # 泉の水まわりの微小断片(2〜6px)は飛地しか生まない
-ID_ZONE = {747189969: ('sanban', 'B1'), 756534634: ('sanban', 'B1'), 885099466: ('sanban', 'B1'),
-           }
+ID_ZONE = {747189969: ('sanban', 'S1'), 756534634: ('sanban', 'S1'), 885099466: ('sanban', 'S1'),
+           }  # 三番街B1F通路のOSM中心線=浅層
 OSM_SKIP_HW = {'steps', 'motorway_link', 'tertiary', 'unclassified', 'service', 'elevator'}
 osm_ways = []   # (LineString(px), zone, floor)
 for e in osm['elements']:
@@ -149,7 +152,7 @@ osaka_sta_poly = unary_union([
 # 例外(CARVE) = 実在が確認できている「ビル際・ビル貫通の公共帯」だけがビル床を削れる。
 def _edge_band(pred, extra=1.5):
     parts = [LineString([(nodes[a][0], nodes[a][1]), (nodes[b][0], nodes[b][1])]).buffer(w / 2, cap_style=3, join_style=2)
-             for a, b, w, z, fl in edges if pred(a, b, w, z, fl)]
+             for a, b, w, z, fl, fb in edges if pred(a, b, w, z, fl)]
     return unary_union(parts).buffer(extra, join_style=2) if parts else None
 
 # 三番街ノードへの接続エッジは館内に入るので帯から除外(ビル壁で止める)
@@ -187,6 +190,7 @@ FACILITY_BLD = {
     'hilton': bpoly(162158150, 162158151),
     'herbis': bpoly(162158152, 162158418),
     'kitte': bpoly(1146510724),
+    'ema': bpoly(162158020),
     'daimaru': bpoly(161450829),
     'hankyu_dept': bpoly(588689735),
     'hanshin_dept': bpoly(502411898),
@@ -201,7 +205,7 @@ CARVE = {'sanban': whity_band_raw,
 # 通路帯マスクの「穴」(帯がビル内でも生きる場所)は広め(+1.5)で開ける
 MASK_HOLES = {'sanban': whity_band,
               'hankyu_dept': unary_union([whity_band, mido_band]),
-              'hanshin_dept': f40_band, 'ekimae': diamor_band, 'avanza': dotica_band,
+              'hanshin_dept': f40_band, 'avanza': dotica_band,  # ekimae×diamorの貫通穴は撤去(バラエティSTは第4ビル西縁沿い・貫通しない 2026-07-10)
               'daimaru': dai_band, 'herbis': yotsu_band,
               'lucua': umekita_band, 'grandfront': umekita_band}
 _fm_cache = {}
@@ -219,22 +223,22 @@ def facility_mask_total():
 
 # (floor, zone, polygon)
 BUILDING_PLATES = [
-    # 大阪駅前ビル1〜4 (地下街扱い: ゾーン色を維持)
-    ('B1', 'ekimae', plate(70561756)), ('B2', 'ekimae', plate(70561756)),
-    ('B1', 'ekimae', plate(70561758)), ('B2', 'ekimae', plate(70561758)),
-    ('B1', 'ekimae', plate(135624699)), ('B2', 'ekimae', plate(135624699)),
-    ('B1', 'ekimae', plate(135624700)), ('B2', 'ekimae', plate(135624700)),
-    # 阪急三番街 = 阪急大阪梅田駅ビル直下。
-    # B1は北館/南館が間の市道で分断(直結なし・B2経由)。B2「川の流れる街」は貫通
-    ('B1', 'sanban', plate(*byname['大阪梅田']).difference(
+    # 大阪駅前ビル1〜4 (地下街扱い: ゾーン色を維持)。三番街と同じくB1F=浅層(S1)/B2F=中枢層(B1)
+    ('S1', 'ekimae', plate(70561756)), ('B1', 'ekimae', plate(70561756)),
+    ('S1', 'ekimae', plate(70561758)), ('B1', 'ekimae', plate(70561758)),
+    ('S1', 'ekimae', plate(135624699)), ('B1', 'ekimae', plate(135624699)),
+    ('S1', 'ekimae', plate(135624700)), ('B1', 'ekimae', plate(135624700)),
+    # 阪急三番街 = 阪急大阪梅田駅ビル直下。B1F=浅層(S1)、B2F=中枢層(B1)
+    # B1Fは北館/南館が間の市道で分断(直結なし・B2F経由)。B2F「川の流れる街」は貫通
+    ('S1', 'sanban', plate(*byname['大阪梅田']).difference(
         LineString([(915, 603), (1040, 577)]).buffer(8, cap_style=2))),
-    ('B2', 'sanban', plate(*byname['大阪梅田'])),
-    # JR大阪駅構内+駅ビル(Googleでも赤=駅構内扱い)
-    ('B1', 'osaka_sta', osaka_sta_poly.buffer(3.5, join_style=2)),
-    ('B1', 'lucua', plate(162183788)),               # ルクア+ルクア1100(ノースゲート)
-    ('B2', 'lucua', plate(162183788)),  # バルチカ/フードホール(壁際店舗の許容+3.5px)
+    ('B1', 'sanban', plate(*byname['大阪梅田'])),
+    # JR大阪駅構内+駅ビル=浅層(三番街・リンクス・ルクアB1Fと同層)
+    ('S1', 'osaka_sta', osaka_sta_poly.buffer(3.5, join_style=2)),
+    ('S1', 'lucua', plate(162183788)),               # ルクア+ルクア1100(ノースゲート) B1F=浅層
+    ('B1', 'lucua', plate(162183788)),  # バルチカ/フードホール B2F=中枢層(壁際店舗の許容+3.5px)
     ('B1', 'daimaru', plate(161450829)), ('B2', 'daimaru', plate(161450829)),   # 大丸梅田店(サウスゲート)
-    ('B1', 'osaka_sta', plate(1147394005)),          # イノゲート大阪
+    ('S1', 'osaka_sta', plate(1147394005)),          # イノゲート大阪(駅クラスタ=浅層)
     # ビル館内経由(グレー補足): Googleでは白いが中を歩いて繋がっている
     ('B1', 'hilton', plate(162158150)), ('B2', 'hilton', plate(162158150)),   # ヒルトンW
     ('B1', 'hilton', plate(162158151)), ('B2', 'hilton', plate(162158151)),   # ヒルトンE
@@ -243,9 +247,11 @@ BUILDING_PLATES = [
     ('B1', 'hankyu_dept', plate(588689735)), ('B2', 'hankyu_dept', plate(588689735)),   # 阪急百貨店
     ('B1', 'hanshin_dept', plate(502411898)), ('B2', 'hanshin_dept', plate(502411898)),   # 阪神百貨店
     ('B1', 'kitte', plate(1146510724)),              # KITTE大阪(JPタワー)
-    ('B1', 'links', plate(*byname['ヨドバシ梅田タワー'])),       # ヨドバシ/リンクス梅田(独立施設)
+    ('B1', 'ema', plate(162158020)),                 # イーマ(B1がディアモール マーケットST東端と直結)
+    ('S1', 'links', plate(*byname['ヨドバシ梅田タワー'])),       # リンクス梅田B1F=浅層
+    ('B1', 'links', plate(*byname['ヨドバシ梅田タワー'])),       # リンクス梅田B2F=中枢層(館内EV/ESCのみで接続)
     ('B1', 'avanza', plate(178958655)),              # 堂島アバンザ(ドーチカ直結)
-    ('B1', 'grandfront', plate(178942581)),          # グランフロント大阪(南館)
+    ('S1', 'grandfront', plate(178942581)),          # グランフロント大阪(南館) B1F=浅層
 ]
 
 # --- 手トレースの面(広場・モール)。スクショ校正済みマップpx ---
@@ -253,8 +259,8 @@ HAND_PLATES = [
     # (floor, zone, [[x,y],...])  ※検証しながら追加・調整する
     # 阪急百貨店前コンコース(公共歩行空間。ホワイティではなく梅田地下道系)
     ('B1', 'umechika', [[906, 702], [1002, 702], [1034, 746], [1034, 792], [954, 800], [906, 788]]),
-    # うめきた広場(OSM way 549066320のサンクン広場。B1でうめきたセラー・地下道と接続)
-    ('B1', 'umekita', [[658, 723], [652, 721], [639, 725], [626, 743], [623, 784], [628, 788], [636, 789], [643, 784], [654, 768], [661, 747], [662, 737]]),
+    # うめきた広場(OSM way 549066320のサンクン広場。駅クラスタ=浅層でセラー・グランフロントと接続)
+    ('S1', 'umekita', [[658, 723], [652, 721], [639, 725], [626, 743], [623, 784], [628, 788], [636, 789], [643, 784], [654, 768], [661, 747], [662, 737]]),
     # ディアモール マーケットストリート(阪神ビル外形の凹み部を通る。店3軒が実在)
     ('B1', 'diamor', [[926, 1062], [965, 1062], [965, 1094], [926, 1094]]),
     # 阪神前広場〜うめちか本体(阪急百と阪神百の間、御堂筋直下の面)
@@ -270,7 +276,9 @@ groups = {}
 def add(floor, zone, geom):
     groups.setdefault((floor, zone), []).append(geom)
 
-for a, b, w, zone, fl in edges:
+for a, b, w, zone, fl, fb in edges:
+    if fl != fb:
+        continue  # フロアまたぎ(昇降接続)は床帯を作らない=スラブ貫通の元
     ax, ay, _ = nodes[a]; bx, by, _ = nodes[b]
     add(fl, zone, LineString([(ax, ay), (bx, by)]).buffer(w / 2, cap_style=3, join_style=2))
 for ls, zone, fl in osm_ways:
@@ -284,17 +292,20 @@ for fl, zone, cx, cy, r in DISCS:
 
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
-ORDER = ['sanban', 'links', 'grandfront', 'umekita', 'lucua', 'hilton', 'herbis', 'kitte', 'daimaru',
+ORDER = ['sanban', 'links', 'grandfront', 'umekita', 'lucua', 'hilton', 'herbis', 'kitte', 'ema', 'daimaru',
          'hankyu_dept', 'hanshin_dept', 'avanza', 'diamor', 'whity', 'umechika', 'osaka_sta',
          'dotica', 'ekimae', 'sonechika', 'nishi_umeda', 'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)
 covers_by_group = {}
-for a, b, w, zone, fl in edges:
+for a, b, w, zone, fl, fb in edges:
     covers_by_group.setdefault((fl, zone), []).append((a, b))
+    # フロアまたぎエッジは通路箱を絶対に描かない(斜めランプがスラブを貫く)。両フロアのゾーン面に登録して確実に抑止
+    if fb != fl:
+        covers_by_group.setdefault((fb, zone), []).append((a, b))
 
 out_entries = []
-for floor in ('B1', 'B2'):
+for floor in ('S1', 'B1', 'B2'):
     claimed = None
     for zone in ORDER:
         key = (floor, zone)

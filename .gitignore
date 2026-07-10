@@ -1,2 +1,5 @@
 node_modules/
 .DS_Store
+
+# 再構築の作業・実験・成果物（重い作業画像。gitを汚さない。ソースPDFは tools/data/floorguides/ で追跡）
+rebuild/

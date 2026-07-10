@@ -1,0 +1,1136 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-07-07T22:20:15Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 1740965437,
+  "lat": 34.7020616,
+  "lon": 135.4986697,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "G-1a"
+  }
+},
+{
+  "type": "node",
+  "id": 2293552457,
+  "lat": 34.7005980,
+  "lon": 135.4998930,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-80"
+  }
+},
+{
+  "type": "node",
+  "id": 2295889619,
+  "lat": 34.7004570,
+  "lon": 135.4999430,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-82"
+  }
+},
+{
+  "type": "node",
+  "id": 2299297072,
+  "lat": 34.7002199,
+  "lon": 135.4955390,
+  "tags": {
+    "access": "yes",
+    "highway": "elevator",
+    "railway": "subway_entrance",
+    "ref": "4-A",
+    "toilets:wheelchair": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2299299144,
+  "lat": 34.7000808,
+  "lon": 135.4958847,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-30",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2299310457,
+  "lat": 34.7015530,
+  "lon": 135.4966671,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-14"
+  }
+},
+{
+  "type": "node",
+  "id": 2330458903,
+  "lat": 34.7026817,
+  "lon": 135.5016509,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-1"
+  }
+},
+{
+  "type": "node",
+  "id": 2715291684,
+  "lat": 34.7022520,
+  "lon": 135.5020929,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-10"
+  }
+},
+{
+  "type": "node",
+  "id": 2715291801,
+  "lat": 34.7026427,
+  "lon": 135.5020120,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-6"
+  }
+},
+{
+  "type": "node",
+  "id": 3394153475,
+  "lat": 34.7021239,
+  "lon": 135.4977352,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-30"
+  }
+},
+{
+  "type": "node",
+  "id": 3394153476,
+  "lat": 34.7039201,
+  "lon": 135.4976154,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-9"
+  }
+},
+{
+  "type": "node",
+  "id": 3394153477,
+  "lat": 34.7043239,
+  "lon": 135.4974803,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-10"
+  }
+},
+{
+  "type": "node",
+  "id": 3448863955,
+  "lat": 34.7026493,
+  "lon": 135.4973791,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-38",
+    "source": "loacl knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 3448863958,
+  "lat": 34.7029775,
+  "lon": 135.4973885,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-42",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 3512355893,
+  "lat": 34.7037769,
+  "lon": 135.4969421,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-1",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 4590754903,
+  "lat": 34.7054217,
+  "lon": 135.4991952,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-2"
+  }
+},
+{
+  "type": "node",
+  "id": 4609280782,
+  "lat": 34.7044310,
+  "lon": 135.4995858,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-16"
+  }
+},
+{
+  "type": "node",
+  "id": 4883607418,
+  "lat": 34.7020609,
+  "lon": 135.4985903,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "G-1b"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945871,
+  "lat": 34.7007419,
+  "lon": 135.4992932,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-40"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945872,
+  "lat": 34.7011163,
+  "lon": 135.4990720,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-34"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031049,
+  "lat": 34.7019287,
+  "lon": 135.5016827,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-13"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031050,
+  "lat": 34.7019719,
+  "lon": 135.5021115,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-14"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031051,
+  "lat": 34.7022196,
+  "lon": 135.5016723,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-9"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031052,
+  "lat": 34.7025805,
+  "lon": 135.5016593,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-5"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031053,
+  "lat": 34.7027147,
+  "lon": 135.5020077,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-2"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365348,
+  "lat": 34.7018944,
+  "lon": 135.5011025,
+  "tags": {
+    "access": "no",
+    "railway": "subway_entrance",
+    "ref": "7-75"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365349,
+  "lat": 34.7021207,
+  "lon": 135.5009474,
+  "tags": {
+    "access": "no",
+    "railway": "subway_entrance",
+    "ref": "7-72"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365350,
+  "lat": 34.7021391,
+  "lon": 135.5004104,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-66"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365351,
+  "lat": 34.7018464,
+  "lon": 135.5004249,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-65"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365372,
+  "lat": 34.7021210,
+  "lon": 135.5000053,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-58"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365373,
+  "lat": 34.7018297,
+  "lon": 135.4996799,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-58"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365374,
+  "lat": 34.7012997,
+  "lon": 135.4996591,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-68"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365375,
+  "lat": 34.7015879,
+  "lon": 135.4994828,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-60"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365377,
+  "lat": 34.7001084,
+  "lon": 135.4994294,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-54"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365378,
+  "lat": 34.7003140,
+  "lon": 135.4992444,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "9"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365400,
+  "lat": 34.7037684,
+  "lon": 135.4993017,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-68"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365401,
+  "lat": 34.7036115,
+  "lon": 135.4990928,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-66"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365402,
+  "lat": 34.7035534,
+  "lon": 135.4988906,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-64"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365408,
+  "lat": 34.7024423,
+  "lon": 135.4993255,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-49"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365409,
+  "lat": 34.7022888,
+  "lon": 135.4993029,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-51"
+  }
+},
+{
+  "type": "node",
+  "id": 5051066991,
+  "lat": 34.7024019,
+  "lon": 135.4982811,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-14"
+  }
+},
+{
+  "type": "node",
+  "id": 5340839338,
+  "lat": 34.7026307,
+  "lon": 135.4976487,
+  "tags": {
+    "access": "yes",
+    "foot": "yes",
+    "highway": "elevator",
+    "level": "-1;1",
+    "railway": "subway_entrance",
+    "wheelchair": "designated"
+  }
+},
+{
+  "type": "node",
+  "id": 5682041666,
+  "lat": 34.7008008,
+  "lon": 135.4971817,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-24"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795512,
+  "lat": 34.6997557,
+  "lon": 135.4972208,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-41"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795515,
+  "lat": 34.6998650,
+  "lon": 135.4972236,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-39"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795557,
+  "lat": 34.6996302,
+  "lon": 135.4982126,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-17"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795559,
+  "lat": 34.6997155,
+  "lon": 135.4980755,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-13"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795565,
+  "lat": 34.6997662,
+  "lon": 135.4982736,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-20"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795566,
+  "lat": 34.7000943,
+  "lon": 135.4983550,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-14"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795573,
+  "lat": 34.7001899,
+  "lon": 135.4979930,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-8"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795583,
+  "lat": 34.7002488,
+  "lon": 135.4972166,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-33"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795585,
+  "lat": 34.7004261,
+  "lon": 135.4976018,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-2"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795614,
+  "lat": 34.7007114,
+  "lon": 135.4969987,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-23"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387923,
+  "lat": 34.6992424,
+  "lon": 135.4986862,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-26"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387925,
+  "lat": 34.6993266,
+  "lon": 135.4985863,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-21"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387932,
+  "lat": 34.6995237,
+  "lon": 135.4975893,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-44"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387969,
+  "lat": 34.6992474,
+  "lon": 135.4978221,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-7"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387973,
+  "lat": 34.6992461,
+  "lon": 135.4976403,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-50"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387974,
+  "lat": 34.6992286,
+  "lon": 135.4971258,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-49"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387975,
+  "lat": 34.6991036,
+  "lon": 135.4972078,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-51"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387979,
+  "lat": 34.7008478,
+  "lon": 135.4981826,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-17"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387981,
+  "lat": 34.7006896,
+  "lon": 135.4978663,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-5"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318034,
+  "lat": 34.7039048,
+  "lon": 135.4996605,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-28"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318036,
+  "lat": 34.7037043,
+  "lon": 135.4998578,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-30"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318038,
+  "lat": 34.7036478,
+  "lon": 135.4998645,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-32"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318056,
+  "lat": 34.7001340,
+  "lon": 135.4993253,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-51"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318058,
+  "lat": 34.7013805,
+  "lon": 135.4985274,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-22"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318079,
+  "lat": 34.7023187,
+  "lon": 135.4997411,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-52"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318083,
+  "lat": 34.7027388,
+  "lon": 135.4993501,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "G-1"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318493,
+  "lat": 34.7028652,
+  "lon": 135.4994190,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-41"
+  }
+},
+{
+  "type": "node",
+  "id": 5865516097,
+  "lat": 34.6995917,
+  "lon": 135.4978662,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-15"
+  }
+},
+{
+  "type": "node",
+  "id": 5865516098,
+  "lat": 34.7030099,
+  "lon": 135.4993997,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-43"
+  }
+},
+{
+  "type": "node",
+  "id": 5866989584,
+  "lat": 34.6997531,
+  "lon": 135.4995396,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-62"
+  }
+},
+{
+  "type": "node",
+  "id": 5866997085,
+  "lat": 34.6991770,
+  "lon": 135.4997535,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-70"
+  }
+},
+{
+  "type": "node",
+  "id": 5884709877,
+  "lat": 34.6995247,
+  "lon": 135.4988959,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-22"
+  }
+},
+{
+  "type": "node",
+  "id": 5884709881,
+  "lat": 34.6995251,
+  "lon": 135.4987500,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-18"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732499,
+  "lat": 34.6991038,
+  "lon": 135.4973312,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-52"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732540,
+  "lat": 34.6992489,
+  "lon": 135.4980009,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-9"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732545,
+  "lat": 34.6992496,
+  "lon": 135.4981544,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-25"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732568,
+  "lat": 34.6993544,
+  "lon": 135.4979102,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-8"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732584,
+  "lat": 34.7002180,
+  "lon": 135.4975424,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-34"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732789,
+  "lat": 34.6995785,
+  "lon": 135.4974440,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-40"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732792,
+  "lat": 34.7002097,
+  "lon": 135.4968916,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-31"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069694,
+  "lat": 34.7014647,
+  "lon": 135.4964822,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-13"
+  }
+},
+{
+  "type": "node",
+  "id": 5916069661,
+  "lat": 34.7041358,
+  "lon": 135.4968499,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-2"
+  }
+},
+{
+  "type": "node",
+  "id": 5916069662,
+  "lat": 34.7045380,
+  "lon": 135.4969278,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-4"
+  }
+},
+{
+  "type": "node",
+  "id": 6013223048,
+  "lat": 34.7025006,
+  "lon": 135.4988090,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 6423375459,
+  "lat": 34.7049830,
+  "lon": 135.4993003,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-8"
+  }
+},
+{
+  "type": "node",
+  "id": 8836160773,
+  "lat": 34.7021470,
+  "lon": 135.4960712,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance",
+    "ref": "D-1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8872207243,
+  "lat": 34.7054245,
+  "lon": 135.4988996,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-1"
+  }
+},
+{
+  "type": "node",
+  "id": 8878597296,
+  "lat": 34.7029165,
+  "lon": 135.5003246,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "J-2"
+  }
+},
+{
+  "type": "node",
+  "id": 8878597300,
+  "lat": 34.7028221,
+  "lon": 135.4998444,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "J-3"
+  }
+},
+{
+  "type": "node",
+  "id": 8878597302,
+  "lat": 34.7026411,
+  "lon": 135.4999946,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "J-4"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684239,
+  "lat": 34.7009111,
+  "lon": 135.4980503,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-10"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684247,
+  "lat": 34.7023451,
+  "lon": 135.4964401,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-22"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684248,
+  "lat": 34.7025651,
+  "lon": 135.4970401,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-30"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684249,
+  "lat": 34.7019752,
+  "lon": 135.4956788,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-10"
+  }
+},
+{
+  "type": "node",
+  "id": 8987123750,
+  "lat": 34.7035219,
+  "lon": 135.4967805,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 9014035679,
+  "lat": 34.7035177,
+  "lon": 135.4967840,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 9014035683,
+  "lat": 34.7036491,
+  "lon": 135.4967823,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 9677032133,
+  "lat": 34.7008440,
+  "lon": 135.4972766,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-22"
+  }
+},
+{
+  "type": "node",
+  "id": 10959644128,
+  "lat": 34.7008005,
+  "lon": 135.4998616,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 12159153614,
+  "lat": 34.7008095,
+  "lon": 135.4968271,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-21"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322082,
+  "lat": 34.7005309,
+  "lon": 135.4970799,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-27"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322171,
+  "lat": 34.7011259,
+  "lon": 135.4959961,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-12"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322172,
+  "lat": 34.7016188,
+  "lon": 135.4968499,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322182,
+  "lat": 34.7016471,
+  "lon": 135.4970548,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-22"
+  }
+},
+{
+  "type": "node",
+  "id": 12215302980,
+  "lat": 34.7024998,
+  "lon": 135.4989060,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 12300527184,
+  "lat": 34.7014141,
+  "lon": 135.4985216,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F23"
+  }
+},
+{
+  "type": "node",
+  "id": 12738965940,
+  "lat": 34.7013126,
+  "lon": 135.4962998,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 13382703231,
+  "lat": 34.7006728,
+  "lon": 135.4963200,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-18"
+  }
+}
+
+  ]
+}

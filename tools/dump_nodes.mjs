@@ -6,11 +6,11 @@ const { SHOP_AREAS, SHOPS_SCRAPED, SHOPS_MANUAL } = await import(new URL('./_sho
 
 const src = readFileSync(new URL('../main.js', import.meta.url), 'utf8');
 const NODES = [];
-for (const m of src.matchAll(/S\('(\w+)',\s*'([^']*)',\s*'(B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+)\)/g))
+for (const m of src.matchAll(/S\('(\w+)',\s*'([^']*)',\s*'(S1|B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+)\)/g))
   NODES.push({ id: m[1], name: m[2], floor: m[3], mx: +m[4], my: +m[5], type: 'station' });
-for (const m of src.matchAll(/P\('(\w+)',\s*'([^']*)',\s*'(B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+),\s*'(\w+)'\)/g))
+for (const m of src.matchAll(/P\('(\w+)',\s*'([^']*)',\s*'(S1|B1|B2)',\s*(-?[\d.]+),\s*(-?[\d.]+),\s*'(\w+)'\)/g))
   NODES.push({ id: m[1], name: m[2], floor: m[3], mx: +m[4], my: +m[5], zone: m[6], type: 'poi' });
-for (const m of src.matchAll(/J\('(\w+)',\s*(-?[\d.]+),\s*(-?[\d.]+)(?:,\s*'(B1|B2)')?\)/g))
+for (const m of src.matchAll(/J\('(\w+)',\s*(-?[\d.]+),\s*(-?[\d.]+)(?:,\s*'(S1|B1|B2)')?\)/g))
   NODES.push({ id: m[1], name: '', floor: m[4] || 'B1', mx: +m[2], my: +m[3], type: 'junction' });
 const em = src.match(/const EDGES = \[([\s\S]*?)\n\];/);
 const EDGES = [];
