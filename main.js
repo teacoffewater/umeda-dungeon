@@ -551,6 +551,7 @@ controls.enableDamping = true;
 controls.zoomSpeed = 3; // ホイールズームの感度
 controls.zoomToCursor = true; // カーソル/ピンチ中心の地点に向かって拡大縮小(固定中心をやめる)
 controls.maxPolarAngle = Math.PI * 0.49;
+window.__dbg = { camera, controls, M2W, FLOOR_Y }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.9));
 const dir = new THREE.DirectionalLight(0xffffff, 1.4);
@@ -587,29 +588,32 @@ scene.add(groundGroup);
   // r: [x1, y1, x2, y2](地図px), h: 高さ(world), name: 屋上ラベル, lm: ランドマーク(輪郭強調)
   // 高さは実際の建物高(m)×0.75で統一(相対的な高さ関係を実物に合わせる)
   const GROUND_BUILDINGS = [
-    { r: [906, 393, 1030, 700], h: 24, name: '阪急 大阪梅田駅', lm: true },   // 高架ホーム大屋根 ~30m
-    { r: [928, 758, 1037, 943], h: 140, name: '阪急百貨店', lm: true },      // 梅田阪急ビル 187m
-    { r: [1002, 782, 1035, 862], h: 95, name: '阪急グランドビル' },          // 127m
-    { r: [1072, 653, 1173, 744], h: 47, name: 'HEP FIVE', lm: true },        // 建物63m(観覧車の方が大きい)
-    { r: [854, 1011, 1032, 1144], h: 141, name: '阪神百貨店', lm: true },      // ツインタワーズ・サウス 188m
-    { r: [606, 717, 848, 911], h: 48, name: 'ルクア / ノースゲート', lm: true }, // 低層大型 ~60m
-    { r: [733, 914, 852, 1044], h: 92, name: '大丸 / サウスゲート', lm: true },   // 122m
-    { r: [718, 571, 857, 729], h: 85, name: 'ヨドバシ梅田 / LINKS', lm: true },  // タワー部 ~150m(街区平均で圧縮)
-    { r: [483, 907, 588, 1008], h: 75, name: 'イノゲート大阪' },              // ~100m
-    { r: [622, 601, 717, 733], h: 135, name: 'グランフロント南館', lm: true }, // タワーA 180m
-    { r: [602, 348, 691, 564], h: 131, name: 'グランフロント北館', lm: true }, // タワーB 175m
-    { r: [343, 765, 491, 987], h: 32, name: 'グラングリーン大阪' },          // 低層 ~40m
-    { r: [536, 1039, 659, 1205], h: 130, name: 'KITTE大阪' },                 // JPタワー大阪 ~170m
-    { r: [729, 1289, 847, 1379], h: 38, name: '駅前第1ビル' },               // ~50m
-    { r: [863, 1294, 968, 1395], h: 53, name: '駅前第2ビル' },               // ~70m
-    { r: [969, 1299, 1074, 1400], h: 107, name: '駅前第3ビル' },             // 142m(4棟で最も高い)
-    { r: [937, 1170, 1044, 1256], h: 68, name: '駅前第4ビル' },              // ~90m
-    { r: [668, 1107, 812, 1244], h: 110, name: 'ヒルトンプラザ', lm: true }, // WESTタワー 167m
+    // 実外形はOSM building footprint(簡略化3.5px)。高さは従来値を踏襲
+    { poly: [[949.4, 697.5], [992.7, 689.7], [1030.4, 671.4], [1016.7, 536.0], [987.6, 393.5], [923.7, 404.8], [906.4, 439.5], [937.7, 667.6], [925.7, 660.5], [930.3, 700.3]], h: 24, name: '阪急 大阪梅田駅', lm: true },
+    { poly: [[927.7, 811.0], [954.3, 914.1], [970.7, 939.1], [981.4, 942.7], [1024.8, 934.3], [1037.3, 874.4], [1002.1, 872.7], [1002.3, 759.7]], h: 140, name: '阪急百貨店', lm: true },
+    { poly: [[1006.1, 784.5], [1002.4, 857.6], [1033.4, 858.9], [1035.2, 785.7]], h: 95, name: '阪急グランドビル' },
+    { poly: [[1172.9, 709.4], [1171.7, 670.5], [1168.0, 670.6], [1171.2, 652.6], [1075.5, 705.2], [1071.6, 743.6], [1118.2, 740.0], [1117.4, 712.1]], h: 47, name: 'HEP FIVE', lm: true },
+    { poly: [[996.8, 1058.3], [965.3, 1023.5], [937.2, 1011.5], [911.5, 1018.7], [854.0, 1059.9], [877.5, 1112.3], [957.2, 1057.9], [992.1, 1137.0], [996.4, 1143.5], [1003.3, 1143.5], [1030.3, 1135.8], [1031.9, 1126.0], [1024.7, 1093.6]], h: 141, name: '阪神百貨店', lm: true },
+    { poly: [[840.2, 778.5], [834.8, 767.0], [847.6, 753.0], [838.0, 740.5], [837.6, 732.8], [847.1, 729.4], [841.2, 717.0], [748.2, 782.5], [734.4, 754.0], [606.2, 844.6], [631.8, 911.0], [805.8, 788.5], [808.6, 801.3]], h: 48, name: 'ルクア / ノースゲート', lm: true },
+    { poly: [[759.4, 1044.1], [850.0, 976.7], [851.4, 964.4], [829.3, 914.0], [732.9, 984.7]], h: 92, name: '大丸 / サウスゲート', lm: true },
+    { poly: [[717.8, 598.4], [731.6, 667.1], [755.3, 727.8], [766.2, 727.8], [847.8, 667.2], [850.2, 618.9], [857.1, 618.2], [854.0, 586.2], [839.6, 579.9], [838.7, 571.0], [831.7, 572.0], [832.7, 582.4]], h: 85, name: 'ヨドバシ梅田 / LINKS', lm: true },
+    { poly: [[482.6, 990.1], [491.3, 1007.9], [576.6, 948.3], [574.0, 942.4], [587.6, 932.7], [576.0, 907.4]], h: 75, name: 'イノゲート大阪' },
+    { poly: [[624.8, 613.0], [625.2, 652.3], [646.4, 697.4], [678.7, 726.0], [715.8, 732.7], [694.2, 603.9]], h: 135, name: 'グランフロント南館', lm: true },
+    { poly: [[601.7, 350.5], [617.6, 557.6], [624.3, 556.9], [624.9, 564.5], [690.8, 552.8], [670.2, 349.2], [620.6, 354.8], [620.1, 348.4]], h: 131, name: 'グランフロント北館', lm: true },
+    { poly: [[389.4, 771.1], [380.8, 767.3], [360.6, 843.2], [355.3, 900.7], [343.7, 938.5], [343.4, 953.0], [378.1, 965.3], [381.1, 951.8], [389.6, 954.8], [397.2, 921.6], [405.2, 922.2], [424.8, 837.3], [447.6, 808.8], [425.6, 785.1], [419.7, 787.3], [422.0, 777.5], [391.6, 765.2]], h: 32, name: 'グラングリーン大阪' },
+    { poly: [[547.6, 1205.1], [599.8, 1152.0], [656.2, 1112.7], [647.2, 1093.0], [658.5, 1085.0], [637.3, 1039.0], [535.6, 1108.9]], h: 130, name: 'KITTE大阪' },
+    { poly: [[837.7, 1379.5], [843.9, 1372.9], [847.4, 1301.6], [841.7, 1292.8], [742.7, 1289.4], [732.5, 1300.8], [729.5, 1349.2], [741.6, 1366.1]], h: 38, name: '駅前第1ビル' },
+    { poly: [[862.6, 1377.5], [868.1, 1385.6], [962.1, 1394.6], [967.9, 1385.9], [949.0, 1305.4], [942.0, 1296.9], [871.6, 1294.3], [865.1, 1302.5]], h: 53, name: '駅前第2ビル' },
+    { poly: [[975.4, 1298.8], [969.4, 1309.1], [987.6, 1389.2], [995.6, 1396.9], [1066.4, 1400.1], [1073.7, 1391.0], [1054.0, 1309.2], [1047.5, 1301.2]], h: 107, name: '駅前第3ビル' },
+    { poly: [[940.9, 1193.3], [937.2, 1203.6], [954.1, 1247.2], [961.2, 1252.5], [1039.0, 1255.8], [1044.4, 1248.6], [1026.6, 1174.4], [1017.2, 1170.3]], h: 68, name: '駅前第4ビル' },
+    { poly: [[789.3, 1107.3], [764.3, 1120.1], [751.4, 1141.1], [741.6, 1211.5], [746.9, 1243.3], [783.5, 1244.5], [786.7, 1240.4], [792.2, 1184.3], [811.9, 1157.8]], h: 110, name: 'ヒルトンプラザ', lm: true },
+    { poly: [[668.1, 1243.9], [680.8, 1240.6], [681.2, 1232.5], [704.8, 1234.6], [709.6, 1168.3], [689.5, 1166.3], [671.8, 1178.1]], h: 110 },
     { poly: [[608, 1206], [607, 1213], [582, 1237], [581, 1263], [585, 1263], [585, 1267], [602, 1269], [618, 1262], [624, 1251], [639, 1254], [667, 1245], [671, 1173], [687, 1166], [687, 1162], [672, 1159], [657, 1164]],
       h: 75, name: 'ハービスENT', lm: true },   // 約100m ×0.75。斜め形状のため実外形で描画
     { poly: [[540, 1282], [542, 1285], [548, 1279], [561, 1282], [565, 1278], [569, 1283], [513, 1347], [515, 1350], [508, 1357], [510, 1361], [501, 1371], [500, 1379], [493, 1378], [476, 1395], [473, 1413], [465, 1423], [426, 1452], [402, 1413], [410, 1405], [408, 1403], [421, 1390], [423, 1393], [447, 1367], [450, 1375], [453, 1362], [460, 1363], [477, 1347], [477, 1341], [482, 1342], [497, 1322], [499, 1326]],
       h: 135, name: 'ハービスOSAKA', lm: true }, // 190m ×0.75。同上
-    { r: [544, 1301, 611, 1399], h: 131, name: 'ブリーゼタワー' },           // 175m
+    { poly: [[555.5, 1332.6], [556.9, 1338.6], [547.7, 1343.2], [550.2, 1351.7], [544.3, 1354.7], [548.1, 1365.4], [563.8, 1360.5], [570.6, 1380.4], [566.3, 1388.8], [569.8, 1399.3], [572.9, 1389.7], [584.9, 1395.7], [590.8, 1389.3], [589.4, 1376.8], [596.3, 1373.5], [602.4, 1381.2], [596.1, 1359.0], [597.3, 1350.7], [610.2, 1344.6], [607.1, 1312.1], [602.8, 1313.7], [599.0, 1303.1], [595.3, 1307.4], [585.4, 1300.9], [576.9, 1310.8], [580.0, 1324.2]], h: 131, name: 'ブリーゼタワー' },
+    { poly: [[946.8, 1101.8], [960.4, 1158.7], [987.3, 1147.5], [961.0, 1086.5], [945.5, 1097.0]], h: 55, name: 'イーマ' },
   ];
   // 街の地: 名もなきビル群（低層〜中層）で市街の質感を足す
   const FILLER_BUILDINGS = [
@@ -687,51 +691,58 @@ scene.add(groundGroup);
   }
   for (const [x1, y1, x2, y2, h] of FILLER_BUILDINGS) addBox([x1, y1, x2, y2], h, edgeMatFill);
 
-  // --- 梅田スカイビル: OSM実外形のツインタワー+空中庭園(円形開口つき頂部スラブ+斜行シャフト) ---
+  // --- 梅田スカイビル: OSM building:part 実測。段丘状ツインタワー(吹き抜け側ほど高い)+
+  //     空中庭園(39-40Fの板が両塔頂部と吹き抜けを覆い、中央に円形開口)+35F→39F斜行チューブ ---
   {
-    const H = 130; // 173m ×0.75
-    // タワー実外形(吹き抜け側の円弧を含む)
-    const TOWER_W = [[290, 478], [266, 475], [262, 537], [286, 541], [286, 530], [275, 523], [271, 507], [277, 494], [283, 490], [289, 489]];
-    const TOWER_E = [[289, 489], [301, 497], [304, 512], [298, 525], [293, 529], [286, 530], [286, 541], [309, 543], [314, 481], [290, 478]];
-    addPolyBldg(TOWER_W, H, edgeMat, true);
-    addPolyBldg(TOWER_E, H, edgeMat, true);
-    // 空中庭園: 両塔頂部を繋ぐスラブ(建物全体外形)に円形開口
-    const DECK = [[242, 472], [339, 485], [334, 546], [237, 534]];
+    const LV = 130 / 40; // 1フロア分の高さ(173m×0.75 ÷ 40F)
+    // 各段の実外形(OSM way 252708903/901, 252485324, 252708902/904)。lv=階数
+    const PARTS = [
+      { pts: [[241.6, 472.4], [253.9, 473.9], [249.7, 535.1], [236.8, 533.5]], lv: 38 }, // 西塔 外段
+      { pts: [[253.9, 473.9], [266.1, 475.5], [262.0, 536.7], [249.7, 535.1]], lv: 39 }, // 西塔 内段
+      { pts: [[313.7, 481.4], [321.1, 482.3], [316.8, 543.5], [309.2, 542.6]], lv: 40 }, // 東塔 内段
+      { pts: [[321.1, 482.3], [330.3, 483.5], [325.3, 544.6], [316.8, 543.5]], lv: 39 }, // 東塔 中段
+      { pts: [[330.3, 483.5], [339.2, 484.6], [334.4, 545.7], [325.3, 544.6]], lv: 38 }, // 東塔 外段
+    ];
+    for (const p of PARTS) addPolyBldg(p.pts, p.lv * LV, edgeMat, true);
+    // 空中庭園(39-40F): 両塔頂部+吹き抜けを覆う板(OSM way 588689730+649098944の結合外形)に円形開口
+    const DECK = [[266.1, 475.5], [290.3, 478.5], [313.7, 481.4], [309.2, 542.6], [285.6, 540.5], [262.0, 536.7]];
     const shape = new THREE.Shape();
     DECK.forEach(([mx, my], i) => {
       const [x, z] = M2W([mx, my]);
       if (i === 0) shape.moveTo(x, z); else shape.lineTo(x, z);
     });
-    const [ox, oz] = M2W([288, 509]);
+    const [ox, oz] = M2W([288, 509.7]);
     const holePath = new THREE.Path();
-    holePath.absarc(ox, oz, 10, 0, Math.PI * 2, true);
+    holePath.absarc(ox, oz, 8.3, 0, Math.PI * 2, true); // 実測: 開口半径≈16.5px→world 8.3
     shape.holes.push(holePath);
-    const deckGeo = new THREE.ExtrudeGeometry(shape, { depth: 10, bevelEnabled: false });
+    const deckGeo = new THREE.ExtrudeGeometry(shape, { depth: LV, bevelEnabled: false });
     deckGeo.rotateX(Math.PI / 2);
-    deckGeo.translate(0, GROUND_Y + H, 0);
+    deckGeo.translate(0, GROUND_Y + 40 * LV, 0); // 39F床〜40F屋上
     const deck = new THREE.Mesh(deckGeo, faceMatLm);
     deck.renderOrder = 3;
     groundGroup.add(deck, new THREE.LineSegments(new THREE.EdgesGeometry(deckGeo, 30), edgeMat));
-    // 展望リング(開口の縁)
+    // 屋上スカイウォーク(開口の縁のリング)
     const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(11, 0.9, 6, 40),
+      new THREE.TorusGeometry(8.8, 0.7, 6, 40),
       new THREE.MeshBasicMaterial({ color: 0xcfe0f5, transparent: true, opacity: 0.35, depthWrite: false })
     );
     ring.rotation.x = Math.PI / 2;
-    ring.position.set(ox, GROUND_Y + H + 1, oz);
+    ring.position.set(ox, GROUND_Y + 40 * LV + 0.8, oz);
     groundGroup.add(ring);
-    // 斜行エスカレーターシャフト(吹き抜けを渡る2本、上部で交差)
-    const tube = [];
-    const seg = (m1, y1, m2, y2) => {
+    // 斜行エスカレーターチューブ(35F→39F。吹き抜けを渡って交差する名物の2本。見える太さの円柱で)
+    const tubeMat = new THREE.MeshBasicMaterial({ color: 0xcfe0f5, transparent: true, opacity: 0.5, depthWrite: false });
+    const addTube = (m1, y1, m2, y2) => {
       const [ax, az] = M2W(m1); const [bx, bz] = M2W(m2);
-      tube.push(ax, y1, az, bx, y2, bz);
+      const a = new THREE.Vector3(ax, y1, az), b = new THREE.Vector3(bx, y2, bz);
+      const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, a.distanceTo(b), 8), tubeMat);
+      cyl.position.copy(a).add(b).multiplyScalar(0.5);
+      cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+      cyl.renderOrder = 3;
+      groundGroup.add(cyl);
     };
-    seg([270, 521], GROUND_Y + H * 0.52, [300, 500], GROUND_Y + H - 4);
-    seg([305, 505], GROUND_Y + H * 0.52, [276, 516], GROUND_Y + H - 4);
-    const tubeGeo = new THREE.BufferGeometry();
-    tubeGeo.setAttribute('position', new THREE.Float32BufferAttribute(tube, 3));
-    groundGroup.add(new THREE.LineSegments(tubeGeo, edgeMat));
-    addBldgLabel('梅田スカイビル', 288, 509, GROUND_Y + H + 9);
+    addTube([264, 524], GROUND_Y + 35 * LV, [297, 498], GROUND_Y + 39 * LV);
+    addTube([307, 522], GROUND_Y + 35 * LV, [280, 496], GROUND_Y + 39 * LV);
+    addBldgLabel('梅田スカイビル', 288, 509, GROUND_Y + 40 * LV + 9);
   }
 
   // --- HEP FIVE: 赤い観覧車（梅田の目印） ---
@@ -805,29 +816,40 @@ scene.add(groundGroup);
       new THREE.LineBasicMaterial({ color: 0xaec4de, transparent: true, opacity: 0.14 })));
   }
 
-  // --- JR大阪駅の駅舎: 南北ゲートビルの間に架かる「大屋根」アーチ＋ホームでトレース ---
+  // --- JR大阪駅: OSM実測(relation 17915329)。駅は地図座標系で長軸-36.4°に斜行する ---
+  //     (地下・浅層の駅コンコース床と同じ外形なので、上下がぴったり重なる)
   {
     const stMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.24 });
-    const [xW] = M2W([640, 0]), [xE] = M2W([860, 0]);
-    const [, zN] = M2W([0, 792]), [, zS] = M2W([0, 918]);
-    // アーチ断面（北→南）: 中央が膨らみ、南へ緩く下がる大屋根
-    const arch = t => [
-      GROUND_Y + 36 + Math.sin(Math.PI * t) * 34 - 10 * t,  // y
-      zN + (zS - zN) * t,                                    // z
-    ];
+    // 駅本体+西側部(うめきた/西口)の実外形ボリューム
+    const STA_MAIN = [[897.1, 848.2], [866.0, 726.6], [849.5, 737.3], [853.6, 748.6], [834.8, 767.0], [840.2, 778.5], [808.6, 801.3], [805.8, 788.5], [631.8, 911.0], [627.5, 901.4], [618.1, 910.9], [665.4, 1017.5], [728.2, 973.8], [732.9, 984.7], [815.6, 926.3], [885.4, 874.7], [886.1, 857.0]];
+    const STA_WEST = [[607.1, 1054.7], [640.1, 1032.8], [593.5, 928.4], [545.4, 970.5], [588.7, 1067.2]];
+    addPolyBldg(STA_MAIN, 20, edgeMat, true);
+    addPolyBldg(STA_WEST, 8, edgeMatSoft);
+
+    // 回転フレーム: 中心=本体重心(765.3,885.1)、長軸-36.4°(OSM回転矩形の実測)
+    const C = [765.3, 885.1];
+    const TH = -36.4 * Math.PI / 180;
+    const ux = Math.cos(TH), uy = Math.sin(TH); // 長軸=線路方向(南西→北東)
+    const vx = -uy, vy = ux;                    // 幅方向(ホームを横切る向き)
+    const ROOF_W = 132;                          // 大屋根の幅(回転矩形の実測短辺)
+    const at = (s, t) => M2W([C[0] + ux * s + vx * (t - 0.5) * ROOF_W,
+                              C[1] + uy * s + vy * (t - 0.5) * ROOF_W]);
+    // アーチ断面(幅方向t=0..1): 中央が膨らみ、片側へ緩く下がる大屋根
+    const archY = t => GROUND_Y + 36 + Math.sin(Math.PI * t) * 34 - 10 * t;
     const P = [];
     const SEG = 12;
-    const rails = [0, 0.25, 0.5, 0.75, 1].map(u => xW + (xE - xW) * u); // 屋根の稜線5本
-    for (const x of rails) {
+    const S_ARCS = [-110, -55, 0, 55, 110]; // アーチ断面の位置(長軸方向・ゲートビル間)
+    for (const s of S_ARCS) {
       for (let i = 0; i < SEG; i++) {
-        const [y1, z1] = arch(i / SEG), [y2, z2] = arch((i + 1) / SEG);
-        P.push(x, y1, z1, x, y2, z2);
+        const [x1, z1] = at(s, i / SEG), [x2, z2] = at(s, (i + 1) / SEG);
+        P.push(x1, archY(i / SEG), z1, x2, archY((i + 1) / SEG), z2);
       }
     }
-    for (const t of [0, 0.25, 0.5, 0.75, 1]) { // 横つなぎ
-      const [y, z] = arch(t);
-      for (let r = 0; r < rails.length - 1; r++) {
-        P.push(rails[r], y, z, rails[r + 1], y, z);
+    for (const t of [0, 0.25, 0.5, 0.75, 1]) { // 長軸方向のつなぎ(稜線)
+      const y = archY(t);
+      for (let r = 0; r < S_ARCS.length - 1; r++) {
+        const [x1, z1] = at(S_ARCS[r], t), [x2, z2] = at(S_ARCS[r + 1], t);
+        P.push(x1, y, z1, x2, y, z2);
       }
     }
     const archGeo = new THREE.BufferGeometry();
@@ -837,10 +859,13 @@ scene.add(groundGroup);
     // 大屋根の面（ごく薄いシートを張って「駅の大屋根」に見せる）
     {
       const verts = [], idx = [];
-      const COLS = rails.length;
+      const COLS = S_ARCS.length;
       for (let i = 0; i <= SEG; i++) {
-        const [y, z] = arch(i / SEG);
-        for (const x of rails) verts.push(x, y, z);
+        const y = archY(i / SEG);
+        for (const s of S_ARCS) {
+          const [x, z] = at(s, i / SEG);
+          verts.push(x, y, z);
+        }
       }
       for (let i = 0; i < SEG; i++) {
         for (let c = 0; c < COLS - 1; c++) {
@@ -856,33 +881,27 @@ scene.add(groundGroup);
       }));
       sheet.renderOrder = 3;
       groundGroup.add(sheet);
-      addBldgLabel('JR大阪駅', 750, 855, GROUND_Y + 78);
+      addBldgLabel('JR大阪駅', 765, 885, GROUND_Y + 78);
     }
 
-    // JR線の高架橋: 航空写真に合わせて幅を変化させた帯で描く。
-    // 駅部分(11面のホーム群)で大きく膨らみ、東は新大阪方面へ北東カーブしながら、
-    // 西は塚本方面へ向かいながら細く収束する。地面の枠の端から端まで貫通させる
+    // JR線の高架橋: OSM東海道本線の実線形(駅重心から5.5px)を簡略化した帯。
+    // 南西(福島方面)から駅を斜めに貫き、北東へカーブして新大阪方面へ抜ける
     const VIADUCT = [
-      [30, 908, 16],    // 西端(マップ端)
-      [400, 884, 24],
-      [600, 862, 55],   // 駅の西端で急拡大
-      [760, 855, 63],   // 駅中心
-      [920, 850, 55],
-      [1080, 826, 28],  // 駅の東で収束
-      [1390, 770, 15],  // 東端(マップ端)
+      [76, 1373, 14],   // 南西端(福島方面)
+      [156, 1356, 15],
+      [226, 1320, 17],
+      [558, 1024, 30],  // 駅の手前で拡大開始
+      [626, 976, 55],
+      [762, 880, 63],   // 駅中心(ホーム群)
+      [895, 787, 55],
+      [1091, 664, 26],  // 北東へ収束
+      [1155, 600, 20],
+      [1191, 547, 18],
+      [1238, 436, 16],
+      [1254, 363, 15],
+      [1277, 136, 14],  // 北東端(新大阪方面)
     ];
     const deckTop = GROUND_Y + 13;
-    const interpV = mx => {
-      for (let i = 0; i < VIADUCT.length - 1; i++) {
-        const a = VIADUCT[i], b = VIADUCT[i + 1];
-        if (mx >= a[0] && mx <= b[0]) {
-          const t = (mx - a[0]) / (b[0] - a[0]);
-          return [a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-        }
-      }
-      const e = VIADUCT[VIADUCT.length - 1];
-      return [e[1], e[2]];
-    };
     {
       // 高架は「地面から立ち上がる一体の盛土状ボリューム」で描く(柱なし・下は埋める)
       const upper = VIADUCT.map(([mx, my, hw]) => M2W([mx, my - hw]));
@@ -907,13 +926,13 @@ scene.add(groundGroup);
       groundGroup.add(new THREE.LineLoop(outlineGeo, stMat));
     }
 
-    // ホーム（高架デッキの上・大屋根の下）
-    for (const [py1, py2] of [[840, 852], [862, 874]]) {
-      const [hx1, hz1] = M2W([640, py1]);
-      const [hx2, hz2] = M2W([860, py2]);
-      const g = new THREE.BoxGeometry(Math.abs(hx2 - hx1), 5, Math.abs(hz2 - hz1));
+    // ホーム（高架デッキの上・大屋根の下）: 線路軸に沿った細長い箱を幅方向にずらして2本
+    for (const off of [-9, 13]) {
+      const g = new THREE.BoxGeometry(220 * 0.5, 5, 12 * 0.5); // 地図px→world ×0.5
       const w = new THREE.LineSegments(new THREE.EdgesGeometry(g), stMat);
-      w.position.set((hx1 + hx2) / 2, deckTop + 2.5, (hz1 + hz2) / 2);
+      const [px, pz] = M2W([C[0] + vx * off, C[1] + vy * off]);
+      w.position.set(px, deckTop + 2.5, pz);
+      w.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(ux, 0, uy).normalize());
       groundGroup.add(w);
     }
   }
@@ -1084,9 +1103,9 @@ const evShaftMat = new THREE.MeshBasicMaterial({
 });
 const evShaftEdgeMat = new THREE.LineBasicMaterial({ color: 0x9fe0ff, transparent: true, opacity: 0.45 });
 const evCageGeo = new THREE.BoxGeometry(3.2, 3.2, 3.2);
-const evCages = []; // { mesh, phase } — animate()でB2⇔B1を往復させる
-const EV_CAGE_LOW = FLOOR_Y.B2 + 1.9 + 1.6;   // 床上面+かご半分
-const EV_CAGE_HIGH = FLOOR_Y.B1 + 1.9 + 1.6;
+const evCages = []; // { mesh, low, high, phase } — animate()で各EVの実フロア間を往復させる
+window.__dbg.evCages = evCages;
+// かごの可動域は各EVの実フロアペアから算出(evCagesのlow/high。+3.5=床上面+かご半分)
 
 // エスカレーターの手すり(欄干): 中身の詰まったソリッドな側面パネル×2。
 // ローカル+Xが「上り方向」。フロアで形を変える:
@@ -1176,9 +1195,10 @@ for (const v of VERTICALS) {
     const edges = new THREE.LineSegments(new THREE.EdgesGeometry(evShaftGeo), evShaftEdgeMat);
     edges.position.set(x, shaftY, z);
     const cage = new THREE.Mesh(evCageGeo, padMats.ev);
-    cage.position.set(x, EV_CAGE_LOW, z);
+    cage.position.set(x, yB2 + 3.5, z);
     vertGroup.add(fill, edges, cage);
-    evCages.push({ mesh: cage, phase: evCages.length * 1.73 });
+    // かごの可動域はこのEVが実際につなぐ2フロア(浅層⇔中枢層のEVを深層まで動かさない)
+    evCages.push({ mesh: cage, low: yB2 + 3.5, high: yB1 + 3.5, phase: evCages.length * 1.73 });
   } else {
     const beam = new THREE.Mesh(beamGeo, beamMats[v.type]);
     beam.position.set(x, (yB1 + yB2) / 2, z);
@@ -2137,16 +2157,16 @@ function animate() {
       m.position.copy(routeCurve.getPointAt(u));
     });
   }
-  // EVのかご: B2⇔B1をゆっくり往復(各階で一瞬停止。位相をずらして同期させない)
+  // EVのかご: そのEVが実際につなぐ下階⇔上階をゆっくり往復(各階で一瞬停止。位相をずらして同期させない)
   for (const c of evCages) {
     const tt = ((t + c.phase) % 7) / 7;
     let u;
     if (tt < 0.4) u = tt / 0.4;             // 上昇
-    else if (tt < 0.5) u = 1;               // B1で停止
+    else if (tt < 0.5) u = 1;               // 上階で停止
     else if (tt < 0.9) u = 1 - (tt - 0.5) / 0.4; // 下降
-    else u = 0;                             // B2で停止
+    else u = 0;                             // 下階で停止
     const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
-    c.mesh.position.y = EV_CAGE_LOW + (EV_CAGE_HIGH - EV_CAGE_LOW) * e;
+    c.mesh.position.y = c.low + (c.high - c.low) * e;
   }
   // 現在地マーカー: 人型の浮遊＋足元のパルスリング
   if (startIcon) {
