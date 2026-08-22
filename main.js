@@ -32,7 +32,8 @@ const ZONES = {
   osaka_sta:   { name: 'JR大阪駅',              color: 0x5f9fd9, label: [671.6, 893.1] },
   lucua:       { name: 'ルクア',                color: 0x6a6fe2, label: [649, 811.9] },  // インディゴ(ルクア+ルクア1100)
   diamor:      { name: 'ディアモール大阪',      color: 0x45c8a8, label: [863.9, 1143] },
-  nishi_umeda: { name: '西梅田 / ガーデンアベニュー', color: 0xa07fd9, label: [438.5, 1226.6] },
+  // corridor: 現地で名前の表示が乏しく施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない(2026-08-23 現地確認)
+  nishi_umeda: { name: '西梅田地下通路(ガーデンアベニュー)', color: 0x7f93b0, label: [438.5, 1226.6], corridor: true },
   hilton:      { name: 'ヒルトンプラザ',        color: 0xcbb37a, label: [735.6, 1154.6] },  // シャンパン(EAST/WEST)
   herbis:      { name: 'ハービス',              color: 0xaa4e66, label: [517.7, 1272.9] },  // ワイン(ENT/OSAKA)
   kitte:       { name: 'KITTE大阪',             color: 0x2f8fa3, label: [539.7, 1098.3] },  // ダークターコイズ
@@ -42,7 +43,7 @@ const ZONES = {
   hanshin_dept:{ name: '阪神百貨店',            color: 0x3f5f9e, label: [954.4, 1061.3] },  // 阪神ネイビー(床の重心)
   avanza:      { name: '堂島アバンザ',          color: 0x9a8f52, label: [782.9, 1514.8] },  // オリーブ
   ekimae:      { name: '大阪駅前ビル',          color: 0xdb5a66, label: [904.2, 1221.8] },  // 鮮明な赤(そねちかとの分離)
-  sonechika:   { name: 'そねちか',              color: 0x49b6c4, label: [1023.8, 1319.1] },  // シアン(隣接する駅前ビルの赤と対比)
+  sonechika:   { name: '曽根崎地下歩道(そねちか)', color: 0x7f93b0, label: [1023.8, 1319.1], corridor: true },  // 東梅田改札へ向かうただの通路として扱う
   ema:         { name: 'イーマ',                color: 0x9b59d0, label: [984.4, 1098.6] },  // 紫(隣のディアモールteal・うめちかピンクと対比)
   dotica:      { name: 'ドージマ地下センター',  color: 0x5fae6e, label: [700.4, 1435.7] },
   links:       { name: 'ヨドバシ / リンクス梅田', color: 0xcf6bbf, label: [772.5, 656] },  // ローズ
@@ -1237,7 +1238,7 @@ for (const a of Object.values(SHOP_AREAS)) addZoneFloor(a.zone, a.floor);
 const zoneLabelDivs = {};
 const zoneLabelObjs = []; // {id, lab} 施設名は一律トグルに任せず updateZoneLabels() で可視フロアへ出し分ける
 for (const [id, z] of Object.entries(ZONES)) {
-  if (!z.label) continue;
+  if (!z.label || z.corridor) continue; // 通路扱いのゾーンは地図に名前を出さない
   const [lx, lz] = M2W(z.label);
   const div = document.createElement('div');
   div.className = 'zone-label';
@@ -1996,9 +1997,35 @@ function showRoute(startId, goalId) {
     }
     return best;
   };
-  // i番目のノードでの曲がり方向（±32°未満は直進扱い）
+  // 曲がり判定は「4m以内の横ずれ」を無視した折れ線で行う(OSM由来の微小な分岐ループで
+  // 数m間隔に左→右→右→左と出るのを防ぐ)。同一フロアの連続区間ごとに Douglas-Peucker で頂点を残す
+  const turnKeep = new Set();
+  {
+    const TOL = 2.0; // world unit(=4m)
+    const dp = (lo, hi) => {
+      if (hi - lo < 2) return;
+      const ax = pathNodes[lo].x, az = pathNodes[lo].z, bx = pathNodes[hi].x, bz = pathNodes[hi].z;
+      const L = Math.hypot(bx - ax, bz - az) || 1;
+      let best = -1, bd = 0;
+      for (let k = lo + 1; k < hi; k++) {
+        const d = Math.abs((bx - ax) * (az - pathNodes[k].z) - (ax - pathNodes[k].x) * (bz - az)) / L;
+        if (d > bd) { bd = d; best = k; }
+      }
+      if (best >= 0 && bd > TOL) { turnKeep.add(best); dp(lo, best); dp(best, hi); }
+    };
+    let runStart = 0;
+    for (let i = 1; i <= pathNodes.length; i++) {
+      if (i === pathNodes.length || pathNodes[i].floor !== pathNodes[runStart].floor) {
+        turnKeep.add(runStart); turnKeep.add(i - 1); dp(runStart, i - 1); runStart = i;
+      }
+    }
+  }
+  // i番目のノードでの曲がり方向（±32°未満は直進扱い）。前後は残した頂点同士で見る
   const turnAt = i => {
-    const a = pathNodes[i - 1], b = pathNodes[i], c = pathNodes[i + 1];
+    if (!turnKeep.has(i)) return null;
+    let ia = i - 1; while (ia >= 0 && !turnKeep.has(ia)) ia--;
+    let ic = i + 1; while (ic < pathNodes.length && !turnKeep.has(ic)) ic++;
+    const a = pathNodes[ia], b = pathNodes[i], c = pathNodes[ic];
     if (!a || !c || a.floor !== b.floor || b.floor !== c.floor) return null;
     const v1x = b.x - a.x, v1z = b.z - a.z, v2x = c.x - b.x, v2z = c.z - b.z;
     if (Math.hypot(v1x, v1z) < 1 || Math.hypot(v2x, v2z) < 1) return null;
@@ -2012,6 +2039,7 @@ function showRoute(startId, goalId) {
   const pushStep = (html, node) => { steps.push(html); stepNodes.push(node); };
   const usedShopIds = new Set(); // 一度案内に使った店は再登場させない
   let leg = 0, legSegs = [], curZone = nodeById[startId].zone || null, firstLandmark = null;
+  let walked = 0, lastTurn = null; // 直前の曲がりからの距離が短ければ1行にまとめる(「左、すぐ右」)
   const flushLeg = () => {
     const legEnd = legSegs.length ? legSegs[legSegs.length - 1][1] : null;
     // 12m未満の短い区間は通過店を並べない（館内の格子移動などのノイズ防止）
@@ -2032,14 +2060,15 @@ function showRoute(startId, goalId) {
     const n = pathNodes[i], prevN = pathNodes[i - 1];
     if (prevN.floor === n.floor) {
       // 階の移動区間は歩行距離に含めない（誇張した階差が距離に乗るのを防ぐ）
-      leg += posOf(prevN).distanceTo(posOf(n)) * UNIT_M;
+      const dm = posOf(prevN).distanceTo(posOf(n)) * UNIT_M;
+      leg += dm; walked += dm;
       legSegs.push([prevN, n]);
     }
     if (labelDivs[n.id]) labelDivs[n.id].classList.add('on-route');
 
     // 施設の変わり目 = 「いま自分がどの施設にいるか」を伝える
     const ez = edgeZoneByPair[pairKey(prevN.id, n.id)];
-    if (ez && ez !== curZone) {
+    if (ez && ez !== curZone && !ZONES[ez]?.corridor) { // 通路扱いのゾーンは「ここから」を出さない
       flushLeg();
       pushStep(`<div class="step zone">📍 ここから ${ZONES[ez].name}</div>`, prevN);
       curZone = ez;
@@ -2059,7 +2088,11 @@ function showRoute(startId, goalId) {
     }
 
     const turn = turnAt(i);
-    if (turn) {
+    if (turn && lastTurn && walked - lastTurn.at < 15) {
+      // 15m以内に続く曲がりは直前の行に足す(「左へ曲がる、すぐ右」)。通路の微小な折れで行が増えるのを防ぐ
+      steps[lastTurn.idx] = steps[lastTurn.idx].replace(/<\/div>$/, `、すぐ${turn}</div>`);
+      lastTurn.at = walked;
+    } else if (turn) {
       const shop = nearestShopTo(n.x, n.z, n.floor);
       if (shop) usedShopIds.add(shop.id); // 曲がり角に使った店は通過リストに再登場させない
       if (shop && !firstLandmark && steps.length === 0 && legSegs.length > 0) {
@@ -2069,6 +2102,7 @@ function showRoute(startId, goalId) {
       const anchor = shop ? `「${shortShopName(shop.name)}」の前で` :
         (n.type !== 'junction' ? `${n.name}で` : '突き当たり・分岐を');
       pushStep(`<div class="step turn">↪ ${anchor}${turn}へ曲がる</div>`, n);
+      lastTurn = { idx: steps.length - 1, at: walked };
     } else if (n.type === 'spot' || n.type === 'station') {
       // 曲がらないが、広場や駅など見て分かる目標物は確認情報として出す
       flushLeg();
@@ -2294,6 +2328,7 @@ function applyZoneFilter() {
 const zoneChipsEl = document.getElementById('zone-chips');
 const zoneChipEls = {};
 for (const [id, z] of Object.entries(ZONES)) {
+  if (z.corridor) continue; // 通路扱いのゾーンは施設レイヤーに出さない
   const chip = document.createElement('div');
   chip.className = 'zchip';
   chip.innerHTML = `<span class="dot" style="background:#${z.color.toString(16).padStart(6, '0')}"></span>${z.name}`;

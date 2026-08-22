@@ -33367,7 +33367,8 @@
         lucua: { name: "\u30EB\u30AF\u30A2", color: 6975458, label: [649, 811.9] },
         // インディゴ(ルクア+ルクア1100)
         diamor: { name: "\u30C7\u30A3\u30A2\u30E2\u30FC\u30EB\u5927\u962A", color: 4573352, label: [863.9, 1143] },
-        nishi_umeda: { name: "\u897F\u6885\u7530 / \u30AC\u30FC\u30C7\u30F3\u30A2\u30D9\u30CB\u30E5\u30FC", color: 10518489, label: [438.5, 1226.6] },
+        // corridor: 現地で名前の表示が乏しく施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない(2026-08-23 現地確認)
+        nishi_umeda: { name: "\u897F\u6885\u7530\u5730\u4E0B\u901A\u8DEF(\u30AC\u30FC\u30C7\u30F3\u30A2\u30D9\u30CB\u30E5\u30FC)", color: 8360880, label: [438.5, 1226.6], corridor: true },
         hilton: { name: "\u30D2\u30EB\u30C8\u30F3\u30D7\u30E9\u30B6", color: 13349754, label: [735.6, 1154.6] },
         // シャンパン(EAST/WEST)
         herbis: { name: "\u30CF\u30FC\u30D3\u30B9", color: 11161190, label: [517.7, 1272.9] },
@@ -33385,8 +33386,8 @@
         // オリーブ
         ekimae: { name: "\u5927\u962A\u99C5\u524D\u30D3\u30EB", color: 14375526, label: [904.2, 1221.8] },
         // 鮮明な赤(そねちかとの分離)
-        sonechika: { name: "\u305D\u306D\u3061\u304B", color: 4830916, label: [1023.8, 1319.1] },
-        // シアン(隣接する駅前ビルの赤と対比)
+        sonechika: { name: "\u66FD\u6839\u5D0E\u5730\u4E0B\u6B69\u9053(\u305D\u306D\u3061\u304B)", color: 8360880, label: [1023.8, 1319.1], corridor: true },
+        // 東梅田改札へ向かうただの通路として扱う
         ema: { name: "\u30A4\u30FC\u30DE", color: 10181072, label: [984.4, 1098.6] },
         // 紫(隣のディアモールteal・うめちかピンクと対比)
         dotica: { name: "\u30C9\u30FC\u30B8\u30DE\u5730\u4E0B\u30BB\u30F3\u30BF\u30FC", color: 6270574, label: [700.4, 1435.7] },
@@ -34840,7 +34841,7 @@
       var zoneLabelDivs = {};
       var zoneLabelObjs = [];
       for (const [id, z] of Object.entries(ZONES)) {
-        if (!z.label) continue;
+        if (!z.label || z.corridor) continue;
         const [lx, lz] = M2W(z.label);
         const div = document.createElement("div");
         div.className = "zone-label";
@@ -35525,8 +35526,44 @@
           }
           return best;
         };
+        const turnKeep = /* @__PURE__ */ new Set();
+        {
+          const TOL = 2;
+          const dp = (lo, hi) => {
+            if (hi - lo < 2) return;
+            const ax = pathNodes[lo].x, az = pathNodes[lo].z, bx = pathNodes[hi].x, bz = pathNodes[hi].z;
+            const L = Math.hypot(bx - ax, bz - az) || 1;
+            let best = -1, bd = 0;
+            for (let k = lo + 1; k < hi; k++) {
+              const d = Math.abs((bx - ax) * (az - pathNodes[k].z) - (ax - pathNodes[k].x) * (bz - az)) / L;
+              if (d > bd) {
+                bd = d;
+                best = k;
+              }
+            }
+            if (best >= 0 && bd > TOL) {
+              turnKeep.add(best);
+              dp(lo, best);
+              dp(best, hi);
+            }
+          };
+          let runStart = 0;
+          for (let i = 1; i <= pathNodes.length; i++) {
+            if (i === pathNodes.length || pathNodes[i].floor !== pathNodes[runStart].floor) {
+              turnKeep.add(runStart);
+              turnKeep.add(i - 1);
+              dp(runStart, i - 1);
+              runStart = i;
+            }
+          }
+        }
         const turnAt = (i) => {
-          const a = pathNodes[i - 1], b = pathNodes[i], c = pathNodes[i + 1];
+          if (!turnKeep.has(i)) return null;
+          let ia = i - 1;
+          while (ia >= 0 && !turnKeep.has(ia)) ia--;
+          let ic = i + 1;
+          while (ic < pathNodes.length && !turnKeep.has(ic)) ic++;
+          const a = pathNodes[ia], b = pathNodes[i], c = pathNodes[ic];
           if (!a || !c || a.floor !== b.floor || b.floor !== c.floor) return null;
           const v1x = b.x - a.x, v1z = b.z - a.z, v2x = c.x - b.x, v2z = c.z - b.z;
           if (Math.hypot(v1x, v1z) < 1 || Math.hypot(v2x, v2z) < 1) return null;
@@ -35542,6 +35579,7 @@
         };
         const usedShopIds = /* @__PURE__ */ new Set();
         let leg = 0, legSegs = [], curZone = nodeById[startId].zone || null, firstLandmark = null;
+        let walked = 0, lastTurn = null;
         const flushLeg = () => {
           const legEnd = legSegs.length ? legSegs[legSegs.length - 1][1] : null;
           if (leg >= 12) {
@@ -35559,12 +35597,14 @@
         for (let i = 1; i < path.length; i++) {
           const n = pathNodes[i], prevN = pathNodes[i - 1];
           if (prevN.floor === n.floor) {
-            leg += posOf(prevN).distanceTo(posOf(n)) * UNIT_M;
+            const dm = posOf(prevN).distanceTo(posOf(n)) * UNIT_M;
+            leg += dm;
+            walked += dm;
             legSegs.push([prevN, n]);
           }
           if (labelDivs[n.id]) labelDivs[n.id].classList.add("on-route");
           const ez = edgeZoneByPair[pairKey(prevN.id, n.id)];
-          if (ez && ez !== curZone) {
+          if (ez && ez !== curZone && !ZONES[ez]?.corridor) {
             flushLeg();
             pushStep(`<div class="step zone">\u{1F4CD} \u3053\u3053\u304B\u3089 ${ZONES[ez].name}</div>`, prevN);
             curZone = ez;
@@ -35582,7 +35622,10 @@
             continue;
           }
           const turn = turnAt(i);
-          if (turn) {
+          if (turn && lastTurn && walked - lastTurn.at < 15) {
+            steps[lastTurn.idx] = steps[lastTurn.idx].replace(/<\/div>$/, `\u3001\u3059\u3050${turn}</div>`);
+            lastTurn.at = walked;
+          } else if (turn) {
             const shop = nearestShopTo(n.x, n.z, n.floor);
             if (shop) usedShopIds.add(shop.id);
             if (shop && !firstLandmark && steps.length === 0 && legSegs.length > 0) {
@@ -35591,6 +35634,7 @@
             flushLeg();
             const anchor = shop ? `\u300C${shortShopName(shop.name)}\u300D\u306E\u524D\u3067` : n.type !== "junction" ? `${n.name}\u3067` : "\u7A81\u304D\u5F53\u305F\u308A\u30FB\u5206\u5C90\u3092";
             pushStep(`<div class="step turn">\u21AA ${anchor}${turn}\u3078\u66F2\u304C\u308B</div>`, n);
+            lastTurn = { idx: steps.length - 1, at: walked };
           } else if (n.type === "spot" || n.type === "station") {
             flushLeg();
             pushStep(`<div class="step">\u2192 ${n.name} \u3092\u901A\u904E</div>`, n);
@@ -35785,6 +35829,7 @@
       var zoneChipsEl = document.getElementById("zone-chips");
       var zoneChipEls = {};
       for (const [id, z] of Object.entries(ZONES)) {
+        if (z.corridor) continue;
         const chip = document.createElement("div");
         chip.className = "zchip";
         chip.innerHTML = `<span class="dot" style="background:#${z.color.toString(16).padStart(6, "0")}"></span>${z.name}`;
