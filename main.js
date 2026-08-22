@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { SHOP_AREAS, SHOPS_MANUAL, SHOPS_SCRAPED, ALIASES } from './shops.js';
+import { initSurvey } from './survey.js';
 
 // ---------------------------------------------------------------------------
 // 梅田ダンジョン データ
@@ -537,7 +538,8 @@ labelRenderer.setSize(innerWidth, innerHeight);
 // 画面中央ではなく「シートを除いた地図表示領域の中央」へずらす。シート高は状態で変わるので実測する
 function applyViewOffset() {
   if (innerWidth <= 640) {
-    const panelH = document.getElementById('panel')?.offsetHeight ?? 0;
+    const sheet = document.body.classList.contains('survey') ? 'survey' : 'panel';
+    const panelH = document.getElementById(sheet)?.offsetHeight ?? 0;
     camera.setViewOffset(innerWidth, innerHeight, 0, panelH / 2, innerWidth, innerHeight);
   } else {
     camera.clearViewOffset();
@@ -551,7 +553,7 @@ controls.enableDamping = true;
 controls.zoomSpeed = 3; // ホイールズームの感度
 controls.zoomToCursor = true; // カーソル/ピンチ中心の地点に向かって拡大縮小(固定中心をやめる)
 controls.maxPolarAngle = Math.PI * 0.49;
-window.__dbg = { camera, controls, M2W, FLOOR_Y }; // 開発用: 検証時にカメラ操作・状態確認に使う
+window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.9));
 const dir = new THREE.DirectionalLight(0xffffff, 1.4);
@@ -1023,6 +1025,7 @@ function addCorridor(aId, bId, w, zone) {
   const d = pb.clone().sub(pa).normalize();
   const geo = new THREE.BoxGeometry(len, 3, w);
   const mesh = new THREE.Mesh(geo, zoneMats[zone] || corridorMat);
+  if (zone) mesh.userData.zone = zone; // 調査モードのタップ地点判定用
   // 延長量が左右で違うぶん中心をずらす
   mesh.position.copy(pa).add(pb).multiplyScalar(0.5).add(d.clone().multiplyScalar((extB - extA) / 2));
   mesh.position.y += jitterY();
@@ -1061,6 +1064,7 @@ for (const fp of FLOOR_POLYS) {
   }
   const geo = new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
   const mesh = new THREE.Mesh(geo, zoneMats[fp.zone] || corridorMat);
+  mesh.userData.zone = fp.zone; mesh.userData.floor = fp.floor; // 調査モードのタップ地点判定用
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.y = FLOOR_Y[fp.floor] - 1.5; // ゾーン間の重なりは生成時に除去済み。高さは全面で統一(段差なし)
   floorGroups[fp.floor].add(mesh);
@@ -2105,21 +2109,44 @@ for (const chip of document.querySelectorAll('#floor-toggle .chip')) {
   });
 }
 
+// 現地調査モード(?survey=1): 店舗クリックの代わりに床タップで記録する。UIは survey.js / #survey
+let survey = null;
+if (new URLSearchParams(location.search).get('survey') === '1') {
+  document.body.classList.add('survey');
+  applyViewOffset();
+  survey = initSurvey({
+    camera, floorGroups, FLOOR_Y, ZONES,
+    w2m: ([x, z]) => [x / 0.5 + 800, z / 0.5 + 1100], // M2W の逆
+  });
+}
+
 // クリックで出発地・目的地を選択
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let clickPhase = 0;
 let downAt = null;
+// ピンチ(2本指)の指離しをタップ扱いにしない。pointerIdの集合で管理し、upを取りこぼしても次のdownで上書きされて復帰する
+const activePtrs = new Set();
+let multiTouch = false;
+const releasePtr = e => { activePtrs.delete(e.pointerId); if (activePtrs.size === 0) multiTouch = false; };
 renderer.domElement.addEventListener('pointerdown', e => {
   downAt = [e.clientX, e.clientY];
+  activePtrs.add(e.pointerId);
+  if (activePtrs.size > 1) multiTouch = true;
   camAnim = null; // 手動操作が始まったら自動カメラ移動は中断
   // 地図に触れたら入力モードを終了（キーボードも閉じる）
   if (document.body.classList.contains('picker-editing')) {
     document.activeElement?.blur?.();
   }
 });
+addEventListener('pointerup', releasePtr);
+addEventListener('pointercancel', releasePtr);
 renderer.domElement.addEventListener('pointerup', e => {
+  const wasMulti = multiTouch;
+  releasePtr(e);
+  if (wasMulti || !e.isPrimary) return;
   if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 5) return;
+  if (survey) { survey.onTap(e); return; } // 調査モード: 店舗選択の代わりに記録
   pointer.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   raycaster.setFromCamera(pointer, camera);
   const hit = raycaster.intersectObjects(nodeMeshes.filter(m => m.parent.visible))[0];

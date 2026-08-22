@@ -170,6 +170,45 @@
 
   .btns { display: contents; } /* デスクトップは従来どおり縦積み */
 
+  /* ---- 現地調査モード(?survey=1): 画面下に記録バー。通常UIは隠す ---- */
+  #survey { display: none; }
+  body.survey #panel, body.survey #zone-panel, body.survey #legend, body.survey #hint { display: none; }
+  body.survey #survey {
+    display: flex; flex-direction: column; gap: 6px;
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 12;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(13, 18, 28, 0.92); border-top: 1px solid rgba(120,150,190,0.35);
+    color: #dfe7f1; font-size: 12px; backdrop-filter: blur(6px);
+  }
+  .sv-row { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+  .sv-row .sv-key { color: #8fa3bb; font-size: 11px; min-width: 44px; }
+  .sv-status { justify-content: space-between; }
+  #sv-count { color: #ffd97a; font-weight: bold; }
+  #sv-msg { color: #a9bacf; flex: 1; text-align: right; }
+  .sv-chip {
+    border: 1px solid rgba(120,150,190,0.35); border-radius: 999px; padding: 5px 10px;
+    font-size: 12px; cursor: pointer; user-select: none; white-space: nowrap; color: #c3d0e0;
+  }
+  .sv-chip.on { background: #17293a; border-color: rgba(90, 255, 190, 0.6); color: #7dffce; }
+  #survey button {
+    padding: 7px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;
+    background: #1a2536; color: #dfe7f1; border: 1px solid rgba(120,150,190,0.35);
+  }
+  #survey button.primary { background: linear-gradient(90deg, #3ec39a, #3a7bd5); color: #0a1530; font-weight: bold; border: none; }
+  #survey button.danger { color: #ff8a8a; }
+  #survey input[type=text], #survey textarea {
+    flex: 1; min-width: 120px; padding: 7px 9px; border-radius: 8px; font-size: 13px;
+    background: #141b28; color: #dfe7f1; border: 1px solid rgba(120,150,190,0.35);
+  }
+  #survey textarea { width: 100%; height: 120px; font-family: ui-monospace, monospace; font-size: 10px; }
+  #sv-form, #sv-exportbox { border-top: 1px dashed rgba(120,150,190,0.3); padding-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+  #sv-form[hidden], #sv-exportbox[hidden] { display: none; }
+  #sv-form-title { color: #ffd97a; font-size: 12px; }
+  .sv-label {
+    color: #0a1530; font-size: 10px; font-weight: bold; padding: 1px 6px; border-radius: 8px;
+    background: #ffd97a; white-space: nowrap; border: 1px solid #fff;
+  }
+
   /* ---- スマホ(〜640px): 上半分=地図 / 下半分=ルート入力・案内のボトムシート ---- */
   @media (max-width: 640px) {
     #floor-toggle {
@@ -272,6 +311,33 @@
   </div>
 
   <div id="hint">ドラッグで回転 / ホイールでズーム / スポットをクリックで現在地・目的地を選択</div>
+
+  <!-- 現地調査モード(?survey=1)。中身は survey.js が動かす -->
+  <div id="survey">
+    <div class="sv-row sv-status"><span id="sv-count">0件</span><span id="sv-msg"></span></div>
+    <div class="sv-row"><span class="sv-key">看板の階</span><div class="sv-row" id="sv-floor"></div></div>
+    <div class="sv-row"><span class="sv-key">種別</span><div class="sv-row" id="sv-types"></div></div>
+    <div class="sv-row">
+      <button id="sv-undo">取り消し</button>
+      <button id="sv-export" class="primary">書き出し</button>
+      <button id="sv-clear" class="danger">全消去</button>
+    </div>
+    <div id="sv-form" hidden>
+      <div id="sv-form-title"></div>
+      <div class="sv-row" id="sv-to-row"><span class="sv-key">どこへ</span><div class="sv-row" id="sv-to"></div></div>
+      <div class="sv-row" id="sv-exit-row"><span class="sv-key">出口番号</span><input type="text" id="sv-exit" placeholder="例: H-25 / 東梅田7" /></div>
+      <div class="sv-row"><span class="sv-key">メモ</span><input type="text" id="sv-note" placeholder="任意" /></div>
+      <div class="sv-row">
+        <button id="sv-gps">GPSを付ける</button>
+        <button id="sv-save" class="primary">保存</button>
+        <button id="sv-cancel">キャンセル</button>
+      </div>
+    </div>
+    <div id="sv-exportbox" hidden>
+      <textarea id="sv-textarea" readonly></textarea>
+      <div class="sv-row"><button id="sv-copy" class="primary">コピー</button><button id="sv-close">閉じる</button></div>
+    </div>
+  </div>
 </div>
 
 <script defer src="./app.js?v=2"></script>

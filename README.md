@@ -21,6 +21,12 @@ npx -y http-server . -p 8931 -c-1
 - `index.html` — UIとスタイル(スマホは640px以下でボトムシート表示)
 - `app.js` — ビルド成果物(直接編集しない)
 
+## 現地調査モード
+
+`https://teacoffewater.github.io/umeda-dungeon/?survey=1` をスマホで開く(地上かホテルで一度開いてから地下へ)。
+種別(階段 / EV / ESC / 壁・行き止まり / 通路あり / 出口番号 / 店 / メモ)を選んで床をタップ → 保存。
+記録はスマホ内(localStorage)に残り、「書き出し」でJSONを共有/コピーできる。座標は現行の地図座標(`frame: legacy-px-v1`)。
+
 ## データの出典
 
 - 通路網の概略座標: 梅田地下街案内図のトレース
