@@ -8,15 +8,10 @@
 import sys, os, math, time, json, urllib.request
 from PIL import Image
 
-MX = [0.9016776456322585, 0.029513667767732826, 843.3902886095399]
-MY = [0.03970669489516974, -1.1219829189908253, 944.3469058365063]
-DET = MX[0]*MY[1] - MX[1]*MY[0]
-COS0 = math.cos(math.radians(34.702))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from geo import m2ll  # noqa: E402
 def mappx_to_latlon(px, py):
-    ux, uy = px - MX[2], py - MY[2]
-    xm = (ux*MY[1] - MX[1]*uy)/DET
-    ym = (MX[0]*uy - ux*MY[0])/DET
-    return 34.702 + ym/110950, 135.497 + xm/(111320*COS0)
+    return m2ll(px, py)
 def merc(lat, lon, Z):
     N = 2**Z * 256
     return ((lon+180)/360*N,

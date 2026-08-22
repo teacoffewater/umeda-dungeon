@@ -18,11 +18,11 @@ from collections import defaultdict, deque
 src = open('main.js').read()
 
 nodes = {}
-for m in re.finditer(r"S\('(\w+)',\s*'[^']*',\s*'(B1|B2)',", src):
+for m in re.finditer(r"S\('(\w+)',\s*'[^']*',\s*'(S1|B1|B2)',", src):
     nodes[m.group(1)] = {'floor': m.group(2), 'zone': None, 'type': 'station'}
-for m in re.finditer(r"P\('(\w+)',\s*'[^']*',\s*'(B1|B2)',\s*[\d.]+,\s*[\d.]+,\s*'(\w+)'\)", src):
+for m in re.finditer(r"P\('(\w+)',\s*'[^']*',\s*'(S1|B1|B2)',\s*[\d.]+,\s*[\d.]+,\s*'(\w+)'\)", src):
     nodes[m.group(1)] = {'floor': m.group(2), 'zone': m.group(3), 'type': 'poi'}
-for m in re.finditer(r"J\('(\w+)',\s*[\d.]+,\s*[\d.]+(?:,\s*'(B1|B2)')?\)", src):
+for m in re.finditer(r"J\('(\w+)',\s*[\d.]+,\s*[\d.]+(?:,\s*'(S1|B1|B2)')?\)", src):
     nodes[m.group(1)] = {'floor': m.group(2) or 'B1', 'zone': None, 'type': 'junction'}
 
 em = re.search(r"const EDGES = \[(.*?)\n\];", src, re.S)

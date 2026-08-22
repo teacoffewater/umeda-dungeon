@@ -13,13 +13,9 @@ from shapely.geometry import Polygon, Point
 from shapely.ops import unary_union
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LAT0 = 34.702
-MX = [0.9016776456322585, 0.029513667767732826, 843.3902886095399]
-MY = [0.03970669489516974, -1.1219829189908253, 944.3469058365063]
-def to_px(lat, lon):
-    x = (lon - 135.497) * 111320 * math.cos(math.radians(LAT0))
-    y = (lat - LAT0) * 110950
-    return (MX[0]*x + MX[1]*y + MX[2], MY[0]*x + MY[1]*y + MY[2])
+# --- 実座標 → マップ座標(メートル, metric-v1)。変換は tools/geo.py に一本化 ---
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from geo import ll2m as to_px  # noqa: E402
 
 # 既知の許容(理由付き)
 KNOWN_SHOP_OK = {"麺's room 神虎"}   # 第4ビル北縁×バラエティ帯の境界密着(2.4px)
@@ -145,7 +141,7 @@ for fl, zone, poly in finals:
 # 満たさない島は理由と根拠を明記して登録する
 ISLAND_REGISTRY = {
     'S1': [
-        (573, 985, 'JR大阪駅 西側コンコース(西口・桜橋口側)',
+        (545, 991.1, 'JR大阪駅 西側コンコース(西口・桜橋口側)',
          '駅構内の実在部分(浅層)。ルクアビルのマスクで東側コンコースと分割される。'
          'ノード未整備のため昇降設備アイコンなし。うめきた地下口↔西口の通り抜けルートを'
          '実装する際にノード・接続を張る予定(ロードマップ)'),
@@ -153,11 +149,11 @@ ISLAND_REGISTRY = {
     'B1': [],
     'B2': [
         # (x, y, 名称, 理由と根拠)
-        (946, 1072, '阪神百貨店B2(阪神バル横丁)',
+        (960.8, 1054, '阪神百貨店B2(阪神バル横丁)',
          '公式フロアガイドにB2バル横丁実在。昇降は阪神大阪梅田駅のEV/ESC'
          '(hanshin⇔hanshin_home)経由で接続済みだが、ホーム側B2ノードが島の西縁の外'
          '(駅ホーム上)にあるため島内に設備アイコンが載らない'),
-        (478, 1368, 'ハービスOSAKA B2',
+        (451, 1335.8, 'ハービスOSAKA B2',
          '公式フロアガイドに売場あり(実在)。昇降はENT側の館内ESCノードに集約しているため'
          '島内に設備アイコンがないが、館内でENT B2と接続している'),
     ],

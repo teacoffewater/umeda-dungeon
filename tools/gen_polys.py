@@ -23,14 +23,9 @@ MAIN = os.path.join(ROOT, 'main.js')
 DATA = os.path.join(ROOT, 'tools', 'data')
 src = open(MAIN).read()
 
-# --- 実座標 → マップpx 投影 ---
-LAT0 = 34.702
-MX = [0.9016776456322585, 0.029513667767732826, 843.3902886095399]
-MY = [0.03970669489516974, -1.1219829189908253, 944.3469058365063]
-def to_px(lat, lon):
-    x = (lon - 135.497) * 111320 * math.cos(math.radians(LAT0))
-    y = (lat - LAT0) * 110950
-    return (MX[0]*x + MX[1]*y + MX[2], MY[0]*x + MY[1]*y + MY[2])
+# --- 実座標 → マップ座標(メートル, metric-v1)。変換は tools/geo.py に一本化 ---
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from geo import ll2m as to_px  # noqa: E402
 
 # --- NODES / EDGES (main.jsから) ---
 nodes = {}
@@ -258,18 +253,18 @@ BUILDING_PLATES = [
 HAND_PLATES = [
     # (floor, zone, [[x,y],...])  ※検証しながら追加・調整する
     # 阪急百貨店前コンコース(公共歩行空間。ホワイティではなく梅田地下道系)
-    ('B1', 'umechika', [[906, 702], [1002, 702], [1034, 746], [1034, 792], [954, 800], [906, 788]]),
+    ('B1', 'umechika', [[905.7, 726.1], [1012, 722.4], [1048.8, 760.3], [1050.1, 801.3], [961.7, 811.5], [908.2, 802.7]]),
     # うめきた広場(OSM way 549066320のサンクン広場。駅クラスタ=浅層でセラー・グランフロントと接続)
-    ('S1', 'umekita', [[658, 723], [652, 721], [639, 725], [626, 743], [623, 784], [628, 788], [636, 789], [643, 784], [654, 768], [661, 747], [662, 737]]),
+    ('S1', 'umekita', [[631.6, 754.6], [624.9, 753], [610.6, 757.1], [596.7, 773.6], [594.6, 810.2], [600.2, 813.6], [609.1, 814.2], [616.7, 809.5], [628.5, 794.8], [635.6, 775.8], [636.4, 766.9]]),
     # ディアモール マーケットストリート(阪神ビル外形の凹み部を通る。店3軒が実在)
-    ('B1', 'diamor', [[926, 1062], [965, 1062], [965, 1094], [926, 1094]]),
+    ('B1', 'diamor', [[938.3, 1045.9], [981.5, 1044.3], [982.5, 1072.8], [939.3, 1074.3]]),
     # 阪神前広場〜うめちか本体(阪急百と阪神百の間、御堂筋直下の面)
     # 百貨店ビル内部はビルマスクが自動で除くため外形は広めに定義
-    ('B1', 'umechika', [[840, 920], [1028, 920], [1028, 1010], [850, 1012]]),
+    ('B1', 'umechika', [[838.9, 922.8], [1047.2, 915.4], [1049.8, 995.6], [852.7, 1004.3]]),
 ]
 
 # --- 円形の広場(円は使用OK) ---
-DISCS = [('B1', 'diamor', 863, 1134, 16), ('B1', 'whity', 1249, 953, 15)]
+DISCS = [('B1', 'diamor', 870.6, 1112.4, 16), ('B1', 'whity', 1293, 936.2, 15)]
 
 # --- ゾーンごとに結合 ---
 groups = {}
@@ -339,6 +334,13 @@ for floor in ('S1', 'B1', 'B2'):
                 others = [q for q in polys if q is not p]
                 if not others or min(p.distance(q) for q in others) > 15:
                     continue  # 施設に挟まれて残った微小な切れ端は捨てる
+            if p.area < 400:
+                # 孤立した小片(同ゾーンの他の面から15m超離れ、ノードも載っていない)はマスクの残骸なので捨てる
+                others = [q for q in polys if q is not p]
+                isolated = not others or min(p.distance(q) for q in others) > 15
+                has_node = any(fl == floor and p.contains(Point(x, y)) for x, y, fl in nodes.values())
+                if isolated and not has_node:
+                    continue
             ext = [[round(x, 1), round(y, 1)] for x, y in p.exterior.coords[:-1]]
             holes = [[[round(x, 1), round(y, 1)] for x, y in r.coords[:-1]] for r in p.interiors]
             e = {'floor': floor, 'zone': zone, 'pts': ext}

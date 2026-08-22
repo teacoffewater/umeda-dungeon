@@ -41,8 +41,10 @@ for (const [areaId, shops] of Object.entries(byArea)) {
       const bx = cx + c[0] * rw / 3, by = cy + c[1] * rd / 3;
       const rows = Math.ceil(cellShops.length / 3);
       cellShops.forEach((sh, k) => {
+        // main.js placeShops と同じ: merged はセル中心の1点に集約
         NODES.push({ id: `shop_${areaId}_${seq2++}`, name: sh.name, floor: a.floor,
-          mx: bx + (k % 3 - 1) * 6.5, my: by + (Math.floor(k / 3) - (rows - 1) / 2) * 6.5,
+          mx: a.merged ? bx : bx + (k % 3 - 1) * 6.5,
+          my: a.merged ? by : by + (Math.floor(k / 3) - (rows - 1) / 2) * 6.5,
           zone: a.zone, area: areaId, type: 'shop' });
       });
     }

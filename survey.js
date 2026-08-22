@@ -1,11 +1,11 @@
 // 現地調査モード(最小版)
 // ?survey=1 で有効。床をタップ → 種別を選んで保存 → localStorage に蓄積 → JSONで書き出す。
-// 座標は現行の地図座標(mx,my = 旧案内図px。frame: legacy-px-v1)。土台切替後に変換する。
+// 座標は mx,my(メートル, metric-v1)。M2W の逆変換で world → mx,my に戻す。
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
 const STORAGE_KEY = 'survey_v1';
-const FRAME = 'legacy-px-v1';
+const FRAME = 'metric-v1';
 
 // 種別: 2点ものは two=true。to=true は「どこへ」を聞く
 export const TYPES = {

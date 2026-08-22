@@ -1,0 +1,8 @@
+{
+  "name": "metric-v1",
+  "description": "mx,my = 原点からの東向き・南向きのメートル(北が上)。mx = (lon-lon0)*111320*cos(lat0) + ox, my = -(lat-lat0)*110950 + oy",
+  "lat0": 34.702,
+  "lon0": 135.497,
+  "ox": 843.39,
+  "oy": 944.35
+}
