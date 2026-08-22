@@ -33,7 +33,7 @@ export const SHOP_AREAS = {
   diamor_variety: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'diamor_04'], ['diamor_04', 'j_variety'], ['j_variety', 'j_diamor_e']] },  // バラエティST本通り(OSMカーブ追従)。第4ビルへの枝には店を置かない
 
   // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
-  dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'avanza']] },
+  dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'dotica_01'], ['dotica_01', 'avanza']] },
   // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
   ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], offset: 6, path: [[889.8, 919.2], [891.8, 979.8]] },
   // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）

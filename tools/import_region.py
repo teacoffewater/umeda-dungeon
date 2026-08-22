@@ -260,13 +260,35 @@ node_out.append(f'  // @region {zone} end')
 edge_out = [f'  // @region {zone} begin  (OSM way id をコメントに保持)']
 for i, j, w, wid in sorted(new_edges, key=lambda e: (ids[e[0]], ids[e[1]])):
     edge_out.append(f"  ['{ids[i]}', '{ids[j]}', {w:g}, '{zone}'], // osm {wid}")
-# 残した旧ノードの接続
-adj_new = {}
-for i, j, w, wid in new_edges:
-    adj_new.setdefault(i, set()).add(j); adj_new.setdefault(j, set()).add(i)
+# 残した旧ノード(スポット/駅)の接続: 最寄りの新エッジへ投影し、線上(12m以内)ならそのエッジに割り込ませる。
+# 離れていれば投影点に新ノードを作って接続エッジを張る
+SPLICE = 12.0
 for oid, (i, d) in keep_old.items():
-    if d <= CONNECT_MAX:
-        edge_out.append(f"  ['{oid}', '{ids[i]}', {min(WIDTH, 10):g}, '{zone}'], // 旧ノード接続 {d:.0f}m")
+    ox, oy = inside[oid]['x'], inside[oid]['y']
+    pt = Point(ox, oy)
+    best = min(range(len(new_edges)), key=lambda k: LineString([nodes_xy[new_edges[k][0]], nodes_xy[new_edges[k][1]]]).distance(pt))
+    ei, ej, ew, ewid = new_edges[best]
+    seg = LineString([nodes_xy[ei], nodes_xy[ej]])
+    dl = seg.distance(pt)
+    t = seg.project(pt, normalized=True)
+    a_id, b_id = ids[ei], ids[ej]
+    if dl <= SPLICE and 0.02 < t < 0.98:
+        # エッジを割って旧ノードを挟む
+        edge_out = [ln for ln in edge_out if not re.search(rf"\['{a_id}', '{b_id}'|\['{b_id}', '{a_id}'", ln)]
+        edge_out.append(f"  ['{a_id}', '{oid}', {ew:g}, '{zone}'], // osm {ewid} (旧ノード {oid} を挟む)")
+        edge_out.append(f"  ['{oid}', '{b_id}', {ew:g}, '{zone}'], // osm {ewid}")
+        log(f'[{zone}] {oid} をエッジ {a_id}-{b_id} に割り込ませる(線から {dl:.1f} m)')
+    elif dl <= CONNECT_MAX:
+        q = seg.interpolate(t, normalized=True)
+        nid = f'{zone}_p{len(keep_old)}_{oid}'
+        node_out.insert(-1, f"  J('{nid}', {q.x:.1f}, {q.y:.1f}{', ' + chr(39) + FLOOR + chr(39) if FLOOR != 'B1' else ''}),")
+        edge_out = [ln for ln in edge_out if not re.search(rf"\['{a_id}', '{b_id}'|\['{b_id}', '{a_id}'", ln)]
+        edge_out.append(f"  ['{a_id}', '{nid}', {ew:g}, '{zone}'], // osm {ewid}")
+        edge_out.append(f"  ['{nid}', '{b_id}', {ew:g}, '{zone}'], // osm {ewid}")
+        edge_out.append(f"  ['{oid}', '{nid}', {min(WIDTH, 10):g}, '{zone}'], // 旧ノード接続 {dl:.0f}m")
+        log(f'[{zone}] {oid} → 投影点 {nid} へ接続({dl:.1f} m)')
+    else:
+        log(f'[{zone}] !! {oid} は新通路から {dl:.0f} m 離れている(未接続。手で直す)')
 edge_out.append(f'  // @region {zone} end')
 
 # 旧エッジの整理: 両端が区域内(削除J or 残した旧ノード) → 削除。既存の @region ブロックも除去
