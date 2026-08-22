@@ -65,6 +65,17 @@ def region_polygon():
         e = els.get(wid) or next((x for x in osm_all if x['id'] == wid), None)
         assert e, f'way {wid} が見つからない'
         parts.append(LineString([ll2m(p['lat'], p['lon']) for p in e['geometry']]).buffer(0.1))
+    if REG.get('from_edges'):
+        src0 = open(MAIN).read()
+        nd = {}
+        for m in re.finditer(rf"\b(?:S|P)\('(\w+)',\s*'[^']*',\s*'(?:S1|B1|B2)',\s*({NUM}),\s*({NUM})", src0):
+            nd[m.group(1)] = (float(m.group(2)), float(m.group(3)))
+        for m in re.finditer(rf"\bJ\('(\w+)',\s*({NUM}),\s*({NUM})", src0):
+            nd[m.group(1)] = (float(m.group(2)), float(m.group(3)))
+        em0 = re.search(r"const EDGES = \[\n(.*?)\n\];", src0, re.S)
+        for m in re.finditer(rf"\['(\w+)',\s*'(\w+)',\s*{NUM},\s*'{zone}'\]", em0.group(1)):
+            if m.group(1) in nd and m.group(2) in nd:
+                parts.append(LineString([nd[m.group(1)], nd[m.group(2)]]).buffer(0.1))
     assert parts, '区域の形が定義されていない'
     return unary_union(parts).buffer(REG.get('buffer', 3), join_style=2)
 

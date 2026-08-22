@@ -1,8 +1,54 @@
 {
   "_doc": "区域ごとのOSM取り込み設定。polygon は osm_regions.json の way/relation id(複数なら結合)。floor は内部フロア、width は幅の既定(m)。name_hint は OSM の name で区域に含める通路",
-  "whity":       { "polygon": [1304559276], "floor": "B1", "width": 14, "buffer": 3 },
-  "diamor":      { "polygon": [1304559275], "floor": "B1", "width": 14, "buffer": 3 },
-  "dotica":      { "polygon": [1304559274], "floor": "B1", "width": 12, "buffer": 3 },
-  "nishi_umeda": { "polygon": [], "ways": [1318982038, 1323837456], "floor": "B1", "width": 13, "buffer": 12 },
-  "sonechika":   { "polygon": [], "ways": [1010195557], "floor": "B1", "width": 9, "buffer": 12 }
+  "whity": {
+    "polygon": [
+      1304559276
+    ],
+    "floor": "B1",
+    "width": 14,
+    "buffer": 3
+  },
+  "diamor": {
+    "polygon": [
+      1304559275
+    ],
+    "floor": "B1",
+    "width": 14,
+    "buffer": 3
+  },
+  "dotica": {
+    "polygon": [
+      1304559274
+    ],
+    "floor": "B1",
+    "width": 12,
+    "buffer": 3
+  },
+  "nishi_umeda": {
+    "polygon": [],
+    "ways": [
+      1318982038,
+      1323837456
+    ],
+    "floor": "B1",
+    "width": 13,
+    "buffer": 25
+  },
+  "sonechika": {
+    "polygon": [],
+    "ways": [
+      1010195557
+    ],
+    "floor": "B1",
+    "width": 9,
+    "buffer": 25
+  },
+  "umechika": {
+    "polygon": [],
+    "from_edges": true,
+    "floor": "B1",
+    "width": 12,
+    "buffer": 20,
+    "_note": "梅田地下道はOSMにモール区画が無いので、旧グラフの同ゾーンのエッジ±20mを区域にする"
+  }
 }
