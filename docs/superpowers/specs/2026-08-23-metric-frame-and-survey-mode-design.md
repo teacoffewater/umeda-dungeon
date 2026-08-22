@@ -21,7 +21,7 @@ OSMカバレッジ(2026-08-22 Overpass): B1通路 7.3km、地下店舗 249件、
 ## 2. ゴール / 非ゴール
 
 ゴール
-1. `mx,my` が「北が上・1px=1m」の実寸格子になり、緯度経度との相互変換が1本の関数で `main.js` と `tools/` の両方から使える。
+1. `mx,my` が「原点からの東向き・南向きのメートル(北が上)」になる。旧データ由来の「px」という呼び方は仕様・コメントから廃止し、座標は小数のメートル値として扱う。緯度経度との相互変換は1本の関数で `main.js` と `tools/` の両方から使える。
 2. 既存データ(ノード・上下接続・ラベル・店舗エリア・地上ビル等)が新格子へ一括移行され、見た目・経路・検査ツールが移行前と同等に動く。
 3. Whity が OSM の通路中心線で置き換わり、`validate_map.py` が通り、店舗の並び順・上下接続・隣接区域との接続が保たれる。同じ手順がディアモール・ドーチカに適用できる。
 4. スマホの3Dマップ上でタップして「階段/EV/ESC/壁・行き止まり/通路あり/出口番号/店/メモ」を記録し、JSONで書き出せる調査モード。
@@ -38,10 +38,10 @@ OSMカバレッジ(2026-08-22 Overpass): B1通路 7.3km、地下店舗 249件、
 
 ```
 LAT0 = 34.702, LON0 = 135.497, OX = 843.39, OY = 944.35   # 原点は旧アフィンの平行移動項を踏襲し数値域を維持
-px = (lon - LON0) * 111320 * cos(LAT0) + OX
-py = -(lat - LAT0) * 110950 + OY                          # y は南+
+mx = (lon - LON0) * 111320 * cos(LAT0) + OX               # 東向きメートル
+my = -(lat - LAT0) * 110950 + OY                          # 南向きメートル(y は南+)
 ```
-- 回転なし・等方・1px=1m。逆変換 `px2ll` も同じファイルに置く。
+- 回転なし・等方・数値1 = 1m(小数可)。関数名は `ll2m`(緯度経度→メートル)と `m2ll`(逆変換)。
 - `geo.js`(ESM、`main.js` と将来の調査モードが import)と `tools/geo.py`(`gen_polys.py`/`validate_map.py`/`make_edit_layers.py`/`fetch_district_mosaic.py` が import)に同じ定数を持つ。定数は `tools/data/frame.json` を正とし、JS側は esbuild でバンドルされるので `geo.js` に同値を書き、`tools/geo.py` 起動時に `frame.json` との一致を検査して食い違えば落とす。
 - 4ファイルにコピーされた旧アフィン(`MX`/`MY`/`LAT0`)は削除し、旧→緯度経度の逆変換は移行スクリプト内だけに残す。
 
@@ -52,7 +52,7 @@ py = -(lat - LAT0) * 110950 + OY                          # y は南+
 - ファイル先頭コメント(案内図トレースの記述)と README の出典・座標系の記述を更新する。
 
 ### 3.3 既存データの一括移行 — `tools/migrate_frame.py`(1回きり・実行後は削除してよい)
-旧px → 旧アフィン逆変換 → 緯度経度 → 新px を、**ソース内の数値リテラルを書き換える** 形で行う。対象ブロックを列挙し、スクリプトは各ブロックの置換件数を表示、想定外のリテラル形式があれば失敗させる。
+旧ピクセル座標 → 旧アフィン逆変換 → 緯度経度 → 新メートル座標 を、**ソース内の数値リテラルを書き換える** 形で行う。対象ブロックを列挙し、スクリプトは各ブロックの置換件数を表示、想定外のリテラル形式があれば失敗させる。
 
 | ファイル | ブロック | 形式 |
 |---|---|---|
@@ -66,10 +66,10 @@ py = -(lat - LAT0) * 110950 + OY                          # y は南+
 | `shops.js` | `SHOP_AREAS[*].rect` (27件) | `[cx, cy, w, d]`: 中心は変換、幅 w(東西)は ×1.108、奥行 d(南北)は ×0.891(旧pxの実距離に合わせる) |
 | `shops.js` | `SHOP_AREAS[*].path` (4件) | 点列 |
 | `tools/gen_polys.py` | `HAND_PLATES`, `DISCS`, `CARVE`/`MASK_HOLES` 内の数値 | 点列 / 円(中心変換、半径は平均スケール) |
-| `tools/validate_map.py`, `tools/gen_edit_svg.py`, `tools/make_edit_layers.py` | bbox・しきい値のpx定数 | 個別に確認して変換 |
+| `tools/validate_map.py`, `tools/gen_edit_svg.py`, `tools/make_edit_layers.py` | bbox・しきい値の座標定数 | 個別に確認して変換 |
 
 - 角度の扱い: 旧アフィンは約+2.5°回転を含むため、`dir` のような方向ベクトルは2×2部分で回転のみ適用。
-- 移行後に `gen_polys.py` を新 `to_px` で実行して `FLOOR_POLYS` を再生成し、`dump_nodes.mjs` → `validate_map.py` を通す。
+- 移行後に `gen_polys.py` を新 `ll2m` で実行して `FLOOR_POLYS` を再生成し、`dump_nodes.mjs` → `validate_map.py` を通す。
 
 ### 3.4 検証(フェーズ1完了条件)
 - `validate_map.py` 5項目が通る(ホワイトリストの見直しが必要なら理由をコメントで残す)。
@@ -121,23 +121,23 @@ py = -(lat - LAT0) * 110950 + OY                          # y は南+
 - 書き出し: `navigator.share` があれば共有シート、無ければ JSON をテキストエリアに表示してコピー(ダウンロードはHTTPでは不安定なので使わない)。
 
 ### 5.4 GPS(補助)
-- **主役は出口番号**。OSMの出口ノード(`tools/data/osm_exits_whity.json` 111点、他駅は Overpass で追加)を `px` で持ち、出口番号を記録したら出口位置を記録に自動付与する。
-- GPSボタンは `window.isSecureContext && navigator.geolocation` のときだけ表示。取れたら `lat,lon,accuracy` と `geo.js` で換算した `px` を記録に付ける。`http://<MacのIP>` では出ない旨をバーに表示。HTTPS化は別件。
+- **主役は出口番号**。OSMの出口ノード(`tools/data/osm_exits_whity.json` 111点、他駅は Overpass で追加)をメートル座標で持ち、出口番号を記録したら出口位置を記録に自動付与する。
+- GPSボタンは `window.isSecureContext && navigator.geolocation` のときだけ表示。取れたら `lat,lon,accuracy` と `geo.js` の `ll2m` で換算したメートル座標を記録に付ける。`http://<MacのIP>` では出ない旨をバーに表示。HTTPS化は別件。
 
 ### 5.5 記録フォーマット
 ```json
 { "version": 1, "exported": "2026-08-30T10:12:00+09:00", "frame": "metric-v1",
   "records": [
     { "id": "r1", "ts": "...", "type": "stairs", "zone": "whity", "floorSign": "B1F", "floor": "B1",
-      "px": [1187.2, 948.6], "to": "B2F", "note": "幅広い、上り下り両方" },
+      "m": [1187.2, 948.6], "to": "B2F", "note": "幅広い、上り下り両方" },
     { "id": "r2", "ts": "...", "type": "wall", "zone": "whity", "floorSign": "B1F", "floor": "B1",
-      "px": [1180.0, 960.0], "px2": [1180.0, 990.0], "note": "" },
+      "m": [1180.0, 960.0], "m2": [1180.0, 990.0], "note": "" },
     { "id": "r3", "ts": "...", "type": "exit", "zone": "whity", "floorSign": "B1F", "floor": "B1",
-      "px": [1201.3, 930.1], "exit": "H-25", "exitPx": [1203.0, 928.4],
+      "m": [1201.3, 930.1], "exit": "H-25", "exitM": [1203.0, 928.4],
       "gps": { "lat": 34.70212, "lon": 135.50090, "acc": 18 } }
   ] }
 ```
-`type`: `stairs | ev | esc | wall | corridor | exit | shop | memo`。
+`type`: `stairs | ev | esc | wall | corridor | exit | shop | memo`。`m`/`m2`/`exitM` は `[mx, my]` のメートル座標。
 
 ### 5.6 反映
 JSONをClaudeに渡す → 記録ごとにマップ修正(ノード移動・エッジ追加/削除・上下接続追加・店舗並び修正)を行い、`validate_map.py` を通してコミット。自動反映ツールは記録が溜まってから検討。
