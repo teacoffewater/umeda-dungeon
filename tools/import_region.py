@@ -50,7 +50,10 @@ def log(*a):
 
 
 # ---------------------------------------------------------------- 区域ポリゴン
-def region_polygon():
+ALL_REG = json.load(open(os.path.join(DATA, 'regions.json')))
+
+
+def region_polygon(zone=zone, REG=REG):
     els = {e['id']: e for e in json.load(open(os.path.join(DATA, 'osm_regions.json')))['elements']}
     parts = []
     for pid in REG.get('polygon', []):
@@ -82,6 +85,14 @@ def region_polygon():
 
 osm_all = [e for e in json.load(open(os.path.join(DATA, 'osm_underground_2026-08.json')))['elements']]
 POLY = region_polygon()
+# 取り込み済みの他区域(main.js に @region ブロックがある)は差し引く。境界の端点は adopt で相手側ノードにつなぐ
+_main0 = open(MAIN).read()
+for z, cfg in ALL_REG.items():
+    if z == zone or z.startswith('_') or f'// @region {z} begin' not in _main0:
+        continue
+    POLY = POLY.difference(region_polygon(z, cfg))
+if POLY.geom_type == 'MultiPolygon':
+    POLY = max(POLY.geoms, key=lambda g: g.area)
 log(f'[{zone}] 区域ポリゴン 面積 {POLY.area:.0f} m², bounds {[round(v) for v in POLY.bounds]}')
 
 # ---------------------------------------------------------------- OSM通路の切り出し
@@ -189,8 +200,20 @@ for li, ln in enumerate(edge_lines):
 
 # 前回の取り込みで生成したノード(<zone>_NN)は対象外(ブロックごと作り直す)。旧IDを継承したノードは再び改名対象になる
 GEN = re.compile(rf'^{zone}_\d+$')
+# 他区域の @region ブロックに属するノードは触らない(境界で重なれば adopt で流用する)
+foreign = set()
+_cur = None
+for ln in node_lines:
+    mb = re.search(r'// @region (\w+) (begin|end)', ln)
+    if mb:
+        _cur = mb.group(1) if mb.group(2) == 'begin' and mb.group(1) != zone else None
+        continue
+    if _cur:
+        mm = re.search(r"\b(?:S|P|J)\('(\w+)'", ln)
+        if mm:
+            foreign.add(mm.group(1))
 inside = {nid: n for nid, n in old_nodes.items()
-          if n['floor'] == FLOOR and POLY.contains(Point(n['x'], n['y'])) and not GEN.match(nid)}
+          if n['floor'] == FLOOR and POLY.contains(Point(n['x'], n['y'])) and not GEN.match(nid) and nid not in foreign}
 log(f'[{zone}] 区域内の旧ノード {len(inside)}: ' + ', '.join(f"{k}({v['kind']})" for k, v in inside.items()))
 
 # 旧ノード → 新ノード改名 / 残す
@@ -244,12 +267,27 @@ if dropped:
 new_edges = [e for e in new_edges if comp_of[e[0]] in good]
 used = {i for e in new_edges for i in e[:2]}
 log(f'[{zone}] 刈り込み後: ノード {len(used)}、エッジ {len(new_edges)}')
+# adopt: 区域外の既存ノード(隣接区域の境界端点など)に 2.5m 以内で重なる新ノードは既存IDを使う(ノード行は出さない)
+adopted = {}
+for i in used:
+    if i in renamed:
+        continue
+    x, y = nodes_xy[i]
+    for oid, n in old_nodes.items():
+        if oid in inside or n['floor'] != FLOOR:
+            continue
+        if math.hypot(n['x'] - x, n['y'] - y) <= 2.5 and oid not in adopted.values():
+            adopted[i] = oid; break
+if adopted:
+    log(f'[{zone}] 隣接ノードを流用 {len(adopted)}: ' + ', '.join(adopted.values()))
 # 新ノードID(使われているノードだけ)
 ids = {}
 seq = 1
 for i in sorted(used, key=lambda k: (round(nodes_xy[k][0]), round(nodes_xy[k][1]))):
     if i in renamed:
         ids[i] = renamed[i]
+    elif i in adopted:
+        ids[i] = adopted[i]
     else:
         ids[i] = f'{zone}_{seq:02d}'
         seq += 1
@@ -264,6 +302,8 @@ for oid, (i, d) in keep_old.items():
 removed_J = {oid for oid in inside if oid not in keep_old}
 node_out = [f'  // @region {zone} begin  (tools/import_region.py が生成。OSM通路の交点・屈曲点)']
 for i in sorted(ids, key=lambda k: ids[k]):
+    if i in adopted:
+        continue  # 既存ノードをそのまま使う
     x, y = nodes_xy[i]
     tag = "'" + FLOOR + "'" if FLOOR != 'B1' else ''
     node_out.append(f"  J('{ids[i]}', {x:.1f}, {y:.1f}{', ' + tag if tag else ''}),")
@@ -370,6 +410,37 @@ def shortest(a, b):
 
 def nearest_node(x, y):
     return min(all_nodes, key=lambda k: math.dist(all_nodes[k], (x, y)))
+
+
+# 連結性の保証: 削除した旧エッジの両端が新グラフで分断されていたら、その旧エッジを残す(OSMの欠落を補う)
+def _connected(a, b):
+    seen, stack = {a}, [a]
+    while stack:
+        u = stack.pop()
+        if u == b:
+            return True
+        for v, w in graph.get(u, []):
+            if v not in seen:
+                seen.add(v); stack.append(v)
+    return False
+
+
+restored = []
+for a, b, w, z, li in old_edges:
+    if li not in drop_edge_li or a not in all_nodes or b not in all_nodes:
+        continue
+    if not _connected(a, b):
+        ln = edge_lines[li].rstrip()
+        restored.append(ln + f'  // OSMに無い区間のため旧エッジを維持(import_region {zone})')
+        d = math.dist(all_nodes[a], all_nodes[b])
+        graph.setdefault(a, []).append((b, d)); graph.setdefault(b, []).append((a, d))
+        log(f'[{zone}] 旧エッジを維持: {a}-{b}(新グラフで分断されるため)')
+if restored:
+    idx = len(new_edge_lines) - 1  # '// @region end' の前に入れる
+    new_edge_lines[idx:idx] = restored
+    src2 = src2[:0] + src2  # (src2 は下で作り直す)
+    em2 = re.search(r"const EDGES = \[\n(.*?)\n\];", src2, re.S)
+    src2 = src2[:em2.start(1)] + '\n'.join(new_edge_lines) + src2[em2.end(1):]
 
 
 shops_src = open(SHOPS).read()

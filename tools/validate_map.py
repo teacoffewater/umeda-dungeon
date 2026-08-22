@@ -20,7 +20,9 @@ from geo import ll2m as to_px  # noqa: E402
 # 既知の許容(理由付き)
 KNOWN_SHOP_OK = {"麺's room 神虎"}   # 第4ビル北縁×バラエティ帯の境界密着(2.4px)
 # 店ゾーン→乗ってよい他ゾーン床: バラエティストリート(diamor)は第4ビルB2F(中枢層)を貫通し、店は通り沿いに並ぶ
-SHOP_ZONE_PAIR_OK = {('ekimae', 'diamor')}
+SHOP_ZONE_PAIR_OK = {('ekimae', 'diamor'),
+    ('umechika', 'whity'),  # ekimo(御堂筋線梅田駅の店)はホワイティ西端と同じ通路面に接する(2026-08-23 OSM取り込み後)
+}
 INTRUSION_WHITELIST = {('whity', 'sanban'), ('whity', 'hankyu_dept'), ('diamor', 'ekimae'),
                        ('diamor', 'hanshin_dept'),  # F-40系南北通路(御堂筋沿い・阪神百の壁際)
                        ('hilton', 'herbis'),  # ヒルトンW⇔ハービスENTは直結(壁+3.5px床同士の継ぎ目)

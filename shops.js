@@ -35,7 +35,7 @@ export const SHOP_AREAS = {
   // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
   dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'dotica_01'], ['dotica_01', 'avanza']] },
   // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
-  ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], offset: 6, path: [[889.8, 919.2], [891.8, 979.8]] },
+  ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], edges: [['j_metro', 'umechika_15'], ['umechika_15', 'umechika_11']] },
   // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）
   ekimae1_b1: { floor: 'S1', zone: 'ekimae', near: ['ekimae1'], rect: [771, 1287.1, 94.2, 57.9] },
   ekimae1_b2: { floor: 'B1', zone: 'ekimae', near: ['ekimae1_b2'], rect: [793.2, 1286.3, 104.1, 64.1] },
