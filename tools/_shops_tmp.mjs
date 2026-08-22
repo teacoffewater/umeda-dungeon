@@ -27,13 +27,10 @@ export const SHOP_AREAS = {
   whity_mikke:  { floor: 'B1', zone: 'whity', near: ['whity_w'], edges: [['whity_07', 'whity_02'], ['whity_02', 'whity_03'], ['whity_03', 'whity_14'], ['whity_14', 'whity_30']] },
   whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_w', 'j_whity_x'], edges: [['whity_22', 'whity_23'], ['whity_23', 'whity_31'], ['whity_31', 'whity_32'], ['whity_32', 'j_whity_x']] },
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
-  diamor_fashion: { floor: 'B1', zone: 'diamor',
-    edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_fashion_e']] },        // 西→東
-  diamor_market: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'j_market_ne']] }, // 広場→北東
-  diamor_casual: { floor: 'B1', zone: 'diamor',
-    edges: [['j_diamor_n', 'enkei'], ['enkei', 'j_diamor_s']] },                     // 北→南
-  diamor_variety: { floor: 'B1', zone: 'diamor',
-    edges: [['enkei', 'j_variety'], ['j_variety', 'j_diamor_e']] },  // バラエティST本通り(OSMカーブ追従)。第4ビルへの枝には店を置かない
+  diamor_fashion: { floor: 'B1', zone: 'diamor', edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_diamor_e'], ['j_diamor_e', 'j_fashion_e']] },        // 西→東
+  diamor_market: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'j_market_ne']] }, // 広場→北東
+  diamor_casual: { floor: 'B1', zone: 'diamor', edges: [['j_diamor_n', 'diamor_03'], ['diamor_03', 'j_diamor_s']] },                     // 北→南
+  diamor_variety: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'diamor_04'], ['diamor_04', 'j_variety'], ['j_variety', 'j_diamor_e']] },  // バラエティST本通り(OSMカーブ追従)。第4ビルへの枝には店を置かない
 
   // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
   dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'avanza']] },

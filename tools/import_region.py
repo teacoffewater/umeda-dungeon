@@ -212,6 +212,25 @@ while True:
     if len(pruned) == len(new_edges):
         break
     new_edges = pruned
+# 孤立した連結成分(旧IDも区域境界の端点も含まない)はOSMの断片なので捨てる
+adj0 = {}
+for i, j, w, wid in new_edges:
+    adj0.setdefault(i, set()).add(j); adj0.setdefault(j, set()).add(i)
+comp_of = {}
+for start in adj0:
+    if start in comp_of:
+        continue
+    stack, cid = [start], start
+    while stack:
+        u = stack.pop()
+        if u in comp_of:
+            continue
+        comp_of[u] = cid; stack.extend(adj0[u])
+good = {cid for u, cid in comp_of.items() if u in protected}
+dropped = [e for e in new_edges if comp_of[e[0]] not in good]
+if dropped:
+    log(f'[{zone}] 孤立成分を削除: エッジ {len(dropped)} 本 ' + str(sorted({(round(nodes_xy[e[0]][0]), round(nodes_xy[e[0]][1])) for e in dropped})[:4]))
+new_edges = [e for e in new_edges if comp_of[e[0]] in good]
 used = {i for e in new_edges for i in e[:2]}
 log(f'[{zone}] 刈り込み後: ノード {len(used)}、エッジ {len(new_edges)}')
 # 新ノードID(使われているノードだけ)
@@ -322,7 +341,13 @@ def nearest_node(x, y):
 
 shops_src = open(SHOPS).read()
 am = re.search(r"export const SHOP_AREAS = \{\n(.*?)\n\};", shops_src, re.S)
-area_lines = am.group(1).split('\n')
+# 複数行にまたがるエントリ(`  id: {` 〜 `},`)は1行に畳んで扱う(生成物なので整形は気にしない)
+area_lines = []
+for ln in am.group(1).split('\n'):
+    if area_lines and re.match(r'^\s{2}\w+:\s*\{', area_lines[-1]) and area_lines[-1].count('{') > area_lines[-1].count('}'):
+        area_lines[-1] = area_lines[-1].rstrip() + ' ' + ln.strip()
+    else:
+        area_lines.append(ln)
 changed = 0
 for li, ln in enumerate(area_lines):
     m = re.search(rf"^(\s*(\w+):\s*\{{.*?zone: '{zone}'.*?edges: )(\[\[.*?\]\])(.*)$", ln)
