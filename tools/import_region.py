@@ -53,7 +53,7 @@ def log(*a):
 ALL_REG = json.load(open(os.path.join(DATA, 'regions.json')))
 
 
-def region_polygon(zone=zone, REG=REG):
+def region_polygon(zone=zone, REG=REG, buffer=None):
     els = {e['id']: e for e in json.load(open(os.path.join(DATA, 'osm_regions.json')))['elements']}
     parts = []
     for pid in REG.get('polygon', []):
@@ -80,7 +80,7 @@ def region_polygon(zone=zone, REG=REG):
             if m.group(1) in nd and m.group(2) in nd:
                 parts.append(LineString([nd[m.group(1)], nd[m.group(2)]]).buffer(0.1))
     assert parts, '区域の形が定義されていない'
-    return unary_union(parts).buffer(REG.get('buffer', 3), join_style=2)
+    return unary_union(parts).buffer(REG.get('buffer', 3) if buffer is None else buffer, join_style=2)
 
 
 osm_all = [e for e in json.load(open(os.path.join(DATA, 'osm_underground_2026-08.json')))['elements']]
@@ -90,7 +90,7 @@ _main0 = open(MAIN).read()
 for z, cfg in ALL_REG.items():
     if z == zone or z.startswith('_') or f'// @region {z} begin' not in _main0:
         continue
-    POLY = POLY.difference(region_polygon(z, cfg))
+    POLY = POLY.difference(region_polygon(z, cfg, buffer=3))
 if POLY.geom_type == 'MultiPolygon':
     POLY = max(POLY.geoms, key=lambda g: g.area)
 log(f'[{zone}] 区域ポリゴン 面積 {POLY.area:.0f} m², bounds {[round(v) for v in POLY.bounds]}')
@@ -212,6 +212,22 @@ for ln in node_lines:
         mm = re.search(r"\b(?:S|P|J)\('(\w+)'", ln)
         if mm:
             foreign.add(mm.group(1))
+own_lines = {}
+_in_own = False
+for ln in node_lines:
+    if f'// @region {zone} begin' in ln: _in_own = True; continue
+    if f'// @region {zone} end' in ln: _in_own = False; continue
+    if _in_own:
+        mm = re.search(r"\b(?:S|P|J)\('(\w+)'", ln)
+        if mm: own_lines[mm.group(1)] = ln
+# 他ブロックのエッジが参照しているノードID(自ブロックを作り直しても消してはいけない)
+_in_own = False; ref_outside = set()
+for ln in edge_lines:
+    if f'// @region {zone} begin' in ln: _in_own = True; continue
+    if f'// @region {zone} end' in ln: _in_own = False; continue
+    if not _in_own:
+        mm = re.search(r"\['(\w+)',\s*'(\w+)'", ln)
+        if mm: ref_outside.update(mm.groups())
 inside = {nid: n for nid, n in old_nodes.items()
           if n['floor'] == FLOOR and POLY.contains(Point(n['x'], n['y'])) and not GEN.match(nid) and nid not in foreign}
 log(f'[{zone}] 区域内の旧ノード {len(inside)}: ' + ', '.join(f"{k}({v['kind']})" for k, v in inside.items()))
@@ -276,7 +292,8 @@ for i in used:
     for oid, n in old_nodes.items():
         if oid in inside or n['floor'] != FLOOR:
             continue
-        if math.hypot(n['x'] - x, n['y'] - y) <= 2.5 and oid not in adopted.values():
+        tol = 5.0 if i in protected else 2.5  # 境界端点(隣区域との継ぎ目)は広めに
+        if math.hypot(n['x'] - x, n['y'] - y) <= tol and oid not in adopted.values():
             adopted[i] = oid; break
 if adopted:
     log(f'[{zone}] 隣接ノードを流用 {len(adopted)}: ' + ', '.join(adopted.values()))
@@ -303,10 +320,18 @@ removed_J = {oid for oid in inside if oid not in keep_old}
 node_out = [f'  // @region {zone} begin  (tools/import_region.py が生成。OSM通路の交点・屈曲点)']
 for i in sorted(ids, key=lambda k: ids[k]):
     if i in adopted:
+        if adopted[i] in own_lines:
+            node_out.append(own_lines[adopted[i]].rstrip())  # 自ブロックの行は作り直すので再掲
         continue  # 既存ノードをそのまま使う
     x, y = nodes_xy[i]
     tag = "'" + FLOOR + "'" if FLOOR != 'B1' else ''
     node_out.append(f"  J('{ids[i]}', {x:.1f}, {y:.1f}{', ' + tag if tag else ''}),")
+for oid, ln in own_lines.items():
+    if oid in inside or oid in ids.values():
+        continue  # 改名/流用で新ブロックに含まれる
+    if not GEN.match(oid) or oid in ref_outside:
+        node_out.append(ln.rstrip() + '  // 前回取り込み分を維持(区域外/他ブロックから参照)')
+        all_keep = True
 node_out.append(f'  // @region {zone} end')
 edge_out = [f'  // @region {zone} begin  (OSM way id をコメントに保持)']
 for i, j, w, wid in sorted(new_edges, key=lambda e: (ids[e[0]], ids[e[1]])):
@@ -513,8 +538,13 @@ for oid in removed_J:
         log(f'  !! shops.js に消えたノード {oid} への参照あり')
 
 # ---------------------------------------------------------------- 検証・書き出し
+own_edge_li = set(); _in_own = False
+for li, ln in enumerate(edge_lines):
+    if f'// @region {zone} begin' in ln: _in_own = True
+    if _in_own: own_edge_li.add(li)
+    if f'// @region {zone} end' in ln: _in_own = False
 for a, b, w, z, li in old_edges:
-    if li in drop_edge_li:
+    if li in drop_edge_li or li in own_edge_li:
         continue
     for nid in (a, b):
         if nid not in all_nodes:

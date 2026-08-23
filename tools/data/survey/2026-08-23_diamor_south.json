@@ -1,0 +1,8 @@
+{
+ "version": 1, "frame": "metric-v1", "exported": "2026-08-23T04:09:09.142Z",
+ "records": [
+  {"id": "rmt5a9p3b", "ts": "2026-08-23T04:04:37.319Z", "type": "stairs", "zone": "ekimae", "floor": "B1", "floorSign": "B1F", "px": [862.5, 1344], "px2": null, "to": null, "exit": null, "note": "駅前ビルの第1と第2の間をディアモールが分断するように通っている。", "gps": null},
+  {"id": "rmt5acchj", "ts": "2026-08-23T04:06:40.951Z", "type": "corridor", "zone": "sonechika", "floor": "B1", "floorSign": "B1F", "px": [1016.5, 1352.9], "px2": [997.1, 1306.4], "to": null, "exit": null, "note": "ここからここまでディアモール", "gps": null}
+ ],
+ "_applied": "ディアモール区域に OSM way 1010195564(第1・第2ビル間)と 1010195563(第2・第3ビル間)を追加して再取り込み(tools/data/regions.json)"
+}
