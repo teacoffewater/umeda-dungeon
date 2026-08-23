@@ -37,8 +37,8 @@ const ZONES = {
   osaka_sta:   { name: 'JR大阪駅',              color: 0x5f9fd9, label: [671.6, 893.1] },
   lucua:       { name: 'ルクア',                color: 0x6a6fe2, label: [649, 811.9] },  // インディゴ(ルクア+ルクア1100)
   diamor:      { name: 'ディアモール大阪',      color: 0x45c8a8, label: [863.9, 1143] },
-  // corridor: 現地で名前の表示が乏しく施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない(2026-08-23 現地確認)
-  nishi_umeda: { name: '西梅田地下通路(ガーデンアベニュー)', color: 0x7f93b0, label: [438.5, 1226.6], corridor: true },
+  // corridor: 現地で名前の表示が乏しく施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない(2026-08-23 現地確認)。色は他の区域と同じ扱い
+  nishi_umeda: { name: '西梅田地下通路(ガーデンアベニュー)', color: 0xa07fd9, label: [438.5, 1226.6], corridor: true },
   hilton:      { name: 'ヒルトンプラザ',        color: 0xcbb37a, label: [735.6, 1154.6] },  // シャンパン(EAST/WEST)
   herbis:      { name: 'ハービス',              color: 0xaa4e66, label: [517.7, 1272.9] },  // ワイン(ENT/OSAKA)
   kitte:       { name: 'KITTE大阪',             color: 0x2f8fa3, label: [539.7, 1098.3] },  // ダークターコイズ
@@ -48,7 +48,7 @@ const ZONES = {
   hanshin_dept:{ name: '阪神百貨店',            color: 0x3f5f9e, label: [954.4, 1061.3] },  // 阪神ネイビー(床の重心)
   avanza:      { name: '堂島アバンザ',          color: 0x9a8f52, label: [782.9, 1514.8] },  // オリーブ
   ekimae:      { name: '大阪駅前ビル',          color: 0xdb5a66, label: [904.2, 1221.8] },  // 鮮明な赤(そねちかとの分離)
-  sonechika:   { name: '曽根崎地下歩道(そねちか)', color: 0x7f93b0, label: [1023.8, 1319.1], corridor: true },  // 東梅田改札へ向かうただの通路として扱う
+  sonechika:   { name: '曽根崎地下歩道(そねちか)', color: 0x49b6c4, label: [1023.8, 1319.1], corridor: true },  // 東梅田改札へ向かうただの通路として扱う
   hep:         { name: 'HEP FIVE / NAVIO',      color: 0xe0554f, label: [1120, 745] },   // 赤い観覧車の朱赤
   osbld:       { name: 'OSビル',                color: 0x5f8fa8, label: [1168, 872] },   // スチールブルー
   ema:         { name: 'イーマ',                color: 0x9b59d0, label: [984.4, 1098.6] },  // 紫(隣のディアモールteal・うめちかピンクと対比)

@@ -33668,8 +33668,8 @@
         lucua: { name: "\u30EB\u30AF\u30A2", color: 6975458, label: [649, 811.9] },
         // インディゴ(ルクア+ルクア1100)
         diamor: { name: "\u30C7\u30A3\u30A2\u30E2\u30FC\u30EB\u5927\u962A", color: 4573352, label: [863.9, 1143] },
-        // corridor: 現地で名前の表示が乏しく施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない(2026-08-23 現地確認)
-        nishi_umeda: { name: "\u897F\u6885\u7530\u5730\u4E0B\u901A\u8DEF(\u30AC\u30FC\u30C7\u30F3\u30A2\u30D9\u30CB\u30E5\u30FC)", color: 8360880, label: [438.5, 1226.6], corridor: true },
+        // corridor: 現地で名前の表示が乏しく施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない(2026-08-23 現地確認)。色は他の区域と同じ扱い
+        nishi_umeda: { name: "\u897F\u6885\u7530\u5730\u4E0B\u901A\u8DEF(\u30AC\u30FC\u30C7\u30F3\u30A2\u30D9\u30CB\u30E5\u30FC)", color: 10518489, label: [438.5, 1226.6], corridor: true },
         hilton: { name: "\u30D2\u30EB\u30C8\u30F3\u30D7\u30E9\u30B6", color: 13349754, label: [735.6, 1154.6] },
         // シャンパン(EAST/WEST)
         herbis: { name: "\u30CF\u30FC\u30D3\u30B9", color: 11161190, label: [517.7, 1272.9] },
@@ -33687,7 +33687,7 @@
         // オリーブ
         ekimae: { name: "\u5927\u962A\u99C5\u524D\u30D3\u30EB", color: 14375526, label: [904.2, 1221.8] },
         // 鮮明な赤(そねちかとの分離)
-        sonechika: { name: "\u66FD\u6839\u5D0E\u5730\u4E0B\u6B69\u9053(\u305D\u306D\u3061\u304B)", color: 8360880, label: [1023.8, 1319.1], corridor: true },
+        sonechika: { name: "\u66FD\u6839\u5D0E\u5730\u4E0B\u6B69\u9053(\u305D\u306D\u3061\u304B)", color: 4830916, label: [1023.8, 1319.1], corridor: true },
         // 東梅田改札へ向かうただの通路として扱う
         hep: { name: "HEP FIVE / NAVIO", color: 14701903, label: [1120, 745] },
         // 赤い観覧車の朱赤
