@@ -824,8 +824,13 @@ applyViewOffset();
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(-30, -10, -10);
 controls.enableDamping = true;
-controls.zoomSpeed = 3; // ホイールズームの感度
-controls.zoomToCursor = true; // カーソル/ピンチ中心の地点に向かって拡大縮小(固定中心をやめる)
+controls.zoomSpeed = 3; // ホイールズームの感度(タッチのピンチは下で等倍=1にする)
+controls.zoomToCursor = true; // カーソル位置に向かって拡大縮小(three r160ではマウスのみ。タッチは下で自前対応)
+controls.minDistance = 15;
+controls.maxDistance = 1600;
+// タッチ: ピンチは「指を広げた比率=拡大率」(等倍)。zoomSpeed=3 だと比率が3乗されて感度が高すぎる
+renderer.domElement.addEventListener('pointerdown', e => { controls.zoomSpeed = e.pointerType === 'touch' ? 1 : 3; }, { capture: true });
+renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
 window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
@@ -2464,11 +2469,27 @@ let downAt = null;
 // ピンチ(2本指)の指離しをタップ扱いにしない。pointerIdの集合で管理し、upを取りこぼしても次のdownで上書きされて復帰する
 const activePtrs = new Set();
 let multiTouch = false;
-const releasePtr = e => { activePtrs.delete(e.pointerId); if (activePtrs.size === 0) multiTouch = false; };
+const releasePtr = e => { activePtrs.delete(e.pointerId); ptrPos.delete(e.pointerId); if (activePtrs.size === 0) multiTouch = false; };
+const ptrPos = new Map(); // pointerId -> [x, y](ピンチ中心の計算用)
+renderer.domElement.addEventListener('pointermove', e => { if (ptrPos.has(e.pointerId)) ptrPos.set(e.pointerId, [e.clientX, e.clientY]); });
+// 2本指で触れた瞬間、指の中央の真下(現在の基準点と同じ高さの水平面)を回転・ズームの基準点にする。
+// カメラは動かさないので画面は飛ばず、以後のピンチはその地点に向かって拡大する
+function pivotToPinchCenter() {
+  const pts = [...ptrPos.values()];
+  if (pts.length < 2) return;
+  const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
+  const rc = new THREE.Raycaster();
+  rc.setFromCamera(new THREE.Vector2((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1), camera);
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -controls.target.y);
+  const hit = new THREE.Vector3();
+  if (rc.ray.intersectPlane(plane, hit) && hit.distanceTo(camera.position) < 3000) controls.target.copy(hit);
+}
 renderer.domElement.addEventListener('pointerdown', e => {
   downAt = [e.clientX, e.clientY];
   activePtrs.add(e.pointerId);
+  ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
   if (activePtrs.size > 1) multiTouch = true;
+  if (e.pointerType === 'touch' && activePtrs.size === 2) pivotToPinchCenter();
   camAnim = null; // 手動操作が始まったら自動カメラ移動は中断
   // 地図に触れたら入力モードを終了（キーボードも閉じる）
   if (document.body.classList.contains('picker-editing')) {

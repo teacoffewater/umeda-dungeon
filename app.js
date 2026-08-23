@@ -34644,6 +34644,14 @@
       controls.enableDamping = true;
       controls.zoomSpeed = 3;
       controls.zoomToCursor = true;
+      controls.minDistance = 15;
+      controls.maxDistance = 1600;
+      renderer.domElement.addEventListener("pointerdown", (e) => {
+        controls.zoomSpeed = e.pointerType === "touch" ? 1 : 3;
+      }, { capture: true });
+      renderer.domElement.addEventListener("wheel", () => {
+        controls.zoomSpeed = 3;
+      }, { capture: true, passive: true });
       controls.maxPolarAngle = Math.PI * 0.49;
       window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE: three_module_exports, scene };
       scene.add(new AmbientLight(8952251, 0.9));
@@ -36203,12 +36211,29 @@
       var multiTouch = false;
       var releasePtr = (e) => {
         activePtrs.delete(e.pointerId);
+        ptrPos.delete(e.pointerId);
         if (activePtrs.size === 0) multiTouch = false;
       };
+      var ptrPos = /* @__PURE__ */ new Map();
+      renderer.domElement.addEventListener("pointermove", (e) => {
+        if (ptrPos.has(e.pointerId)) ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
+      });
+      function pivotToPinchCenter() {
+        const pts = [...ptrPos.values()];
+        if (pts.length < 2) return;
+        const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
+        const rc = new Raycaster();
+        rc.setFromCamera(new Vector2(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1), camera);
+        const plane = new Plane(new Vector3(0, 1, 0), -controls.target.y);
+        const hit = new Vector3();
+        if (rc.ray.intersectPlane(plane, hit) && hit.distanceTo(camera.position) < 3e3) controls.target.copy(hit);
+      }
       renderer.domElement.addEventListener("pointerdown", (e) => {
         downAt = [e.clientX, e.clientY];
         activePtrs.add(e.pointerId);
+        ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
         if (activePtrs.size > 1) multiTouch = true;
+        if (e.pointerType === "touch" && activePtrs.size === 2) pivotToPinchCenter();
         camAnim = null;
         if (document.body.classList.contains("picker-editing")) {
           document.activeElement?.blur?.();
