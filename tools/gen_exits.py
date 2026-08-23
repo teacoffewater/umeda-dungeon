@@ -17,12 +17,15 @@ for m in re.finditer(rf"\b(?:S|P)\('(\w+)',\s*'[^']*',\s*'(S1|B1|B2)',\s*({NUM})
 for m in re.finditer(rf"\bJ\('(\w+)',\s*({NUM}),\s*({NUM})", src): nd[m.group(1)] = (float(m.group(2)), float(m.group(3)))
 em = re.search(r"const EDGES = \[\n(.*?)\n\];", src, re.S)
 net = unary_union([LineString([nd[a], nd[b]]) for a, b in re.findall(r"\['(\w+)',\s*'(\w+)'", em.group(1)) if a in nd and b in nd])
+OVR = json.load(open(os.path.join(ROOT, 'tools/data/exit_overrides.json'))).get('overrides', {})
 out = []
 for e in els:
     t = e['tags']
     if not t.get('ref'): continue
     if not (t.get('railway') in ('subway_entrance', 'train_station_entrance') or t.get('entrance')): continue
     x, y = ll2m(e['lat'], e['lon'])
+    if t['ref'] in OVR:
+        x, y = OVR[t['ref']]['mx'], OVR[t['ref']]['my']  # 現地確認で上書き
     if not (X0 <= x <= X1 and Y0 <= y <= Y1): continue
     d = net.distance(Point(x, y))
     out.append({'id': e['id'], 'ref': t['ref'], 'name': t.get('name', ''), 'mx': round(x, 1), 'my': round(y, 1), 'd': round(d)})
