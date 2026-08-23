@@ -9,9 +9,9 @@
 export const LANDMARKS = [
   // --- 西梅田(ガーデンアベニュー南西端)。現地調査 2026-08-23 (tools/data/survey/2026-08-23_nishi_umeda.json) ---
   { id: 'lm_exit_a1', name: '出口 A-1(階段→1F)', floor: 'B1', mx: 369.6, my: 1222.2, zone: 'nishi_umeda', note: 'ホテルモントレ大阪・エスタボート(クオール薬局・サイゼリヤ)へ上がる階段。位置は現地GPS。ガーデンアベニューから連絡通路(約99m)でつながる' },
-  { id: 'lm_yellow_obj', name: '黄色い円形のオブジェ', floor: 'B1', mx: 250.5, my: 1414.5, zone: 'nishi_umeda',
+  { id: 'lm_yellow_obj', name: '黄色い円形のオブジェ', floor: 'B1', mx: 236.5, my: 1420.0, zone: 'nishi_umeda',
     photo: 'photos/yellow_object.jpg', note: '出口6-1(左)と6-2(右)のY字路の股にある黄色い円形の金属オブジェ(KALEIDOSCOPE)。タップ位置(346,1357)は写真により分岐点へ補正' },
-  { id: 'lm_ev_sw', name: 'EV(→1F)', floor: 'B1', mx: 229, my: 1433.5, zone: 'nishi_umeda', note: '出口6-1のすぐ横。地上1Fへのエレベーター(現地確認 2026-08-23)' },
+  { id: 'lm_ev_sw', name: 'EV(→1F)', floor: 'B1', mx: 230.8, my: 1441.4, zone: 'nishi_umeda', note: '出口6-1のすぐ横。地上1Fへのエレベーター(現地確認 2026-08-23)' },
 ];
 
 export const PHOTOS = {
