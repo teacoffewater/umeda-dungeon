@@ -1367,34 +1367,6 @@ const landmarkById = {};
     landmarkMeshes.push(pin);
   }
 }
-// 地上への出入口(OSM、番号付き): 白い小さな板+番号。番号ラベルは寄ったときだけ表示(LOD)
-const exitLabels = [];
-{
-  const geo = new THREE.BoxGeometry(2.6, 0.6, 2.6);
-  const mat = new THREE.MeshBasicMaterial({ color: 0xf2f6fb });
-  const edge = new THREE.LineBasicMaterial({ color: 0x6f819c });
-  for (const ex of OSM_EXITS) {
-    const [x, z] = M2W([ex.mx, ex.my]);
-    const m = new THREE.Mesh(geo, mat);
-    m.position.set(x, FLOOR_Y.B1 + 2.2, z);
-    m.renderOrder = 4;
-    const div = document.createElement('div');
-    div.className = 'exit-label';
-    div.textContent = ex.ref;
-    div.title = ex.name || '';
-    const lab = new CSS2DObject(div);
-    lab.position.set(0, 3, 0);
-    m.add(lab);
-    floorGroups.B1.add(m, new THREE.LineSegments(new THREE.EdgesGeometry(geo), edge).translateX(x).translateY(FLOOR_Y.B1 + 2.2).translateZ(z));
-    exitLabels.push(lab);
-  }
-}
-function updateExitLabels() {
-  const near = camera.position.distanceTo(controls.target) < 420 && floorGroups.B1.visible;
-  for (const lab of exitLabels) lab.visible = near;
-}
-controls.addEventListener('change', updateExitLabels);
-updateExitLabels();
 
 // 写真ビューア(案内文のサムネイル・ランドマーク/店のタップで開く)
 const photoView = document.getElementById('photo-view');
@@ -1599,7 +1571,7 @@ function drawVertical(type, x, z, yB2, yB1, dir, opts = {}) {
     cage.position.set(x, yB2 + 3.5, z);
     vertGroup.add(fill, edges, cage);
     evCages.push({ mesh: cage, low: yB2 + 3.5, high: yB1 + 3.5, phase: evCages.length * 1.73 });
-    return;
+    return fill;
   }
   const beam = new THREE.Mesh(span === FLOOR_Y.B1 - FLOOR_Y.B2 ? beamGeo : new THREE.CylinderGeometry(0.7, 0.7, span, 8), beamMats[type]);
   beam.position.set(x, (yB1 + yB2) / 2, z);
@@ -1616,6 +1588,7 @@ function drawVertical(type, x, z, yB2, yB1, dir, opts = {}) {
     m.position.set(x, y + FLOOR_TOP, z);
     vertGroup.add(m);
   }
+  return beam;
 }
 
 for (const v of VERTICALS) {
@@ -1659,6 +1632,38 @@ for (const lm of LANDMARKS) {
   const dir = lm.dir ? [lm.dir[0], lm.dir[1]] : [1, 0];
   drawVertical(lm.vert, x, z, FLOOR_Y[lm.floor], GROUND_Y, dir, { skipUpper: true });
 }
+
+// 地上への出入口(OSM、番号付き): 地上へ上がる階段として、地図内の階段と同じ表現(光の帯+ステップ)で描く。
+// 種別が現地で分かっているもの(exit_overrides の type: esc/ev)はその表現。向きは最寄りの通路ノードから外へ。
+// 番号ラベルは寄ったときだけ表示(LOD)
+const exitLabels = [];
+{
+  const b1Nodes = NODES.filter(n => n.floor === 'B1' && n.type !== 'shop');
+  for (const ex of OSM_EXITS) {
+    const [x, z] = M2W([ex.mx, ex.my]);
+    let best = null, bd = Infinity;
+    for (const n of b1Nodes) { const d = Math.hypot(n.x - x, n.z - z); if (d < bd) { bd = d; best = n; } }
+    const dir = best && bd > 1 ? [x - best.x, z - best.z] : [1, 0];
+    const mesh = drawVertical(ex.type || 'stairs', x, z, FLOOR_Y.B1, GROUND_Y, dir, { skipUpper: true });
+    const div = document.createElement('div');
+    div.className = 'exit-label';
+    div.textContent = ex.ref;
+    div.title = ex.name || '';
+    const lab = new CSS2DObject(div);
+    lab.position.set(0, 0, 0);
+    const anchor = new THREE.Object3D();
+    anchor.position.set(x, FLOOR_Y.B1 + 9, z);
+    anchor.add(lab);
+    vertGroup.add(anchor);
+    exitLabels.push(lab);
+  }
+}
+function updateExitLabels() {
+  const near = camera.position.distanceTo(controls.target) < 420;
+  for (const lab of exitLabels) lab.visible = near;
+}
+controls.addEventListener('change', updateExitLabels);
+updateExitLabels();
 
 // --- B2: 路線・駅ホーム・改札内コンコース（見やすさのため一旦非表示。trueで復活） ---
 const SHOW_STATION_INTERIOR = false;

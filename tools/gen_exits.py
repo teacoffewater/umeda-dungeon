@@ -28,7 +28,10 @@ for e in els:
         x, y = OVR[t['ref']]['mx'], OVR[t['ref']]['my']  # 現地確認で上書き
     if not (X0 <= x <= X1 and Y0 <= y <= Y1): continue
     d = net.distance(Point(x, y))
-    out.append({'id': e['id'], 'ref': t['ref'], 'name': t.get('name', ''), 'mx': round(x, 1), 'my': round(y, 1), 'd': round(d)})
+    rec = {'id': e['id'], 'ref': t['ref'], 'name': t.get('name', ''), 'mx': round(x, 1), 'my': round(y, 1), 'd': round(d)}
+    if t['ref'] in OVR and OVR[t['ref']].get('type'):
+        rec['type'] = OVR[t['ref']]['type']  # 現地確認の種別(esc/ev)。無ければ階段
+    out.append(rec)
 out.sort(key=lambda r: (r['ref']))
 with open(os.path.join(ROOT, 'exits_data.js'), 'w') as f:
     f.write('// 自動生成: tools/gen_exits.py(OSMの番号付き出入口。d=既存通路からの距離m、>40は通路未接続)。手編集しない\n')
