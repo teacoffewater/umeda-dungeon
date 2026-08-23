@@ -1,0 +1,4778 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-08-23T08:19:08Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 1734162681,
+  "lat": 34.7078367,
+  "lon": 135.4996543,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 1740965437,
+  "lat": 34.7020616,
+  "lon": 135.4986697,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "G-1a"
+  }
+},
+{
+  "type": "node",
+  "id": 1865061622,
+  "lat": 34.7037066,
+  "lon": 135.4958644,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 1865061645,
+  "lat": 34.7042251,
+  "lon": 135.4969649,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 2293214784,
+  "lat": 34.7050669,
+  "lon": 135.4947124,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 2293280516,
+  "lat": 34.6986635,
+  "lon": 135.4952299,
+  "tags": {
+    "check_date:wheelchair": "2023-05-23",
+    "railway": "subway_entrance",
+    "ref": "C-49",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2293295611,
+  "lat": 34.7105615,
+  "lon": 135.4966929,
+  "tags": {
+    "name": "中津3",
+    "railway": "subway_entrance",
+    "ref": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 2293552457,
+  "lat": 34.7005980,
+  "lon": 135.4998930,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-80"
+  }
+},
+{
+  "type": "node",
+  "id": 2295889619,
+  "lat": 34.7004570,
+  "lon": 135.4999430,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-82"
+  }
+},
+{
+  "type": "node",
+  "id": 2299297072,
+  "lat": 34.7002199,
+  "lon": 135.4955390,
+  "tags": {
+    "access": "yes",
+    "highway": "elevator",
+    "railway": "subway_entrance",
+    "ref": "4-A",
+    "toilets:wheelchair": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2299299144,
+  "lat": 34.7000808,
+  "lon": 135.4958847,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-30",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2299310457,
+  "lat": 34.7015530,
+  "lon": 135.4966671,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-14"
+  }
+},
+{
+  "type": "node",
+  "id": 2308937735,
+  "lat": 34.7064221,
+  "lon": 135.5044272,
+  "tags": {
+    "name": "中崎町駅",
+    "railway": "subway_entrance",
+    "ref": "4"
+  }
+},
+{
+  "type": "node",
+  "id": 2308939939,
+  "lat": 34.7058580,
+  "lon": 135.5042824,
+  "tags": {
+    "name": "中崎町駅",
+    "railway": "subway_entrance",
+    "ref": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 2314356653,
+  "lat": 34.6981007,
+  "lon": 135.4985012,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "11-41"
+  }
+},
+{
+  "type": "node",
+  "id": 2314391261,
+  "lat": 34.6986245,
+  "lon": 135.4957166,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "11-4",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2316550415,
+  "lat": 34.7086344,
+  "lon": 135.4930627,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2318035933,
+  "lat": 34.7033497,
+  "lon": 135.4948612,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 2330458903,
+  "lat": 34.7026817,
+  "lon": 135.5016509,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-1"
+  }
+},
+{
+  "type": "node",
+  "id": 2360458675,
+  "lat": 34.6979684,
+  "lon": 135.4956358,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-60",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2373448050,
+  "lat": 34.6943595,
+  "lon": 135.4990306,
+  "tags": {
+    "railway": "train_station_entrance",
+    "ref": "1",
+    "source": "Bing;survey"
+  }
+},
+{
+  "type": "node",
+  "id": 2373448055,
+  "lat": 34.6943877,
+  "lon": 135.4992254,
+  "tags": {
+    "railway": "train_station_entrance",
+    "ref": "2",
+    "source": "Bing",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2373448060,
+  "lat": 34.6943724,
+  "lon": 135.4997925,
+  "tags": {
+    "railway": "train_station_entrance",
+    "ref": "3",
+    "source": "Bing",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2373448066,
+  "lat": 34.6943626,
+  "lon": 135.5006866,
+  "tags": {
+    "railway": "train_station_entrance",
+    "ref": "5",
+    "source": "Bing;survey"
+  }
+},
+{
+  "type": "node",
+  "id": 2373448072,
+  "lat": 34.6941765,
+  "lon": 135.5007270,
+  "tags": {
+    "railway": "train_station_entrance",
+    "ref": "6",
+    "source": "Bing;survey"
+  }
+},
+{
+  "type": "node",
+  "id": 2373448114,
+  "lat": 34.6940462,
+  "lon": 135.4956304,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7",
+    "source": "Bing; survey",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2376783571,
+  "lat": 34.7099336,
+  "lon": 135.4965113,
+  "tags": {
+    "description": "エスカレーターもあり",
+    "name": "中津4",
+    "railway": "subway_entrance",
+    "ref": "4"
+  }
+},
+{
+  "type": "node",
+  "id": 2376793491,
+  "lat": 34.7112228,
+  "lon": 135.4972617,
+  "tags": {
+    "name": "中津1",
+    "railway": "subway_entrance",
+    "ref": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 2376795893,
+  "lat": 34.7117324,
+  "lon": 135.4973096,
+  "tags": {
+    "description": "2019/04/06階段復活",
+    "name": "中津2",
+    "name:en": "Exit 2",
+    "railway": "subway_entrance",
+    "ref": "2",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2715291684,
+  "lat": 34.7022520,
+  "lon": 135.5020929,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-10"
+  }
+},
+{
+  "type": "node",
+  "id": 2715291801,
+  "lat": 34.7026427,
+  "lon": 135.5020120,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-6"
+  }
+},
+{
+  "type": "node",
+  "id": 3174881337,
+  "lat": 34.7022551,
+  "lon": 135.5022401,
+  "tags": {
+    "access": "yes",
+    "entrance": "yes",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 3375274205,
+  "lat": 34.7039891,
+  "lon": 135.4982098,
+  "tags": {
+    "entrance": "yes",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 3375274223,
+  "lat": 34.7030201,
+  "lon": 135.4980131,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 3375274239,
+  "lat": 34.7014024,
+  "lon": 135.4948312,
+  "tags": {
+    "entrance": "main",
+    "name": "桜橋口",
+    "name:en": "Sakurabashi Gate"
+  }
+},
+{
+  "type": "node",
+  "id": 3394153475,
+  "lat": 34.7021239,
+  "lon": 135.4977352,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-30",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3394153476,
+  "lat": 34.7039201,
+  "lon": 135.4976154,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-9"
+  }
+},
+{
+  "type": "node",
+  "id": 3394153477,
+  "lat": 34.7043239,
+  "lon": 135.4974803,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-10"
+  }
+},
+{
+  "type": "node",
+  "id": 3448863955,
+  "lat": 34.7026493,
+  "lon": 135.4973791,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-38",
+    "source": "loacl knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 3448863956,
+  "lat": 34.7027421,
+  "lon": 135.4974449,
+  "tags": {
+    "entrance": "main",
+    "name": "御堂筋南口",
+    "name:en": "Midosuji South Gate"
+  }
+},
+{
+  "type": "node",
+  "id": 3448863958,
+  "lat": 34.7029775,
+  "lon": 135.4973885,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-42",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 3499800998,
+  "lat": 34.6980749,
+  "lon": 135.5004072,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-92"
+  }
+},
+{
+  "type": "node",
+  "id": 3499800999,
+  "lat": 34.6983825,
+  "lon": 135.5001065,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-85"
+  }
+},
+{
+  "type": "node",
+  "id": 3499801000,
+  "lat": 34.6981002,
+  "lon": 135.4993909,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "11-43"
+  }
+},
+{
+  "type": "node",
+  "id": 3499801001,
+  "lat": 34.6986626,
+  "lon": 135.4999627,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-82"
+  }
+},
+{
+  "type": "node",
+  "id": 3512355893,
+  "lat": 34.7037769,
+  "lon": 135.4969421,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-1",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 3668896761,
+  "lat": 34.7046445,
+  "lon": 135.4947937,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 3961157766,
+  "lat": 34.7045812,
+  "lon": 135.5098935,
+  "tags": {
+    "automatic_door": "yes",
+    "entrance": "main",
+    "source": "local knowledge",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4429043146,
+  "lat": 34.6969676,
+  "lon": 135.4968039,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4429043339,
+  "lat": 34.6971446,
+  "lon": 135.4966461,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4432839763,
+  "lat": 34.6967095,
+  "lon": 135.4957543,
+  "tags": {
+    "highway": "elevator",
+    "level": "-1",
+    "railway": "subway_entrance",
+    "ref": "C-84",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4460424597,
+  "lat": 34.6951771,
+  "lon": 135.4874428,
+  "tags": {
+    "name": "西口",
+    "railway": "subway_entrance",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 4460424598,
+  "lat": 34.6959144,
+  "lon": 135.4872740,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 4498103707,
+  "lat": 34.7070360,
+  "lon": 135.5041049,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4498103708,
+  "lat": 34.7070781,
+  "lon": 135.5042865,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4587131709,
+  "lat": 34.7071105,
+  "lon": 135.4985214,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4587131737,
+  "lat": 34.7071133,
+  "lon": 135.4985365,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4587131789,
+  "lat": 34.7063223,
+  "lon": 135.4977888,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 4588933591,
+  "lat": 34.7071338,
+  "lon": 135.4985247,
+  "tags": {
+    "door": "overhead",
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 4590754838,
+  "lat": 34.7054368,
+  "lon": 135.5005811,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4590754881,
+  "lat": 34.7053121,
+  "lon": 135.4992136,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4590754903,
+  "lat": 34.7054217,
+  "lon": 135.4991952,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-2"
+  }
+},
+{
+  "type": "node",
+  "id": 4590754920,
+  "lat": 34.7056555,
+  "lon": 135.5001369,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4590754971,
+  "lat": 34.7053102,
+  "lon": 135.5001619,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4590754972,
+  "lat": 34.7053225,
+  "lon": 135.5002205,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4590755017,
+  "lat": 34.7055087,
+  "lon": 135.4993074,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4597361107,
+  "lat": 34.7035104,
+  "lon": 135.5050725,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4597361151,
+  "lat": 34.7033305,
+  "lon": 135.5049039,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999569,
+  "lat": 34.7033706,
+  "lon": 135.5054027,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999570,
+  "lat": 34.7033689,
+  "lon": 135.5053896,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999571,
+  "lat": 34.7035334,
+  "lon": 135.5052485,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999576,
+  "lat": 34.7034980,
+  "lon": 135.5048971,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999584,
+  "lat": 34.7033274,
+  "lon": 135.5052442,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999604,
+  "lat": 34.7033163,
+  "lon": 135.5049435,
+  "tags": {
+    "access": "no",
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999612,
+  "lat": 34.7033534,
+  "lon": 135.5052711,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999613,
+  "lat": 34.7033574,
+  "lon": 135.5053024,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4608999614,
+  "lat": 34.7033649,
+  "lon": 135.5053589,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4609280694,
+  "lat": 34.7048397,
+  "lon": 135.4993465,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4609280697,
+  "lat": 34.7048879,
+  "lon": 135.4993303,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4609280733,
+  "lat": 34.7046023,
+  "lon": 135.4994327,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4609280782,
+  "lat": 34.7044310,
+  "lon": 135.4995858,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-16"
+  }
+},
+{
+  "type": "node",
+  "id": 4609280910,
+  "lat": 34.7047872,
+  "lon": 135.4993672,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4609281102,
+  "lat": 34.7046589,
+  "lon": 135.4994122,
+  "tags": {
+    "entrance": "main",
+    "level": "-1"
+  }
+},
+{
+  "type": "node",
+  "id": 4609752112,
+  "lat": 34.7065091,
+  "lon": 135.5041084,
+  "tags": {
+    "access": "yes",
+    "entrance": "main",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4609752137,
+  "lat": 34.7069696,
+  "lon": 135.5039606,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 4883607384,
+  "lat": 34.7023195,
+  "lon": 135.4983143,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4883607387,
+  "lat": 34.7029281,
+  "lon": 135.4980532,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4883607418,
+  "lat": 34.7020609,
+  "lon": 135.4985903,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "G-1b"
+  }
+},
+{
+  "type": "node",
+  "id": 4919245172,
+  "lat": 34.7032368,
+  "lon": 135.4951541,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4919245173,
+  "lat": 34.7033128,
+  "lon": 135.4953026,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4919245183,
+  "lat": 34.7034853,
+  "lon": 135.4953944,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945871,
+  "lat": 34.7007419,
+  "lon": 135.4992932,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-40"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945872,
+  "lat": 34.7011163,
+  "lon": 135.4990720,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-34"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945879,
+  "lat": 34.7036435,
+  "lon": 135.4953711,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945887,
+  "lat": 34.7031282,
+  "lon": 135.4942234,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945893,
+  "lat": 34.7029182,
+  "lon": 135.4942640,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 4928945895,
+  "lat": 34.7033417,
+  "lon": 135.4951520,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 4986337868,
+  "lat": 34.7067379,
+  "lon": 135.4988800,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 4986337869,
+  "lat": 34.7070378,
+  "lon": 135.4993430,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031049,
+  "lat": 34.7019287,
+  "lon": 135.5016827,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-13"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031050,
+  "lat": 34.7019719,
+  "lon": 135.5021115,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-14"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031051,
+  "lat": 34.7022196,
+  "lon": 135.5016723,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-9"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031052,
+  "lat": 34.7025805,
+  "lon": 135.5016593,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-5"
+  }
+},
+{
+  "type": "node",
+  "id": 5018031053,
+  "lat": 34.7027147,
+  "lon": 135.5020077,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "M-2"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365348,
+  "lat": 34.7018944,
+  "lon": 135.5011025,
+  "tags": {
+    "access": "no",
+    "railway": "subway_entrance",
+    "ref": "7-75"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365349,
+  "lat": 34.7021207,
+  "lon": 135.5009474,
+  "tags": {
+    "access": "no",
+    "railway": "subway_entrance",
+    "ref": "7-72"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365350,
+  "lat": 34.7021391,
+  "lon": 135.5004104,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-66"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365351,
+  "lat": 34.7018464,
+  "lon": 135.5004249,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-65"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365372,
+  "lat": 34.7021210,
+  "lon": 135.5000053,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-58"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365373,
+  "lat": 34.7018297,
+  "lon": 135.4996799,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-58"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365374,
+  "lat": 34.7012997,
+  "lon": 135.4996591,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-68"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365375,
+  "lat": 34.7015879,
+  "lon": 135.4994828,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-60"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365377,
+  "lat": 34.7001084,
+  "lon": 135.4994294,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-54"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365378,
+  "lat": 34.7003140,
+  "lon": 135.4992444,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "9"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365381,
+  "lat": 34.6983878,
+  "lon": 135.4993970,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "11-44"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365382,
+  "lat": 34.6981389,
+  "lon": 135.4975513,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "11-23"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365383,
+  "lat": 34.6981846,
+  "lon": 135.4968456,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "11-21"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365384,
+  "lat": 34.6982536,
+  "lon": 135.4958528,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "11-5",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365385,
+  "lat": 34.6979956,
+  "lon": 135.4953636,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-61",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365386,
+  "lat": 34.6982437,
+  "lon": 135.4950114,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-57",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365387,
+  "lat": 34.6976080,
+  "lon": 135.4953542,
+  "tags": {
+    "check_date:wheelchair": "2026-07-13",
+    "railway": "subway_entrance",
+    "ref": "C-69",
+    "toilets:wheelchair": "no",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365388,
+  "lat": 34.6973328,
+  "lon": 135.4956926,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-72",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365389,
+  "lat": 34.6968596,
+  "lon": 135.4956420,
+  "tags": {
+    "level": "-1",
+    "railway": "subway_entrance",
+    "ref": "C-80",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365391,
+  "lat": 34.6966450,
+  "lon": 135.4952340,
+  "tags": {
+    "check_date:wheelchair": "2026-07-13",
+    "railway": "subway_entrance",
+    "ref": "C-83",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365392,
+  "lat": 34.6959474,
+  "lon": 135.4957602,
+  "tags": {
+    "check_date:wheelchair": "2026-07-13",
+    "railway": "subway_entrance",
+    "ref": "C-92",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365393,
+  "lat": 34.6958778,
+  "lon": 135.4954482,
+  "tags": {
+    "check_date:wheelchair": "2026-07-13",
+    "railway": "subway_entrance",
+    "ref": "C-93",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365394,
+  "lat": 34.6996132,
+  "lon": 135.4953178,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "4-B",
+    "toilets:wheelchair": "yes",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365400,
+  "lat": 34.7037684,
+  "lon": 135.4993017,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-68"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365401,
+  "lat": 34.7036115,
+  "lon": 135.4990928,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-66"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365402,
+  "lat": 34.7035534,
+  "lon": 135.4988906,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-64"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365407,
+  "lat": 34.7025614,
+  "lon": 135.4993143,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365408,
+  "lat": 34.7024423,
+  "lon": 135.4993255,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-49"
+  }
+},
+{
+  "type": "node",
+  "id": 5024365409,
+  "lat": 34.7022888,
+  "lon": 135.4993029,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-51"
+  }
+},
+{
+  "type": "node",
+  "id": 5051066991,
+  "lat": 34.7024019,
+  "lon": 135.4982811,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-14"
+  }
+},
+{
+  "type": "node",
+  "id": 5169143092,
+  "lat": 34.7036322,
+  "lon": 135.4942186,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 5178004128,
+  "lat": 34.7034493,
+  "lon": 135.4984328,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5178004143,
+  "lat": 34.7035519,
+  "lon": 135.4977781,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5178004144,
+  "lat": 34.7031858,
+  "lon": 135.4979397,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5178004149,
+  "lat": 34.7034328,
+  "lon": 135.4969814,
+  "tags": {
+    "entrance": "main",
+    "name": "御堂筋北口",
+    "name:en": "Midosuji North Gate"
+  }
+},
+{
+  "type": "node",
+  "id": 5203859254,
+  "lat": 34.7037500,
+  "lon": 135.4957896,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 5226664976,
+  "lat": 34.7057640,
+  "lon": 135.4948489,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5230319759,
+  "lat": 34.7045209,
+  "lon": 135.4999114,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5230319784,
+  "lat": 34.7037759,
+  "lon": 135.4991804,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5236781159,
+  "lat": 34.7050170,
+  "lon": 135.4942640,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5241045346,
+  "lat": 34.7041489,
+  "lon": 135.4991004,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5261546898,
+  "lat": 34.7057649,
+  "lon": 135.4976715,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5261546902,
+  "lat": 34.7059028,
+  "lon": 135.4987765,
+  "tags": {
+    "entrance": "yes",
+    "level": "0",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5261547376,
+  "lat": 34.7054851,
+  "lon": 135.4940718,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5275712276,
+  "lat": 34.7036740,
+  "lon": 135.4950350,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5302036025,
+  "lat": 34.7014416,
+  "lon": 135.4965577,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5303140871,
+  "lat": 34.7039533,
+  "lon": 135.4982168,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5303140875,
+  "lat": 34.7039353,
+  "lon": 135.4982718,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5308122878,
+  "lat": 34.6989856,
+  "lon": 135.4997313,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 5308122885,
+  "lat": 34.6997914,
+  "lon": 135.4994646,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 5340837790,
+  "lat": 34.7009293,
+  "lon": 135.4954599,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-7",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5340839330,
+  "lat": 34.7017753,
+  "lon": 135.4971072,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 5340839338,
+  "lat": 34.7026307,
+  "lon": 135.4976487,
+  "tags": {
+    "access": "yes",
+    "foot": "yes",
+    "highway": "elevator",
+    "level": "-1;1",
+    "railway": "subway_entrance",
+    "wheelchair": "designated"
+  }
+},
+{
+  "type": "node",
+  "id": 5342194712,
+  "lat": 34.7027802,
+  "lon": 135.4955910,
+  "tags": {
+    "entrance": "yes",
+    "name": "中央北口",
+    "name:en": "Central North Gate"
+  }
+},
+{
+  "type": "node",
+  "id": 5342198626,
+  "lat": 34.7036539,
+  "lon": 135.4951485,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5344700126,
+  "lat": 34.7040486,
+  "lon": 135.4975917,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5358890779,
+  "lat": 34.7016378,
+  "lon": 135.4964159,
+  "tags": {
+    "entrance": "main",
+    "name": "中央南口",
+    "name:en": "Central South Gate"
+  }
+},
+{
+  "type": "node",
+  "id": 5358890782,
+  "lat": 34.7034978,
+  "lon": 135.4967293,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5372551983,
+  "lat": 34.7034711,
+  "lon": 135.4988878,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5374684219,
+  "lat": 34.7066628,
+  "lon": 135.4942246,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5374686673,
+  "lat": 34.7030583,
+  "lon": 135.4953822,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5475761024,
+  "lat": 34.7015307,
+  "lon": 135.4952125,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-1"
+  }
+},
+{
+  "type": "node",
+  "id": 5475761029,
+  "lat": 34.7012216,
+  "lon": 135.4959779,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5505661186,
+  "lat": 34.7043965,
+  "lon": 135.4942160,
+  "tags": {
+    "railway": "subway_entrance",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5508533001,
+  "lat": 34.7043972,
+  "lon": 135.4898541,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5508534136,
+  "lat": 34.7039367,
+  "lon": 135.4981992,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5508534137,
+  "lat": 34.7038265,
+  "lon": 135.4976570,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5518077327,
+  "lat": 34.7105169,
+  "lon": 135.4926014,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5518077372,
+  "lat": 34.7105116,
+  "lon": 135.4925459,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5518077380,
+  "lat": 34.7103783,
+  "lon": 135.4935966,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5682041666,
+  "lat": 34.7008008,
+  "lon": 135.4971817,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-24",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5683767360,
+  "lat": 34.7023580,
+  "lon": 135.4997609,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5728446433,
+  "lat": 34.6989163,
+  "lon": 135.4997597,
+  "tags": {
+    "entrance": "yes",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5768428719,
+  "lat": 34.7028448,
+  "lon": 135.4941079,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5785411745,
+  "lat": 34.7014421,
+  "lon": 135.4981694,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 5846147483,
+  "lat": 34.7022208,
+  "lon": 135.5022035,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5846147484,
+  "lat": 34.7023507,
+  "lon": 135.5020434,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5846148785,
+  "lat": 34.7021653,
+  "lon": 135.5015787,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5846148786,
+  "lat": 34.7023076,
+  "lon": 135.5016922,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5847763268,
+  "lat": 34.7018506,
+  "lon": 135.5017356,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5847763269,
+  "lat": 34.7019696,
+  "lon": 135.5015937,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5847763274,
+  "lat": 34.7020201,
+  "lon": 135.5021985,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5847763275,
+  "lat": 34.7018697,
+  "lon": 135.5020835,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795512,
+  "lat": 34.6997557,
+  "lon": 135.4972208,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-41"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795515,
+  "lat": 34.6998650,
+  "lon": 135.4972236,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-39"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795557,
+  "lat": 34.6996302,
+  "lon": 135.4982126,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-17"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795559,
+  "lat": 34.6997155,
+  "lon": 135.4980755,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-13"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795565,
+  "lat": 34.6997662,
+  "lon": 135.4982736,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-20"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795566,
+  "lat": 34.7000943,
+  "lon": 135.4983550,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-14",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795573,
+  "lat": 34.7001899,
+  "lon": 135.4979930,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-8"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795583,
+  "lat": 34.7002488,
+  "lon": 135.4972166,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-33"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795585,
+  "lat": 34.7004261,
+  "lon": 135.4976018,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-2",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5848795614,
+  "lat": 34.7007114,
+  "lon": 135.4969987,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-23"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387923,
+  "lat": 34.6992424,
+  "lon": 135.4986862,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-26"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387925,
+  "lat": 34.6993266,
+  "lon": 135.4985863,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-21"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387932,
+  "lat": 34.6995237,
+  "lon": 135.4975893,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-44"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387951,
+  "lat": 34.6981733,
+  "lon": 135.4956578,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-60",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387961,
+  "lat": 34.6986647,
+  "lon": 135.4987698,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-34"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387962,
+  "lat": 34.6989311,
+  "lon": 135.4986812,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-32"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387965,
+  "lat": 34.6986333,
+  "lon": 135.4986522,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-35"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387966,
+  "lat": 34.6988889,
+  "lon": 135.4985377,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-33"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387969,
+  "lat": 34.6992474,
+  "lon": 135.4978221,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-7"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387970,
+  "lat": 34.6986786,
+  "lon": 135.4973228,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-58"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387971,
+  "lat": 34.6989892,
+  "lon": 135.4973439,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-56"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387973,
+  "lat": 34.6992461,
+  "lon": 135.4976403,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-50"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387974,
+  "lat": 34.6992286,
+  "lon": 135.4971258,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-49"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387975,
+  "lat": 34.6991036,
+  "lon": 135.4972078,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-51"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387976,
+  "lat": 34.6989907,
+  "lon": 135.4971917,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-55"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387977,
+  "lat": 34.6986788,
+  "lon": 135.4972004,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-57"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387979,
+  "lat": 34.7008478,
+  "lon": 135.4981826,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-17"
+  }
+},
+{
+  "type": "node",
+  "id": 5852387981,
+  "lat": 34.7006896,
+  "lon": 135.4978663,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-5"
+  }
+},
+{
+  "type": "node",
+  "id": 5853250926,
+  "lat": 34.6966804,
+  "lon": 135.4957820,
+  "tags": {
+    "highway": "elevator",
+    "railway": "subway_entrance",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318034,
+  "lat": 34.7039048,
+  "lon": 135.4996605,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-28"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318035,
+  "lat": 34.7039617,
+  "lon": 135.4997317,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318036,
+  "lat": 34.7037043,
+  "lon": 135.4998578,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-30",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318038,
+  "lat": 34.7036478,
+  "lon": 135.4998645,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-32",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318056,
+  "lat": 34.7001340,
+  "lon": 135.4993253,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-51"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318058,
+  "lat": 34.7013805,
+  "lon": 135.4985274,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-22"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318079,
+  "lat": 34.7023187,
+  "lon": 135.4997411,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-52"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318080,
+  "lat": 34.7022764,
+  "lon": 135.4997203,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318083,
+  "lat": 34.7027388,
+  "lon": 135.4993501,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "G-1"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318493,
+  "lat": 34.7028652,
+  "lon": 135.4994190,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-41"
+  }
+},
+{
+  "type": "node",
+  "id": 5865318514,
+  "lat": 34.7034472,
+  "lon": 135.4988871,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5865516097,
+  "lat": 34.6995917,
+  "lon": 135.4978662,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-15"
+  }
+},
+{
+  "type": "node",
+  "id": 5865516098,
+  "lat": 34.7030099,
+  "lon": 135.4993997,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-43"
+  }
+},
+{
+  "type": "node",
+  "id": 5866989584,
+  "lat": 34.6997531,
+  "lon": 135.4995396,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-62"
+  }
+},
+{
+  "type": "node",
+  "id": 5866997085,
+  "lat": 34.6991770,
+  "lon": 135.4997535,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F-70"
+  }
+},
+{
+  "type": "node",
+  "id": 5884709877,
+  "lat": 34.6995247,
+  "lon": 135.4988959,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-22"
+  }
+},
+{
+  "type": "node",
+  "id": 5884709881,
+  "lat": 34.6995251,
+  "lon": 135.4987500,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-18"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732499,
+  "lat": 34.6991038,
+  "lon": 135.4973312,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-52"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732540,
+  "lat": 34.6992489,
+  "lon": 135.4980009,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-9"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732545,
+  "lat": 34.6992496,
+  "lon": 135.4981544,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "E-25"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732568,
+  "lat": 34.6993544,
+  "lon": 135.4979102,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "10-8"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732584,
+  "lat": 34.7002180,
+  "lon": 135.4975424,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-34"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732789,
+  "lat": 34.6995785,
+  "lon": 135.4974440,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-40"
+  }
+},
+{
+  "type": "node",
+  "id": 5884732792,
+  "lat": 34.7002097,
+  "lon": 135.4968916,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-31"
+  }
+},
+{
+  "type": "node",
+  "id": 5887068977,
+  "lat": 34.7002877,
+  "lon": 135.4950590,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-77"
+  }
+},
+{
+  "type": "node",
+  "id": 5887068978,
+  "lat": 34.7001666,
+  "lon": 135.4946730,
+  "tags": {
+    "highway": "elevator",
+    "railway": "subway_entrance",
+    "ref": "6-71",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069593,
+  "lat": 34.6996009,
+  "lon": 135.4937914,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-57"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069603,
+  "lat": 34.6992660,
+  "lon": 135.4934980,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-47"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069620,
+  "lat": 34.6994746,
+  "lon": 135.4915162,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "A-1",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069622,
+  "lat": 34.6991130,
+  "lon": 135.4916020,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "A-3",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069623,
+  "lat": 34.6987450,
+  "lon": 135.4921243,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "A-11",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069624,
+  "lat": 34.6982182,
+  "lon": 135.4918956,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-25"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069626,
+  "lat": 34.6986777,
+  "lon": 135.4925317,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-31"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069628,
+  "lat": 34.6990136,
+  "lon": 135.4925701,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-36",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069632,
+  "lat": 34.6991749,
+  "lon": 135.4927978,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-40"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069635,
+  "lat": 34.6995175,
+  "lon": 135.4931342,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-48"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069641,
+  "lat": 34.6994482,
+  "lon": 135.4932961,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-46"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069652,
+  "lat": 34.6981738,
+  "lon": 135.4916717,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-19",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069653,
+  "lat": 34.6983098,
+  "lon": 135.4915441,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-20",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069663,
+  "lat": 34.6979045,
+  "lon": 135.4913318,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-13",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5887069694,
+  "lat": 34.7014647,
+  "lon": 135.4964822,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-13"
+  }
+},
+{
+  "type": "node",
+  "id": 5890883053,
+  "lat": 34.7001878,
+  "lon": 135.4990474,
+  "tags": {
+    "entrance": "staircase",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 5916068775,
+  "lat": 34.7082489,
+  "lon": 135.4980604,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5916068778,
+  "lat": 34.7083116,
+  "lon": 135.4988171,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5916069661,
+  "lat": 34.7041358,
+  "lon": 135.4968499,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-2"
+  }
+},
+{
+  "type": "node",
+  "id": 5916069662,
+  "lat": 34.7045380,
+  "lon": 135.4969278,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "3-4"
+  }
+},
+{
+  "type": "node",
+  "id": 5917242365,
+  "lat": 34.7076030,
+  "lon": 135.4999685,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5917242366,
+  "lat": 34.7071279,
+  "lon": 135.4994867,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5917247217,
+  "lat": 34.7075917,
+  "lon": 135.4997110,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 5985318553,
+  "lat": 34.7047156,
+  "lon": 135.5008509,
+  "tags": {
+    "entrance": "yes",
+    "level": "0",
+    "name": "Dunlop",
+    "shop": "sports",
+    "sport": "golf"
+  }
+},
+{
+  "type": "node",
+  "id": 6013223048,
+  "lat": 34.7025006,
+  "lon": 135.4988090,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 6024811114,
+  "lat": 34.6983561,
+  "lon": 135.4915244,
+  "tags": {
+    "highway": "elevator",
+    "railway": "subway_entrance",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6024811118,
+  "lat": 34.6992581,
+  "lon": 135.4927310,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-40"
+  }
+},
+{
+  "type": "node",
+  "id": 6024811121,
+  "lat": 34.6991493,
+  "lon": 135.4927583,
+  "tags": {
+    "highway": "elevator",
+    "railway": "subway_entrance",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6024811127,
+  "lat": 34.6994116,
+  "lon": 135.4931673,
+  "tags": {
+    "highway": "elevator",
+    "railway": "subway_entrance",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6048835150,
+  "lat": 34.6989068,
+  "lon": 135.4922470,
+  "tags": {
+    "location": "underground",
+    "railway": "subway_entrance",
+    "ref": "6-30",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6048835702,
+  "lat": 34.7013774,
+  "lon": 135.4949238,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 6138777598,
+  "lat": 34.7105285,
+  "lon": 135.4963069,
+  "tags": {
+    "name": "中津5",
+    "railway": "subway_entrance",
+    "ref": "5",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6333103879,
+  "lat": 34.7054014,
+  "lon": 135.4989278,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 6333103881,
+  "lat": 34.7048749,
+  "lon": 135.4990827,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 6333103882,
+  "lat": 34.7045728,
+  "lon": 135.4991269,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 6378712111,
+  "lat": 34.6960829,
+  "lon": 135.4985151,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6423375441,
+  "lat": 34.7035235,
+  "lon": 135.4988801,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 6423375459,
+  "lat": 34.7049830,
+  "lon": 135.4993003,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-8"
+  }
+},
+{
+  "type": "node",
+  "id": 6424710274,
+  "lat": 34.7042966,
+  "lon": 135.4979743,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6424710275,
+  "lat": 34.7043063,
+  "lon": 135.4980423,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6586380268,
+  "lat": 34.6966898,
+  "lon": 135.4957657,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 6593979233,
+  "lat": 34.7096797,
+  "lon": 135.4935342,
+  "tags": {
+    "entrance": "yes",
+    "name": "東出口",
+    "railway": "train_station_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 6699036756,
+  "lat": 34.7128725,
+  "lon": 135.4997453,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6814317108,
+  "lat": 34.6995959,
+  "lon": 135.5090730,
+  "tags": {
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 6814317118,
+  "lat": 34.6996765,
+  "lon": 135.5089053,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 6814317148,
+  "lat": 34.6997741,
+  "lon": 135.5090509,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 7162734511,
+  "lat": 34.7041895,
+  "lon": 135.4955739,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7375548886,
+  "lat": 34.7040879,
+  "lon": 135.4956310,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7375548897,
+  "lat": 34.7041176,
+  "lon": 135.4956197,
+  "tags": {
+    "entrance": "yes",
+    "name": "搬入口"
+  }
+},
+{
+  "type": "node",
+  "id": 7375548905,
+  "lat": 34.7046930,
+  "lon": 135.4955891,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 7375548906,
+  "lat": 34.7045342,
+  "lon": 135.4967840,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 7375548925,
+  "lat": 34.7042911,
+  "lon": 135.4969915,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 7429319831,
+  "lat": 34.7049066,
+  "lon": 135.4969100,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 7429319867,
+  "lat": 34.7048573,
+  "lon": 135.4966258,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 7429319868,
+  "lat": 34.7046486,
+  "lon": 135.4967555,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 7461931714,
+  "lat": 34.7086840,
+  "lon": 135.4904429,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7475686979,
+  "lat": 34.7076212,
+  "lon": 135.5046749,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 7475898824,
+  "lat": 34.7099243,
+  "lon": 135.4956515,
+  "tags": {
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 7887062252,
+  "lat": 34.7046474,
+  "lon": 135.4948179,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 7887062258,
+  "lat": 34.7051184,
+  "lon": 135.4950240,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7887062266,
+  "lat": 34.7050705,
+  "lon": 135.4947467,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 8117678058,
+  "lat": 34.7111122,
+  "lon": 135.4944173,
+  "tags": {
+    "entrance": "garage"
+  }
+},
+{
+  "type": "node",
+  "id": 8230959374,
+  "lat": 34.7039490,
+  "lon": 135.4982705,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8230959375,
+  "lat": 34.7039594,
+  "lon": 135.4981942,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8589110930,
+  "lat": 34.7051354,
+  "lon": 135.5086524,
+  "tags": {
+    "description": "扇町公園駐車場の西入口",
+    "entrance": "yes",
+    "ref": "西入口"
+  }
+},
+{
+  "type": "node",
+  "id": 8836160773,
+  "lat": 34.7021470,
+  "lon": 135.4960712,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance",
+    "ref": "D-1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8872207243,
+  "lat": 34.7054245,
+  "lon": 135.4988996,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "H-1"
+  }
+},
+{
+  "type": "node",
+  "id": 8872207247,
+  "lat": 34.6979453,
+  "lon": 135.4906659,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-10"
+  }
+},
+{
+  "type": "node",
+  "id": 8872207304,
+  "lat": 34.6975562,
+  "lon": 135.4902843,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8872207309,
+  "lat": 34.6978437,
+  "lon": 135.4903723,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-2",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 8878597296,
+  "lat": 34.7029165,
+  "lon": 135.5003246,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "J-2"
+  }
+},
+{
+  "type": "node",
+  "id": 8878597300,
+  "lat": 34.7028221,
+  "lon": 135.4998444,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "J-3"
+  }
+},
+{
+  "type": "node",
+  "id": 8878597302,
+  "lat": 34.7026411,
+  "lon": 135.4999946,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "J-4"
+  }
+},
+{
+  "type": "node",
+  "id": 8878597306,
+  "lat": 34.7015995,
+  "lon": 135.4953081,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-2"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684239,
+  "lat": 34.7009111,
+  "lon": 135.4980503,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "8-10"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684247,
+  "lat": 34.7023451,
+  "lon": 135.4964401,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-22"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684248,
+  "lat": 34.7025651,
+  "lon": 135.4970401,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-30"
+  }
+},
+{
+  "type": "node",
+  "id": 8928684249,
+  "lat": 34.7019752,
+  "lon": 135.4956788,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "5-10"
+  }
+},
+{
+  "type": "node",
+  "id": 8987123750,
+  "lat": 34.7035219,
+  "lon": 135.4967805,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 9014035663,
+  "lat": 34.7032354,
+  "lon": 135.4958268,
+  "tags": {
+    "entrance": "yes",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 9014035665,
+  "lat": 34.7035521,
+  "lon": 135.4966894,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 9014035679,
+  "lat": 34.7035177,
+  "lon": 135.4967840,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance",
+    "source": "local knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 9014035683,
+  "lat": 34.7036491,
+  "lon": 135.4967823,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 9061504110,
+  "lat": 34.7047365,
+  "lon": 135.5002058,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9061504111,
+  "lat": 34.7042443,
+  "lon": 135.5002762,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9061504112,
+  "lat": 34.7043137,
+  "lon": 135.5002112,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9061504113,
+  "lat": 34.7046209,
+  "lon": 135.5008483,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9061510820,
+  "lat": 34.7049433,
+  "lon": 135.5004573,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9061510823,
+  "lat": 34.7042247,
+  "lon": 135.4994538,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 9061510824,
+  "lat": 34.7040348,
+  "lon": 135.4995407,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 9129607412,
+  "lat": 34.6997634,
+  "lon": 135.4994761,
+  "tags": {
+    "access": "no",
+    "entrance": "main",
+    "level": "2"
+  }
+},
+{
+  "type": "node",
+  "id": 9129607414,
+  "lat": 34.6989951,
+  "lon": 135.4997273,
+  "tags": {
+    "access": "no",
+    "entrance": "main",
+    "level": "2"
+  }
+},
+{
+  "type": "node",
+  "id": 9355260794,
+  "lat": 34.7012555,
+  "lon": 135.4975120,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 9468409611,
+  "lat": 34.7086945,
+  "lon": 135.4975240,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 9482788453,
+  "lat": 34.7110422,
+  "lon": 135.4933185,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9482788454,
+  "lat": 34.7110933,
+  "lon": 135.4933202,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9677032133,
+  "lat": 34.7008440,
+  "lon": 135.4972766,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-22",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9677032134,
+  "lat": 34.7011155,
+  "lon": 135.4972373,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 9805620942,
+  "lat": 34.7073926,
+  "lon": 135.5062688,
+  "tags": {
+    "name": "中崎町駅",
+    "railway": "subway_entrance",
+    "ref": "1",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9805620947,
+  "lat": 34.7076433,
+  "lon": 135.5059793,
+  "tags": {
+    "name": "中崎町駅",
+    "railway": "subway_entrance",
+    "ref": "2",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9833372338,
+  "lat": 34.7063476,
+  "lon": 135.4986154,
+  "tags": {
+    "entrance": "main",
+    "level": "0",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9836021656,
+  "lat": 34.7064303,
+  "lon": 135.4984436,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 9836021657,
+  "lat": 34.7064439,
+  "lon": 135.4985325,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 9836021659,
+  "lat": 34.7065750,
+  "lon": 135.4985241,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9836021660,
+  "lat": 34.7065145,
+  "lon": 135.4984621,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 10748809573,
+  "lat": 34.7028245,
+  "lon": 135.4934392,
+  "tags": {
+    "level": "0",
+    "name": "うめきた地下口",
+    "railway": "subway_entrance",
+    "ref": "1(12-4)"
+  }
+},
+{
+  "type": "node",
+  "id": 10748816619,
+  "lat": 34.7012450,
+  "lon": 135.4945479,
+  "tags": {
+    "entrance": "main",
+    "level": "0",
+    "name": "西口"
+  }
+},
+{
+  "type": "node",
+  "id": 10863914493,
+  "lat": 34.7110179,
+  "lon": 135.4961365,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 10959644128,
+  "lat": 34.7008005,
+  "lon": 135.4998616,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 11002742068,
+  "lat": 34.7070187,
+  "lon": 135.5023986,
+  "tags": {
+    "access": "customers",
+    "door": "automatic",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11005368252,
+  "lat": 34.7087054,
+  "lon": 135.5026993,
+  "tags": {
+    "access": "private",
+    "door": "automatic",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11005368274,
+  "lat": 34.7084404,
+  "lon": 135.5021239,
+  "tags": {
+    "access": "private",
+    "door": "hinged",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11005368283,
+  "lat": 34.7085110,
+  "lon": 135.5014242,
+  "tags": {
+    "access": "private",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11005368293,
+  "lat": 34.7090078,
+  "lon": 135.5019355,
+  "tags": {
+    "access": "customers",
+    "door": "automatic",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11005696796,
+  "lat": 34.7085180,
+  "lon": 135.5055758,
+  "tags": {
+    "access": "private",
+    "door": "automatic",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11005710812,
+  "lat": 34.7085799,
+  "lon": 135.5045567,
+  "tags": {
+    "access": "private",
+    "door": "hinged",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11007034666,
+  "lat": 34.7088569,
+  "lon": 135.5095258,
+  "tags": {
+    "access": "customers",
+    "door": "automatic",
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 11007034676,
+  "lat": 34.7090455,
+  "lon": 135.5070947,
+  "tags": {
+    "access": "private",
+    "door": "sliding",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11007090432,
+  "lat": 34.7081421,
+  "lon": 135.5061888,
+  "tags": {
+    "access": "private",
+    "door": "automatic",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 11099142914,
+  "lat": 34.7031291,
+  "lon": 135.4949066,
+  "tags": {
+    "entrance": "yes",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 11395858618,
+  "lat": 34.7024436,
+  "lon": 135.5015629,
+  "tags": {
+    "access": "customers",
+    "door": "automatic",
+    "entrance": "main",
+    "name": "ホテル入口"
+  }
+},
+{
+  "type": "node",
+  "id": 11497149348,
+  "lat": 34.7000052,
+  "lon": 135.5017117,
+  "tags": {
+    "access": "yes",
+    "entrance": "main",
+    "ref": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 11497235957,
+  "lat": 34.7004191,
+  "lon": 135.5013179,
+  "tags": {
+    "access": "yes",
+    "door": "no",
+    "entrance": "staircase",
+    "level": "0",
+    "ref": "2",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 11518698765,
+  "lat": 34.7079972,
+  "lon": 135.5044541,
+  "tags": {
+    "door": "yes",
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 11530548678,
+  "lat": 34.7038013,
+  "lon": 135.4944627,
+  "tags": {
+    "railway": "subway_entrance",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 11533753331,
+  "lat": 34.7120592,
+  "lon": 135.5081812,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 11533753334,
+  "lat": 34.7121190,
+  "lon": 135.5081799,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12091379302,
+  "lat": 34.7010307,
+  "lon": 135.4941754,
+  "tags": {
+    "entrance": "main",
+    "level": "0",
+    "name": "西口"
+  }
+},
+{
+  "type": "node",
+  "id": 12091379303,
+  "lat": 34.7012315,
+  "lon": 135.4959703,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 12095159222,
+  "lat": 34.7006858,
+  "lon": 135.4947117,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-70"
+  }
+},
+{
+  "type": "node",
+  "id": 12095159223,
+  "lat": 34.7004200,
+  "lon": 135.4944614,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 12095159224,
+  "lat": 34.7009993,
+  "lon": 135.4941996,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 12123447895,
+  "lat": 34.6954192,
+  "lon": 135.5051327,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12123447934,
+  "lat": 34.6954762,
+  "lon": 135.5041434,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12123917896,
+  "lat": 34.6947587,
+  "lon": 135.5040930,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12157787187,
+  "lat": 34.7024055,
+  "lon": 135.4952370,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12159153559,
+  "lat": 34.6997632,
+  "lon": 135.4975702,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12159153614,
+  "lat": 34.7008095,
+  "lon": 135.4968271,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-21"
+  }
+},
+{
+  "type": "node",
+  "id": 12159153640,
+  "lat": 34.7032651,
+  "lon": 135.4952094,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12162921327,
+  "lat": 34.7001603,
+  "lon": 135.4953321,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12162921476,
+  "lat": 34.7002754,
+  "lon": 135.4948808,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-71"
+  }
+},
+{
+  "type": "node",
+  "id": 12167701320,
+  "lat": 34.6997377,
+  "lon": 135.4954225,
+  "tags": {
+    "access": "private",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12167701963,
+  "lat": 34.7000176,
+  "lon": 135.4954422,
+  "tags": {
+    "access": "private",
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12177711054,
+  "lat": 34.6995692,
+  "lon": 135.4961288,
+  "tags": {
+    "access": "private",
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 12181257311,
+  "lat": 34.6991749,
+  "lon": 135.4915566,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12183308980,
+  "lat": 34.7010386,
+  "lon": 135.4971932,
+  "tags": {
+    "entrance": "main",
+    "level": "-1"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322082,
+  "lat": 34.7005309,
+  "lon": 135.4970799,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-27"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322171,
+  "lat": 34.7011259,
+  "lon": 135.4959961,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-12"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322172,
+  "lat": 34.7016188,
+  "lon": 135.4968499,
+  "tags": {
+    "level": "0",
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 12183322182,
+  "lat": 34.7016471,
+  "lon": 135.4970548,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "7-22"
+  }
+},
+{
+  "type": "node",
+  "id": 12186047886,
+  "lat": 34.6986077,
+  "lon": 135.4900590,
+  "tags": {
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 12186047889,
+  "lat": 34.6987171,
+  "lon": 135.4902834,
+  "tags": {
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 12196592147,
+  "lat": 34.6969268,
+  "lon": 135.4873599,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12196592149,
+  "lat": 34.6970471,
+  "lon": 135.4879112,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12207912905,
+  "lat": 34.6941411,
+  "lon": 135.4962616,
+  "tags": {
+    "railway": "subway_entrance",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12215302905,
+  "lat": 34.7019708,
+  "lon": 135.4934688,
+  "tags": {
+    "entrance": "main",
+    "level": "0",
+    "name": "西口"
+  }
+},
+{
+  "type": "node",
+  "id": 12215302955,
+  "lat": 34.7007728,
+  "lon": 135.4973878,
+  "tags": {
+    "entrance": "main",
+    "level": "-2"
+  }
+},
+{
+  "type": "node",
+  "id": 12215302980,
+  "lat": 34.7024998,
+  "lon": 135.4989060,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 12215503520,
+  "lat": 34.7007146,
+  "lon": 135.4946903,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 12215503523,
+  "lat": 34.7001036,
+  "lon": 135.4940152,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "6-58"
+  }
+},
+{
+  "type": "node",
+  "id": 12215503535,
+  "lat": 34.6998227,
+  "lon": 135.4932207,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12215503541,
+  "lat": 34.6996682,
+  "lon": 135.4931623,
+  "tags": {
+    "entrance": "main",
+    "level": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 12280356553,
+  "lat": 34.7056776,
+  "lon": 135.4931374,
+  "tags": {
+    "access": "customers",
+    "door": "automatic",
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12289981758,
+  "lat": 34.7074548,
+  "lon": 135.4991930,
+  "tags": {
+    "door": "automatic",
+    "entrance": "yes",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 12289981766,
+  "lat": 34.6992061,
+  "lon": 135.4992122,
+  "tags": {
+    "door": "automatic",
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 12300527184,
+  "lat": 34.7014141,
+  "lon": 135.4985216,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "F23"
+  }
+},
+{
+  "type": "node",
+  "id": 12463425402,
+  "lat": 34.7020862,
+  "lon": 135.4938388,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 12465328147,
+  "lat": 34.7036173,
+  "lon": 135.4916211,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12738965940,
+  "lat": 34.7013126,
+  "lon": 135.4962998,
+  "tags": {
+    "railway": "subway_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 12738965941,
+  "lat": 34.7012955,
+  "lon": 135.4962657,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13042674801,
+  "lat": 34.7045400,
+  "lon": 135.4942156,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13208959676,
+  "lat": 34.7088353,
+  "lon": 135.5095687,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13288441164,
+  "lat": 34.7080858,
+  "lon": 135.5043622,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13323592989,
+  "lat": 34.7091389,
+  "lon": 135.4918291,
+  "tags": {
+    "entrance": "service"
+  }
+},
+{
+  "type": "node",
+  "id": 13323605375,
+  "lat": 34.7086167,
+  "lon": 135.4929074,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13323605378,
+  "lat": 34.7086273,
+  "lon": 135.4928307,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13323605437,
+  "lat": 34.7099533,
+  "lon": 135.4938248,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13323605444,
+  "lat": 34.7095813,
+  "lon": 135.4934781,
+  "tags": {
+    "entrance": "yes",
+    "name": "西出口",
+    "railway": "train_station_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 13382703231,
+  "lat": 34.7006728,
+  "lon": 135.4963200,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "D-18"
+  }
+},
+{
+  "type": "node",
+  "id": 13387550555,
+  "lat": 34.7115208,
+  "lon": 135.4930123,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13387550556,
+  "lat": 34.7114621,
+  "lon": 135.4930450,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13483829896,
+  "lat": 34.7052379,
+  "lon": 135.4960410,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13483829897,
+  "lat": 34.7052268,
+  "lon": 135.4959583,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918749,
+  "lat": 34.7055449,
+  "lon": 135.4957669,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918753,
+  "lat": 34.7053898,
+  "lon": 135.4957996,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918754,
+  "lat": 34.7053261,
+  "lon": 135.4958066,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918756,
+  "lat": 34.7052570,
+  "lon": 135.4958230,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918760,
+  "lat": 34.7052431,
+  "lon": 135.4958256,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918761,
+  "lat": 34.7051701,
+  "lon": 135.4958025,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918763,
+  "lat": 34.7051506,
+  "lon": 135.4956633,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918764,
+  "lat": 34.7051466,
+  "lon": 135.4956397,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918766,
+  "lat": 34.7051388,
+  "lon": 135.4955927,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918767,
+  "lat": 34.7051304,
+  "lon": 135.4955342,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918776,
+  "lat": 34.7053225,
+  "lon": 135.4953097,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918777,
+  "lat": 34.7052884,
+  "lon": 135.4953166,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918785,
+  "lat": 34.7053830,
+  "lon": 135.4952871,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13516918786,
+  "lat": 34.7054438,
+  "lon": 135.4952751,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13524371168,
+  "lat": 34.7060795,
+  "lon": 135.4917518,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13524371169,
+  "lat": 34.7060117,
+  "lon": 135.4916981,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13524371174,
+  "lat": 34.7056588,
+  "lon": 135.4914532,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13524399742,
+  "lat": 34.7066717,
+  "lon": 135.4911964,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13524399772,
+  "lat": 34.7065268,
+  "lon": 135.4918387,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13524449424,
+  "lat": 34.7074955,
+  "lon": 135.4923689,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13524449425,
+  "lat": 34.7078898,
+  "lon": 135.4926466,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13654833912,
+  "lat": 34.6966947,
+  "lon": 135.4963676,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13654833913,
+  "lat": 34.6970735,
+  "lon": 135.4960506,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13654833914,
+  "lat": 34.6968521,
+  "lon": 135.4960102,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13690892139,
+  "lat": 34.6973160,
+  "lon": 135.4960290,
+  "tags": {
+    "railway": "subway_entrance",
+    "ref": "C-72"
+  }
+},
+{
+  "type": "node",
+  "id": 13725245785,
+  "lat": 34.7106159,
+  "lon": 135.4942290,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275706,
+  "lat": 34.7110837,
+  "lon": 135.4940374,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275707,
+  "lat": 34.7110830,
+  "lon": 135.4939898,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275710,
+  "lat": 34.7103803,
+  "lon": 135.4937095,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275712,
+  "lat": 34.7104202,
+  "lon": 135.4937950,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275719,
+  "lat": 34.7104179,
+  "lon": 135.4940938,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275720,
+  "lat": 34.7104243,
+  "lon": 135.4939481,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275721,
+  "lat": 34.7104281,
+  "lon": 135.4940170,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275722,
+  "lat": 34.7104224,
+  "lon": 135.4939134,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275723,
+  "lat": 34.7103686,
+  "lon": 135.4940847,
+  "tags": {
+    "entrance": "staircase"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275725,
+  "lat": 34.7103325,
+  "lon": 135.4940547,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275726,
+  "lat": 34.7102974,
+  "lon": 135.4940363,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275727,
+  "lat": 34.7102604,
+  "lon": 135.4940160,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275728,
+  "lat": 34.7102250,
+  "lon": 135.4939974,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275729,
+  "lat": 34.7101958,
+  "lon": 135.4938821,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275730,
+  "lat": 34.7101551,
+  "lon": 135.4939667,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275731,
+  "lat": 34.7101043,
+  "lon": 135.4939375,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275732,
+  "lat": 34.7100840,
+  "lon": 135.4939257,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275741,
+  "lat": 34.7103372,
+  "lon": 135.4937165,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275777,
+  "lat": 34.7109535,
+  "lon": 135.4938038,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13725275785,
+  "lat": 34.7106268,
+  "lon": 135.4940096,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13758239925,
+  "lat": 34.6955168,
+  "lon": 135.5047810,
+  "tags": {
+    "entrance": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13763655292,
+  "lat": 34.6943718,
+  "lon": 135.5005183,
+  "tags": {
+    "railway": "train_station_entrance",
+    "ref": "4"
+  }
+},
+{
+  "type": "node",
+  "id": 13780712685,
+  "lat": 34.7002197,
+  "lon": 135.4950932,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13864655555,
+  "lat": 34.7070504,
+  "lon": 135.4926882,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13867077501,
+  "lat": 34.7044875,
+  "lon": 135.4906957,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 13867077502,
+  "lat": 34.7045817,
+  "lon": 135.4907019,
+  "tags": {
+    "entrance": "main",
+    "level": "0"
+  }
+},
+{
+  "type": "node",
+  "id": 13881984544,
+  "lat": 34.7018398,
+  "lon": 135.5003051,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13881984547,
+  "lat": 34.7018454,
+  "lon": 135.5003854,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13882093091,
+  "lat": 34.7014085,
+  "lon": 135.5000461,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13882095039,
+  "lat": 34.7014646,
+  "lon": 135.5000518,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 13882124017,
+  "lat": 34.7008245,
+  "lon": 135.5001801,
+  "tags": {
+    "entrance": "main"
+  }
+},
+{
+  "type": "node",
+  "id": 14107117051,
+  "lat": 34.6995580,
+  "lon": 135.5026969,
+  "tags": {
+    "entrance": "yes"
+  }
+}
+
+  ]
+}

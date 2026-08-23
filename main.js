@@ -6,6 +6,7 @@ import { initSurvey } from './survey.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { OSM_BUILDINGS, OSM_ROADS } from './ground_data.js'; // tools/gen_ground.py が生成
 import { LANDMARKS, PHOTOS } from './landmarks.js';
+import { OSM_EXITS } from './exits_data.js'; // tools/gen_exits.py が生成(OSMの番号付き出入口)
 
 // ---------------------------------------------------------------------------
 // 梅田ダンジョン データ
@@ -1341,6 +1342,35 @@ const landmarkById = {};
     landmarkMeshes.push(pin);
   }
 }
+// 地上への出入口(OSM、番号付き): 白い小さな板+番号。番号ラベルは寄ったときだけ表示(LOD)
+const exitLabels = [];
+{
+  const geo = new THREE.BoxGeometry(2.6, 0.6, 2.6);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xf2f6fb });
+  const edge = new THREE.LineBasicMaterial({ color: 0x6f819c });
+  for (const ex of OSM_EXITS) {
+    const [x, z] = M2W([ex.mx, ex.my]);
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(x, FLOOR_Y.B1 + 2.2, z);
+    m.renderOrder = 4;
+    const div = document.createElement('div');
+    div.className = 'exit-label';
+    div.textContent = ex.ref;
+    div.title = ex.name || '';
+    const lab = new CSS2DObject(div);
+    lab.position.set(0, 3, 0);
+    m.add(lab);
+    floorGroups.B1.add(m, new THREE.LineSegments(new THREE.EdgesGeometry(geo), edge).translateX(x).translateY(FLOOR_Y.B1 + 2.2).translateZ(z));
+    exitLabels.push(lab);
+  }
+}
+function updateExitLabels() {
+  const near = camera.position.distanceTo(controls.target) < 420 && floorGroups.B1.visible;
+  for (const lab of exitLabels) lab.visible = near;
+}
+controls.addEventListener('change', updateExitLabels);
+updateExitLabels();
+
 // 写真ビューア(案内文のサムネイル・ランドマーク/店のタップで開く)
 const photoView = document.getElementById('photo-view');
 function showPhotos(title, photos, note) {
@@ -2601,6 +2631,7 @@ renderer.domElement.addEventListener('pointerup', e => {
 // ループ
 // ---------------------------------------------------------------------------
 const clock = new THREE.Clock();
+let frameNo = 0;
 function animate() {
   requestAnimationFrame(animate);
   const t = clock.getElapsedTime();
@@ -2651,6 +2682,7 @@ function animate() {
     if (p >= 1) walkAnim = null;
   }
   controls.update();
+  if ((frameNo++ & 15) === 0) updateExitLabels();
   renderer.render(scene, camera);
   labelRenderer.render(scene, camera);
 }
