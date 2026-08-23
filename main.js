@@ -970,7 +970,9 @@ scene.add(groundGroup);
       geos.push(g);
       for (let i = 0; i < wpts.length; i++) {
         const [x1, z1] = wpts[i], [x2, z2] = wpts[(i + 1) % wpts.length];
-        topPts.push(x1, GROUND_Y + b.h, z1, x2, GROUND_Y + b.h, z2);
+        topPts.push(x1, GROUND_Y + b.h, z1, x2, GROUND_Y + b.h, z2); // 上端
+        topPts.push(x1, GROUND_Y, z1, x2, GROUND_Y, z2);             // 下端
+        topPts.push(x1, GROUND_Y, z1, x1, GROUND_Y + b.h, z1);       // 縦の辺(枠が宙に浮いて見えないように)
       }
     }
     const merged = mergeGeometries(geos, false);
@@ -1052,8 +1054,8 @@ scene.add(groundGroup);
       cyl.renderOrder = 3;
       groundGroup.add(cyl);
     };
-    addTube([264, 524], GROUND_Y + 35 * LV, [297, 498], GROUND_Y + 39 * LV);
-    addTube([307, 522], GROUND_Y + 35 * LV, [280, 496], GROUND_Y + 39 * LV);
+    addTube([189.3, 592.9], GROUND_Y + 35 * LV, [225.1, 568.4], GROUND_Y + 39 * LV);
+    addTube([236.9, 589.4], GROUND_Y + 35 * LV, [206.2, 567.3], GROUND_Y + 39 * LV);
     addBldgLabel('梅田スカイビル', 215.5, 578.6, GROUND_Y + 40 * LV + 9);
   }
 
@@ -1083,21 +1085,10 @@ scene.add(groundGroup);
 
   // --- 主要道路: 御堂筋・四つ橋筋・曽根崎通（地上の座標系の手掛かり） ---
   {
-    const roadMat = new THREE.MeshBasicMaterial({ color: 0xaac4e6, transparent: true, opacity: 0.06, depthWrite: false });
-    const addRoad = (r, name, labelAt) => {
-      const [x1, z1] = M2W([r[0], r[1]]);
-      const [x2, z2] = M2W([r[2], r[3]]);
-      const geo = new THREE.PlaneGeometry(Math.abs(x2 - x1), Math.abs(z2 - z1));
-      const mesh = new THREE.Mesh(geo, roadMat);
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.set((x1 + x2) / 2, GROUND_Y + 0.3, (z1 + z2) / 2);
-      mesh.renderOrder = 2;
-      groundGroup.add(mesh);
-      if (name) addBldgLabel(name, labelAt[0], labelAt[1], GROUND_Y + 3);
-    };
-    addRoad([874, 380, 906, 1560], '御堂筋', [890, 1310]);
-    addRoad([612, 1040, 642, 1560], '四つ橋筋', [627, 1500]);
-    addRoad([560, 1358, 1340, 1388], '曽根崎通', [1180, 1373]);
+    // 道路の面は OSM(ground_data.js)で描くので、ここは主要道路の名前ラベルだけ
+    addBldgLabel('御堂筋', 905.7, 1268.0, GROUND_Y + 3);
+    addBldgLabel('四つ橋筋', 619.9, 1447.5, GROUND_Y + 3);
+    addBldgLabel('曽根崎通', 1228.8, 1312.8, GROUND_Y + 3);
   }
 
   // --- 地面の枠: 地中の底グリッドと同じ範囲を地上レベルで四角く囲い、「地面の板」を感じさせる ---

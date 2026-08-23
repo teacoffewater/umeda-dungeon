@@ -34788,6 +34788,8 @@
             for (let i = 0; i < wpts.length; i++) {
               const [x1, z1] = wpts[i], [x2, z2] = wpts[(i + 1) % wpts.length];
               topPts.push(x1, GROUND_Y + b.h, z1, x2, GROUND_Y + b.h, z2);
+              topPts.push(x1, GROUND_Y, z1, x2, GROUND_Y, z2);
+              topPts.push(x1, GROUND_Y, z1, x1, GROUND_Y + b.h, z1);
             }
           }
           const merged = mergeGeometries(geos, false);
@@ -34876,8 +34878,8 @@
             cyl.renderOrder = 3;
             groundGroup.add(cyl);
           };
-          addTube([264, 524], GROUND_Y + 35 * LV, [297, 498], GROUND_Y + 39 * LV);
-          addTube([307, 522], GROUND_Y + 35 * LV, [280, 496], GROUND_Y + 39 * LV);
+          addTube([189.3, 592.9], GROUND_Y + 35 * LV, [225.1, 568.4], GROUND_Y + 39 * LV);
+          addTube([236.9, 589.4], GROUND_Y + 35 * LV, [206.2, 567.3], GROUND_Y + 39 * LV);
           addBldgLabel("\u6885\u7530\u30B9\u30AB\u30A4\u30D3\u30EB", 215.5, 578.6, GROUND_Y + 40 * LV + 9);
         }
         {
@@ -34908,21 +34910,9 @@
           groundGroup.add(new LineSegments(spokeGeo, wheelMat));
         }
         {
-          const roadMat = new MeshBasicMaterial({ color: 11191526, transparent: true, opacity: 0.06, depthWrite: false });
-          const addRoad = (r, name, labelAt) => {
-            const [x1, z1] = M2W([r[0], r[1]]);
-            const [x2, z2] = M2W([r[2], r[3]]);
-            const geo = new PlaneGeometry(Math.abs(x2 - x1), Math.abs(z2 - z1));
-            const mesh = new Mesh(geo, roadMat);
-            mesh.rotation.x = -Math.PI / 2;
-            mesh.position.set((x1 + x2) / 2, GROUND_Y + 0.3, (z1 + z2) / 2);
-            mesh.renderOrder = 2;
-            groundGroup.add(mesh);
-            if (name) addBldgLabel(name, labelAt[0], labelAt[1], GROUND_Y + 3);
-          };
-          addRoad([874, 380, 906, 1560], "\u5FA1\u5802\u7B4B", [890, 1310]);
-          addRoad([612, 1040, 642, 1560], "\u56DB\u3064\u6A4B\u7B4B", [627, 1500]);
-          addRoad([560, 1358, 1340, 1388], "\u66FD\u6839\u5D0E\u901A", [1180, 1373]);
+          addBldgLabel("\u5FA1\u5802\u7B4B", 905.7, 1268, GROUND_Y + 3);
+          addBldgLabel("\u56DB\u3064\u6A4B\u7B4B", 619.9, 1447.5, GROUND_Y + 3);
+          addBldgLabel("\u66FD\u6839\u5D0E\u901A", 1228.8, 1312.8, GROUND_Y + 3);
         }
         {
           const cx = -45, cz = -20, half = 340;
