@@ -17,7 +17,8 @@ export const TYPES = {
   slope:    { label: '坂',          color: 0xffa94d, two: true, slope: true }, // 始まり→終わりの順に2点。上り/下りは2点目に向かって
   exit:     { label: '出口番号',    color: 0xffffff, exit: true },
   shop:     { label: '店',          color: 0xffa8cd },
-  landmark: { label: '目印',        color: 0xffe066 }, // 看板・柱・オブジェなど。写真は別送(撮影時刻と記録時刻で対応付ける)
+  landmark: { label: '目印',        color: 0xffe066 },
+  toilet:   { label: 'トイレ',      color: 0x6ec6ff }, // 看板・柱・オブジェなど。写真は別送(撮影時刻と記録時刻で対応付ける)
   memo:     { label: 'メモ',        color: 0xc8a2ff },
 };
 const FLOOR_SIGNS = ['B2F', 'B1F', '1F', '2F'];

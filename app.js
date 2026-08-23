@@ -33430,6 +33430,7 @@
         exit: { label: "\u51FA\u53E3\u756A\u53F7", color: 16777215, exit: true },
         shop: { label: "\u5E97", color: 16754893 },
         landmark: { label: "\u76EE\u5370", color: 16769126 },
+        toilet: { label: "\u30C8\u30A4\u30EC", color: 7259903 },
         // 看板・柱・オブジェなど。写真は別送(撮影時刻と記録時刻で対応付ける)
         memo: { label: "\u30E1\u30E2", color: 13148927 }
       };
