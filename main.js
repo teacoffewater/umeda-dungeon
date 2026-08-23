@@ -965,8 +965,8 @@ scene.add(groundGroup);
       const wpts = b.p.map(([mx, my]) => M2W([mx, my]));
       wpts.forEach(([x, z], i) => { if (i === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z); });
       const g = new THREE.ExtrudeGeometry(shape, { depth: b.h, bevelEnabled: false, curveSegments: 1 });
-      g.rotateX(-Math.PI / 2);
-      g.translate(0, GROUND_Y + b.h, 0);
+      g.rotateX(-Math.PI / 2); // 押し出し方向(+z)が +y(上)になる → 地面から上へ h
+      g.translate(0, GROUND_Y, 0);
       geos.push(g);
       for (let i = 0; i < wpts.length; i++) {
         const [x1, z1] = wpts[i], [x2, z2] = wpts[(i + 1) % wpts.length];

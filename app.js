@@ -34783,7 +34783,7 @@
             });
             const g2 = new ExtrudeGeometry(shape, { depth: b.h, bevelEnabled: false, curveSegments: 1 });
             g2.rotateX(-Math.PI / 2);
-            g2.translate(0, GROUND_Y + b.h, 0);
+            g2.translate(0, GROUND_Y, 0);
             geos.push(g2);
             for (let i = 0; i < wpts.length; i++) {
               const [x1, z1] = wpts[i], [x2, z2] = wpts[(i + 1) % wpts.length];
