@@ -1,0 +1,7 @@
+{"version":1,"frame":"metric-v1","exported":"2026-08-23T08:07:10.972Z","records":[
+{"id":"rmt5chf39","ts":"2026-08-23T05:06:36.837Z","type":"stairs","zone":"nishi_umeda","floor":"B1","floorSign":"B1F","px":[415.4,1305.4],"px2":null,"to":"1F","exit":"A-1","note":"モントレとエスタボートにつながっている。エスタボートはクオール薬局やイゼリヤがある。","gps":{"lat":34.699496,"lon":135.491823,"acc":30},"slope":null},
+{"id":"rmt5ib8i1","ts":"2026-08-23T07:49:46.057Z","type":"landmark","zone":"nishi_umeda","floor":"B1","floorSign":"B1F","px":[346.3,1357.3],"px2":null,"to":null,"exit":null,"note":"黄色い円形のオブジェ","gps":null,"slope":null},
+{"id":"rmt5ir9cx","ts":"2026-08-23T08:02:13.665Z","type":"wall","zone":"nishi_umeda","floor":"B1","floorSign":"B1F","px":[307.6,1381.2],"px2":[300.3,1384.6],"to":null,"exit":null,"note":"","gps":null,"slope":null},
+{"id":"rmt5ivgak","ts":"2026-08-23T08:05:29.276Z","type":"ev","zone":"nishi_umeda","floor":"B1","floorSign":"B1F","px":[330.5,1395.4],"px2":null,"to":"1F","exit":null,"note":"","gps":null,"slope":null},
+{"id":"rmt5iw29w","ts":"2026-08-23T08:05:57.764Z","type":"shop","zone":"nishi_umeda","floor":"B1","floorSign":"B1F","px":[320.2,1397],"px2":null,"to":null,"exit":null,"note":"梅田メンタルクリニック","gps":null,"slope":null}],
+"_applied":"landmarks.js に出口A-1/黄色オブジェ/EV/行き止まりを追加、shops.js SHOPS_MANUAL に梅田メンタルクリニックを追加"}

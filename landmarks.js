@@ -8,6 +8,11 @@
 
 export const LANDMARKS = [
   { id: 'lm_bigman', name: 'BIGMAN(大型ビジョン)', floor: 'S1', mx: 965, my: 606.4, zone: 'sanban', note: '阪急三番街 北館B1F。待ち合わせの定番' },
+  // --- 西梅田(ガーデンアベニュー南西端)。現地調査 2026-08-23 (tools/data/survey/2026-08-23_nishi_umeda.json) ---
+  { id: 'lm_exit_a1', name: '出口 A-1(階段→1F)', floor: 'B1', mx: 415.4, my: 1305.4, zone: 'nishi_umeda', note: 'ホテルモントレ大阪・エスタボート(クオール薬局・サイゼリヤ)へ上がる階段。GPSは通路から約100m北西を示したが、タップ位置が通路と整合するのでこちらを採用' },
+  { id: 'lm_yellow_obj', name: '黄色い円形のオブジェ', floor: 'B1', mx: 346.3, my: 1357.3, zone: 'nishi_umeda' },
+  { id: 'lm_ev_sw', name: 'EV(→1F)', floor: 'B1', mx: 330.5, my: 1395.4, zone: 'nishi_umeda', note: '地上1Fへのエレベーター' },
+  { id: 'lm_deadend_ritz', name: '行き止まり(壁)', floor: 'B1', mx: 304, my: 1383, zone: 'nishi_umeda', note: 'リッツ・カールトン前付近。通路はここで終わる(要確認: OSMではさらに南西へ続く線がある)' },
 ];
 
 export const PHOTOS = {

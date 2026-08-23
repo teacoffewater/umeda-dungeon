@@ -31613,7 +31613,9 @@
         { name: "\u962A\u6025\u3046\u3081\u3060\u672C\u5E97 B2F(\u751F\u9BAE\u30FB\u60E3\u83DC)", floor: "B2", mx: 987.1, my: 874.8, near: "j_hankyu_b2", zone: "hankyu_dept" },
         { name: "\u962A\u795E\u6885\u7530\u672C\u5E97 B1F(\u98DF\u54C1\u9928)", floor: "B1", mx: 942.7, my: 1043.9, near: "hanshin", zone: "hanshin_dept" },
         { name: "\u5802\u5CF6\u30A2\u30D0\u30F3\u30B6 B1F(\u30EC\u30B9\u30C8\u30E9\u30F3\u8857)", floor: "B1", mx: 785.7, my: 1499.6, near: "j_avz", zone: "avanza" },
-        { name: "\u962A\u795E\u6885\u7530\u672C\u5E97 B2F(\u962A\u795E\u30D0\u30EB\u6A2A\u4E01)", floor: "B2", mx: 934, my: 1049.6, near: "hanshin_home", zone: "hanshin_dept" }
+        { name: "\u962A\u795E\u6885\u7530\u672C\u5E97 B2F(\u962A\u795E\u30D0\u30EB\u6A2A\u4E01)", floor: "B2", mx: 934, my: 1049.6, near: "hanshin_home", zone: "hanshin_dept" },
+        { name: "\u6885\u7530\u30E1\u30F3\u30BF\u30EB\u30AF\u30EA\u30CB\u30C3\u30AF", floor: "B1", mx: 318.5, my: 1392, near: "nishi_umeda_01", zone: "nishi_umeda" }
+        // 現地調査 2026-08-23
       ];
       s = (name, area2, order, side) => ({ name, area: area2, order, side });
       g = (name, area2, cell) => ({ name, area: area2, cell });
@@ -33605,7 +33607,12 @@
   var init_landmarks = __esm({
     "landmarks.js"() {
       LANDMARKS = [
-        { id: "lm_bigman", name: "BIGMAN(\u5927\u578B\u30D3\u30B8\u30E7\u30F3)", floor: "S1", mx: 965, my: 606.4, zone: "sanban", note: "\u962A\u6025\u4E09\u756A\u8857 \u5317\u9928B1F\u3002\u5F85\u3061\u5408\u308F\u305B\u306E\u5B9A\u756A" }
+        { id: "lm_bigman", name: "BIGMAN(\u5927\u578B\u30D3\u30B8\u30E7\u30F3)", floor: "S1", mx: 965, my: 606.4, zone: "sanban", note: "\u962A\u6025\u4E09\u756A\u8857 \u5317\u9928B1F\u3002\u5F85\u3061\u5408\u308F\u305B\u306E\u5B9A\u756A" },
+        // --- 西梅田(ガーデンアベニュー南西端)。現地調査 2026-08-23 (tools/data/survey/2026-08-23_nishi_umeda.json) ---
+        { id: "lm_exit_a1", name: "\u51FA\u53E3 A-1(\u968E\u6BB5\u21921F)", floor: "B1", mx: 415.4, my: 1305.4, zone: "nishi_umeda", note: "\u30DB\u30C6\u30EB\u30E2\u30F3\u30C8\u30EC\u5927\u962A\u30FB\u30A8\u30B9\u30BF\u30DC\u30FC\u30C8(\u30AF\u30AA\u30FC\u30EB\u85AC\u5C40\u30FB\u30B5\u30A4\u30BC\u30EA\u30E4)\u3078\u4E0A\u304C\u308B\u968E\u6BB5\u3002GPS\u306F\u901A\u8DEF\u304B\u3089\u7D04100m\u5317\u897F\u3092\u793A\u3057\u305F\u304C\u3001\u30BF\u30C3\u30D7\u4F4D\u7F6E\u304C\u901A\u8DEF\u3068\u6574\u5408\u3059\u308B\u306E\u3067\u3053\u3061\u3089\u3092\u63A1\u7528" },
+        { id: "lm_yellow_obj", name: "\u9EC4\u8272\u3044\u5186\u5F62\u306E\u30AA\u30D6\u30B8\u30A7", floor: "B1", mx: 346.3, my: 1357.3, zone: "nishi_umeda" },
+        { id: "lm_ev_sw", name: "EV(\u21921F)", floor: "B1", mx: 330.5, my: 1395.4, zone: "nishi_umeda", note: "\u5730\u4E0A1F\u3078\u306E\u30A8\u30EC\u30D9\u30FC\u30BF\u30FC" },
+        { id: "lm_deadend_ritz", name: "\u884C\u304D\u6B62\u307E\u308A(\u58C1)", floor: "B1", mx: 304, my: 1383, zone: "nishi_umeda", note: "\u30EA\u30C3\u30C4\u30FB\u30AB\u30FC\u30EB\u30C8\u30F3\u524D\u4ED8\u8FD1\u3002\u901A\u8DEF\u306F\u3053\u3053\u3067\u7D42\u308F\u308B(\u8981\u78BA\u8A8D: OSM\u3067\u306F\u3055\u3089\u306B\u5357\u897F\u3078\u7D9A\u304F\u7DDA\u304C\u3042\u308B)" }
       ];
       PHOTOS = {
         // 例: shop_dotica_6: [{ file: 'photos/dotica_indian_curry.jpg', caption: 'インデアンカレー 堂島店の入口' }],
