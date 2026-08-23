@@ -32996,9 +32996,13 @@
     }
     for (const [key, t] of Object.entries(TYPES)) {
       const c = chip(t.label, () => {
+        if (pending) {
+          removeTemp(pending.marker);
+          pending = null;
+        }
         selType = key;
         renderChips();
-        say(`${t.label}: \u5E8A\u3092\u30BF\u30C3\u30D7`);
+        say(t.two ? "1\u70B9\u76EE\u3092\u30BF\u30C3\u30D7" : "\u5E8A\u3092\u30BF\u30C3\u30D7");
       });
       c.dataset.type = key;
       typesEl.appendChild(c);
@@ -33143,7 +33147,7 @@
       const t = TYPES[selType];
       if (t.two && !pending) {
         pending = { ...hit, marker: tempMarker(hit, t.color) };
-        say(`${t.label}: 2\u70B9\u76EE\u3092\u30BF\u30C3\u30D7`);
+        say("2\u70B9\u76EE\u3092\u30BF\u30C3\u30D7");
         return;
       }
       const rec = {
@@ -33395,7 +33399,7 @@
       }
     }
     function say(msg) {
-      $("sv-msg").textContent = msg;
+      $("sv-msg").textContent = `[${TYPES[selType].label}] ${msg}`;
     }
     function describe(rec) {
       const t = TYPES[rec.type]?.label || rec.type;

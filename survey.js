@@ -51,7 +51,11 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     c.dataset.sgrade = k; slopeEl.appendChild(c);
   }
   for (const [key, t] of Object.entries(TYPES)) {
-    const c = chip(t.label, () => { selType = key; renderChips(); say(`${t.label}: 床をタップ`); });
+    const c = chip(t.label, () => {
+      // 種別を変えたら、途中だった2点ものの1点目は破棄してやり直し(別種別で保存されるのを防ぐ)
+      if (pending) { removeTemp(pending.marker); pending = null; }
+      selType = key; renderChips(); say(t.two ? '1点目をタップ' : '床をタップ');
+    });
     c.dataset.type = key; typesEl.appendChild(c);
   }
   for (const s of FLOOR_SIGNS) {
@@ -148,7 +152,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const t = TYPES[selType];
     if (t.two && !pending) {
       pending = { ...hit, marker: tempMarker(hit, t.color) };
-      say(`${t.label}: 2点目をタップ`);
+      say('2点目をタップ');
       return;
     }
     const rec = {
@@ -332,7 +336,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
       c.classList.toggle('on', !!sl && (c.dataset.sdir ? c.dataset.sdir === sl.dir : c.dataset.sgrade === sl.grade));
     }
   }
-  function say(msg) { $('sv-msg').textContent = msg; }
+  function say(msg) { $('sv-msg').textContent = `[${TYPES[selType].label}] ${msg}`; }
   function describe(rec) {
     const t = TYPES[rec.type]?.label || rec.type;
     const sl = rec.slope ? ` ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}` : '';
