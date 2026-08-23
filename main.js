@@ -5,6 +5,7 @@ import { SHOP_AREAS, SHOPS_MANUAL, SHOPS_SCRAPED, ALIASES } from './shops.js';
 import { initSurvey } from './survey.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { OSM_BUILDINGS, OSM_ROADS } from './ground_data.js'; // tools/gen_ground.py が生成
+import { LANDMARKS, PHOTOS } from './landmarks.js';
 
 // ---------------------------------------------------------------------------
 // 梅田ダンジョン データ
@@ -1308,6 +1309,58 @@ function updateZoneLabels() {
 }
 updateZoneLabels();
 
+// ---------------------------------------------------------------------------
+// ランドマーク(目印): 金色のピン+名前。タップで写真/メモを表示。案内文の曲がり角の目印にも使う
+// ---------------------------------------------------------------------------
+const landmarkMeshes = [];
+const landmarkById = {};
+{
+  const pinGeo = new THREE.ConeGeometry(2.2, 6, 6);
+  const pinMat = new THREE.MeshBasicMaterial({ color: 0xffd23f });
+  for (const lm of LANDMARKS) {
+    const [x, z] = M2W([lm.mx, lm.my]);
+    lm.x = x; lm.z = z;
+    landmarkById[lm.id] = lm;
+    const pin = new THREE.Mesh(pinGeo, pinMat);
+    pin.rotation.x = Math.PI; // 先端を下に
+    pin.position.set(x, FLOOR_Y[lm.floor] + 7, z);
+    pin.userData.landmarkId = lm.id;
+    pin.renderOrder = 5;
+    const div = document.createElement('div');
+    div.className = 'landmark-label';
+    div.textContent = (lm.photo ? '📷 ' : '') + lm.name;
+    const lab = new CSS2DObject(div);
+    lab.position.set(0, 5, 0);
+    pin.add(lab);
+    floorGroups[lm.floor].add(pin);
+    floorLabelObjs[lm.floor].push(lab);
+    landmarkMeshes.push(pin);
+  }
+}
+// 写真ビューア(案内文のサムネイル・ランドマーク/店のタップで開く)
+const photoView = document.getElementById('photo-view');
+function showPhotos(title, photos, note) {
+  if (!photoView) return;
+  const list = (photos || []).map(p => `<figure><img src="${p.file}" alt=""><figcaption>${p.caption || ''}</figcaption></figure>`).join('');
+  photoView.innerHTML = `<div class="pv-box"><div class="pv-head"><b>${title}</b><button id="pv-close">閉じる</button></div>${note ? `<p class="pv-note">${note}</p>` : ''}${list || '<p class="pv-note">写真はまだありません</p>'}</div>`;
+  photoView.hidden = false;
+  photoView.querySelector('#pv-close').addEventListener('click', () => { photoView.hidden = true; });
+}
+photoView?.addEventListener('click', e => { if (e.target === photoView) photoView.hidden = true; });
+const photosOf = id => PHOTOS[id] || [];
+// 案内文に付けるサムネイル(写真があるときだけ)
+const photoTag = id => {
+  const ps = photosOf(id);
+  return ps.length ? `<img class="step-photo" src="${ps[0].file}" data-photo-id="${id}" alt="">` : '';
+};
+document.getElementById('route-info')?.addEventListener('click', e => {
+  const img = e.target.closest?.('.step-photo');
+  if (!img) return;
+  e.stopPropagation();
+  const id = img.dataset.photoId;
+  showPhotos(nodeById[id]?.name || landmarkById[id]?.name || id, photosOf(id));
+});
+
 // 通路端の延長量: 交差相手（そのノードに接続する他の通路）の半幅ぶんだけ伸ばす。
 // 行き止まりはノードで止める。露骨な重なり・突き抜けを防ぐ。
 const nodeEdgeWidths = {};
@@ -1701,6 +1754,7 @@ for (const [a, b, , z] of EDGES) if (z) edgeZoneByPair[pairKey(a, b)] = z;
 for (const [a, b, z] of HALL_EDGES) if (z) edgeZoneByPair[pairKey(a, b)] = z;
 const vertTypeByPair = {}; // 経路案内で使う種別（最安コストの設備）
 const vertPosByPair = {};  // ルートの線を実際の設備位置経由で描くため
+const vertNameByPair = {}; // 写真の対応付け用('v:' + name)
 const pairHasEv = new Set();
 const vertCostByPair = {};
 for (const v of VERTICALS) {
@@ -1712,6 +1766,7 @@ for (const v of VERTICALS) {
   if (!(key in vertCostByPair) || w < vertCostByPair[key]) {
     vertCostByPair[key] = w;
     vertTypeByPair[key] = v.type;
+    vertNameByPair[key] = v.name;
     const [vx, vz] = M2W([v.mx, v.my]);
     vertPosByPair[key] = { x: vx, z: vz };
   }
@@ -2028,6 +2083,15 @@ function showRoute(startId, goalId) {
   const pathNodes = path.map(id => nodeById[id]);
   const passExclude = new Set([startId, goalId]);
 
+  const nearestLandmarkTo = (x, z, floor, maxD = 12) => {
+    let best = null, bd = maxD;
+    for (const lm of LANDMARKS) {
+      if (lm.floor !== floor) continue;
+      const d = Math.hypot(lm.x - x, lm.z - z);
+      if (d < bd) { bd = d; best = lm; }
+    }
+    return best;
+  };
   const nearestShopTo = (x, z, floor, maxD = 22) => {
     let best = null, bd = maxD;
     for (const s of shopNodesByFloor[floor] || []) {
@@ -2123,7 +2187,8 @@ function showRoute(startId, goalId) {
       const anchor = vp ? nearestShopTo(vp.x, vp.z, prevN.floor) : null;
       const anchorTxt = anchor ? `「${shortShopName(anchor.name)}」の横の` : '';
       const dirWord = FLOOR_Y[n.floor] < FLOOR_Y[prevN.floor] ? '下りる' : '上がる';
-      pushStep(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}で ${fl(n.floor)}へ${dirWord}${evNote}</div>`, n);
+      const vname = vertNameByPair[key];
+      pushStep(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}で ${fl(n.floor)}へ${dirWord}${evNote}${photoTag(vname ? 'v:' + vname : (anchor ? anchor.id : ''))}</div>`, n);
       continue;
     }
 
@@ -2139,9 +2204,10 @@ function showRoute(startId, goalId) {
         firstLandmark = shortShopName(shop.name);
       }
       flushLeg();
-      const anchor = shop ? `「${shortShopName(shop.name)}」の前で` :
+      const lm = nearestLandmarkTo(n.x, n.z, n.floor);
+      const anchor = lm ? `「${lm.name}」の所で` : shop ? `「${shortShopName(shop.name)}」の前で` :
         (n.type !== 'junction' ? `${n.name}で` : '突き当たり・分岐を');
-      pushStep(`<div class="step turn">↪ ${anchor}${turn}へ曲がる</div>`, n);
+      pushStep(`<div class="step turn">↪ ${anchor}${turn}へ曲がる${photoTag(lm ? lm.id : shop ? shop.id : n.id)}</div>`, n);
       lastTurn = { idx: steps.length - 1, at: walked };
     } else if (n.type === 'spot' || n.type === 'station') {
       // 曲がらないが、広場や駅など見て分かる目標物は確認情報として出す
@@ -2162,7 +2228,7 @@ function showRoute(startId, goalId) {
   const startZoneTxt = startN.zone && ZONES[startN.zone] ? `（いまいる場所: ${ZONES[startN.zone].name} ${fl(startN.floor)}）` : '';
   html += `<div class="step">🧍 「${startN.name}」を出発${startZoneTxt}${firstLandmark ? ` — 「${firstLandmark}」が見える方向へ` : ''}</div>`;
   html += steps.join('');
-  html += `<div class="step" style="border-left-color:#ff5d8f">🏁 到着：${nodeById[goalId].name}</div>`;
+  html += `<div class="step" style="border-left-color:#ff5d8f">🏁 到着：${nodeById[goalId].name}${photoTag(goalId)}</div>`;
   info.innerHTML = html;
 
   // 各案内行に経路上の位置(カーブ上のu)を割り当てる → タップで赤い人がそこまで歩く
@@ -2505,6 +2571,13 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 5) return;
   if (survey) { survey.onTap(e); return; } // 調査モード: 店舗選択の代わりに記録
   pointer.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  raycaster.setFromCamera(pointer, camera);
+  const lmHit = raycaster.intersectObjects(landmarkMeshes.filter(m => m.parent.visible))[0];
+  if (lmHit) {
+    const lm = landmarkById[lmHit.object.userData.landmarkId];
+    showPhotos(lm.name, lm.photo ? [{ file: lm.photo, caption: lm.note }] : photosOf(lm.id), lm.note);
+    return;
+  }
   raycaster.setFromCamera(pointer, camera);
   const hit = raycaster.intersectObjects(nodeMeshes.filter(m => m.parent.visible))[0];
   if (!hit) return;

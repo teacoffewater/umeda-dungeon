@@ -33596,6 +33596,19 @@
     }
   });
 
+  // landmarks.js
+  var LANDMARKS, PHOTOS;
+  var init_landmarks = __esm({
+    "landmarks.js"() {
+      LANDMARKS = [
+        { id: "lm_bigman", name: "BIGMAN(\u5927\u578B\u30D3\u30B8\u30E7\u30F3)", floor: "S1", mx: 965, my: 606.4, zone: "sanban", note: "\u962A\u6025\u4E09\u756A\u8857 \u5317\u9928B1F\u3002\u5F85\u3061\u5408\u308F\u305B\u306E\u5B9A\u756A" }
+      ];
+      PHOTOS = {
+        // 例: shop_dotica_6: [{ file: 'photos/dotica_indian_curry.jpg', caption: 'インデアンカレー 堂島店の入口' }],
+      };
+    }
+  });
+
   // main.js
   var require_main = __commonJS({
     "main.js"() {
@@ -33606,6 +33619,7 @@
       init_survey();
       init_BufferGeometryUtils();
       init_ground_data();
+      init_landmarks();
       var FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
       var FLOOR_LABEL = { S1: "\u6D45\u5C64", B1: "\u4E2D\u67A2\u5C64", B2: "\u6DF1\u5C64" };
       var fl = (f) => FLOOR_LABEL[f] || `${f}F`;
@@ -35156,6 +35170,57 @@
         }
       }
       updateZoneLabels();
+      var landmarkMeshes = [];
+      var landmarkById = {};
+      {
+        const pinGeo = new ConeGeometry(2.2, 6, 6);
+        const pinMat = new MeshBasicMaterial({ color: 16765503 });
+        for (const lm of LANDMARKS) {
+          const [x, z] = M2W([lm.mx, lm.my]);
+          lm.x = x;
+          lm.z = z;
+          landmarkById[lm.id] = lm;
+          const pin = new Mesh(pinGeo, pinMat);
+          pin.rotation.x = Math.PI;
+          pin.position.set(x, FLOOR_Y[lm.floor] + 7, z);
+          pin.userData.landmarkId = lm.id;
+          pin.renderOrder = 5;
+          const div = document.createElement("div");
+          div.className = "landmark-label";
+          div.textContent = (lm.photo ? "\u{1F4F7} " : "") + lm.name;
+          const lab = new CSS2DObject(div);
+          lab.position.set(0, 5, 0);
+          pin.add(lab);
+          floorGroups[lm.floor].add(pin);
+          floorLabelObjs[lm.floor].push(lab);
+          landmarkMeshes.push(pin);
+        }
+      }
+      var photoView = document.getElementById("photo-view");
+      function showPhotos(title, photos, note) {
+        if (!photoView) return;
+        const list = (photos || []).map((p) => `<figure><img src="${p.file}" alt=""><figcaption>${p.caption || ""}</figcaption></figure>`).join("");
+        photoView.innerHTML = `<div class="pv-box"><div class="pv-head"><b>${title}</b><button id="pv-close">\u9589\u3058\u308B</button></div>${note ? `<p class="pv-note">${note}</p>` : ""}${list || '<p class="pv-note">\u5199\u771F\u306F\u307E\u3060\u3042\u308A\u307E\u305B\u3093</p>'}</div>`;
+        photoView.hidden = false;
+        photoView.querySelector("#pv-close").addEventListener("click", () => {
+          photoView.hidden = true;
+        });
+      }
+      photoView?.addEventListener("click", (e) => {
+        if (e.target === photoView) photoView.hidden = true;
+      });
+      var photosOf = (id) => PHOTOS[id] || [];
+      var photoTag = (id) => {
+        const ps = photosOf(id);
+        return ps.length ? `<img class="step-photo" src="${ps[0].file}" data-photo-id="${id}" alt="">` : "";
+      };
+      document.getElementById("route-info")?.addEventListener("click", (e) => {
+        const img = e.target.closest?.(".step-photo");
+        if (!img) return;
+        e.stopPropagation();
+        const id = img.dataset.photoId;
+        showPhotos(nodeById[id]?.name || landmarkById[id]?.name || id, photosOf(id));
+      });
       var nodeEdgeWidths = {};
       for (const [a, b, w] of EDGES) {
         (nodeEdgeWidths[a] ||= []).push(w);
@@ -35510,6 +35575,7 @@
       for (const [a, b, z] of HALL_EDGES) if (z) edgeZoneByPair[pairKey(a, b)] = z;
       var vertTypeByPair = {};
       var vertPosByPair = {};
+      var vertNameByPair = {};
       var pairHasEv = /* @__PURE__ */ new Set();
       var vertCostByPair = {};
       for (const v of VERTICALS) {
@@ -35520,6 +35586,7 @@
         if (!(key in vertCostByPair) || w < vertCostByPair[key]) {
           vertCostByPair[key] = w;
           vertTypeByPair[key] = v.type;
+          vertNameByPair[key] = v.name;
           const [vx, vz] = M2W([v.mx, v.my]);
           vertPosByPair[key] = { x: vx, z: vz };
         }
@@ -35801,6 +35868,18 @@
         const minutes = Math.max(1, Math.round(total / 80));
         const pathNodes = path.map((id) => nodeById[id]);
         const passExclude = /* @__PURE__ */ new Set([startId, goalId]);
+        const nearestLandmarkTo = (x, z, floor, maxD = 12) => {
+          let best = null, bd = maxD;
+          for (const lm of LANDMARKS) {
+            if (lm.floor !== floor) continue;
+            const d = Math.hypot(lm.x - x, lm.z - z);
+            if (d < bd) {
+              bd = d;
+              best = lm;
+            }
+          }
+          return best;
+        };
         const nearestShopTo = (x, z, floor, maxD = 22) => {
           let best = null, bd = maxD;
           for (const s2 of shopNodesByFloor[floor] || []) {
@@ -35905,7 +35984,8 @@
             const anchor = vp ? nearestShopTo(vp.x, vp.z, prevN.floor) : null;
             const anchorTxt = anchor ? `\u300C${shortShopName(anchor.name)}\u300D\u306E\u6A2A\u306E` : "";
             const dirWord = FLOOR_Y[n.floor] < FLOOR_Y[prevN.floor] ? "\u4E0B\u308A\u308B" : "\u4E0A\u304C\u308B";
-            pushStep(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}\u3067 ${fl(n.floor)}\u3078${dirWord}${evNote}</div>`, n);
+            const vname = vertNameByPair[key];
+            pushStep(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}\u3067 ${fl(n.floor)}\u3078${dirWord}${evNote}${photoTag(vname ? "v:" + vname : anchor ? anchor.id : "")}</div>`, n);
             continue;
           }
           const turn = turnAt(i);
@@ -35919,8 +35999,9 @@
               firstLandmark = shortShopName(shop.name);
             }
             flushLeg();
-            const anchor = shop ? `\u300C${shortShopName(shop.name)}\u300D\u306E\u524D\u3067` : n.type !== "junction" ? `${n.name}\u3067` : "\u7A81\u304D\u5F53\u305F\u308A\u30FB\u5206\u5C90\u3092";
-            pushStep(`<div class="step turn">\u21AA ${anchor}${turn}\u3078\u66F2\u304C\u308B</div>`, n);
+            const lm = nearestLandmarkTo(n.x, n.z, n.floor);
+            const anchor = lm ? `\u300C${lm.name}\u300D\u306E\u6240\u3067` : shop ? `\u300C${shortShopName(shop.name)}\u300D\u306E\u524D\u3067` : n.type !== "junction" ? `${n.name}\u3067` : "\u7A81\u304D\u5F53\u305F\u308A\u30FB\u5206\u5C90\u3092";
+            pushStep(`<div class="step turn">\u21AA ${anchor}${turn}\u3078\u66F2\u304C\u308B${photoTag(lm ? lm.id : shop ? shop.id : n.id)}</div>`, n);
             lastTurn = { idx: steps.length - 1, at: walked };
           } else if (n.type === "spot" || n.type === "station") {
             flushLeg();
@@ -35938,7 +36019,7 @@
         const startZoneTxt = startN.zone && ZONES[startN.zone] ? `\uFF08\u3044\u307E\u3044\u308B\u5834\u6240: ${ZONES[startN.zone].name} ${fl(startN.floor)}\uFF09` : "";
         html += `<div class="step">\u{1F9CD} \u300C${startN.name}\u300D\u3092\u51FA\u767A${startZoneTxt}${firstLandmark ? ` \u2014 \u300C${firstLandmark}\u300D\u304C\u898B\u3048\u308B\u65B9\u5411\u3078` : ""}</div>`;
         html += steps.join("");
-        html += `<div class="step" style="border-left-color:#ff5d8f">\u{1F3C1} \u5230\u7740\uFF1A${nodeById[goalId].name}</div>`;
+        html += `<div class="step" style="border-left-color:#ff5d8f">\u{1F3C1} \u5230\u7740\uFF1A${nodeById[goalId].name}${photoTag(goalId)}</div>`;
         info.innerHTML = html;
         {
           const anchors = [startN, ...stepNodes, nodeById[goalId]];
@@ -36251,6 +36332,13 @@
           return;
         }
         pointer.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+        raycaster.setFromCamera(pointer, camera);
+        const lmHit = raycaster.intersectObjects(landmarkMeshes.filter((m) => m.parent.visible))[0];
+        if (lmHit) {
+          const lm = landmarkById[lmHit.object.userData.landmarkId];
+          showPhotos(lm.name, lm.photo ? [{ file: lm.photo, caption: lm.note }] : photosOf(lm.id), lm.note);
+          return;
+        }
         raycaster.setFromCamera(pointer, camera);
         const hit = raycaster.intersectObjects(nodeMeshes.filter((m) => m.parent.visible))[0];
         if (!hit) return;
