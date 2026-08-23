@@ -34878,8 +34878,8 @@
             cyl.renderOrder = 3;
             groundGroup.add(cyl);
           };
-          addTube([189.3, 592.9], GROUND_Y + 35 * LV, [225.1, 568.4], GROUND_Y + 39 * LV);
           addTube([236.9, 589.4], GROUND_Y + 35 * LV, [206.2, 567.3], GROUND_Y + 39 * LV);
+          addTube([240.4, 584.5], GROUND_Y + 35 * LV, [209.7, 562.4], GROUND_Y + 39 * LV);
           addBldgLabel("\u6885\u7530\u30B9\u30AB\u30A4\u30D3\u30EB", 215.5, 578.6, GROUND_Y + 40 * LV + 9);
         }
         {

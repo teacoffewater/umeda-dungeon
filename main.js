@@ -1054,8 +1054,9 @@ scene.add(groundGroup);
       cyl.renderOrder = 3;
       groundGroup.add(cyl);
     };
-    addTube([189.3, 592.9], GROUND_Y + 35 * LV, [225.1, 568.4], GROUND_Y + 39 * LV);
+    // 空中エスカレーター: 東塔35Fから空中庭園(39F)の穴に向かって2本が平行に伸びる(現地確認 2026-08-23)
     addTube([236.9, 589.4], GROUND_Y + 35 * LV, [206.2, 567.3], GROUND_Y + 39 * LV);
+    addTube([240.4, 584.5], GROUND_Y + 35 * LV, [209.7, 562.4], GROUND_Y + 39 * LV);
     addBldgLabel('梅田スカイビル', 215.5, 578.6, GROUND_Y + 40 * LV + 9);
   }
 
