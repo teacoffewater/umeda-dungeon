@@ -32972,7 +32972,28 @@
     const markers = /* @__PURE__ */ new Map();
     const raycaster = new Raycaster();
     const ndc = new Vector2();
-    const typesEl = $("sv-types"), floorEl = $("sv-floor"), toEl = $("sv-to");
+    const typesEl = $("sv-types"), floorEl = $("sv-floor"), toEl = $("sv-to"), slopeEl = $("sv-slope");
+    const SLOPE_DIR = { up: "\u4E0A\u308A", down: "\u4E0B\u308A" }, SLOPE_GRADE = { gentle: "\u3086\u308B\u3044", normal: "\u3075\u3064\u3046", steep: "\u6025" };
+    for (const [k, v] of Object.entries(SLOPE_DIR)) {
+      const c = chip(v, () => {
+        if (draft?.rec.slope) {
+          draft.rec.slope.dir = k;
+          renderChips();
+        }
+      });
+      c.dataset.sdir = k;
+      slopeEl.appendChild(c);
+    }
+    for (const [k, v] of Object.entries(SLOPE_GRADE)) {
+      const c = chip(v, () => {
+        if (draft?.rec.slope) {
+          draft.rec.slope.grade = k;
+          renderChips();
+        }
+      });
+      c.dataset.sgrade = k;
+      slopeEl.appendChild(c);
+    }
     for (const [key, t] of Object.entries(TYPES)) {
       const c = chip(t.label, () => {
         selType = key;
@@ -33137,7 +33158,9 @@
         to: null,
         exit: null,
         note: "",
-        gps: null
+        gps: null,
+        slope: t.slope ? { dir: "up", grade: "gentle" } : null
+        // 既定: 2点目に向かってゆるい上り
       };
       if (pending) {
         removeTemp(pending.marker);
@@ -33217,6 +33240,7 @@
       $("sv-form-title").textContent = `${t.label} @ ${rec.zone} ${rec.floorSign} (${rec.px.join(", ")})`;
       $("sv-to-row").hidden = !t.to;
       $("sv-exit-row").hidden = !t.exit;
+      $("sv-slope-row").hidden = !t.slope;
       $("sv-exit").value = "";
       $("sv-note").value = "";
       gpsBtn.disabled = false;
@@ -33365,16 +33389,22 @@
       for (const c of typesEl.children) c.classList.toggle("on", c.dataset.type === selType);
       for (const c of floorEl.children) c.classList.toggle("on", c.dataset.sign === floorSign);
       for (const c of toEl.children) c.classList.toggle("on", !!draft && c.dataset.to === draft.rec.to);
+      for (const c of slopeEl.children) {
+        const sl = draft?.rec.slope;
+        c.classList.toggle("on", !!sl && (c.dataset.sdir ? c.dataset.sdir === sl.dir : c.dataset.sgrade === sl.grade));
+      }
     }
     function say(msg) {
       $("sv-msg").textContent = msg;
     }
     function describe(rec) {
       const t = TYPES[rec.type]?.label || rec.type;
-      return `${t}${rec.exit ? " " + rec.exit : ""}${rec.to ? "\u2192" + rec.to : ""} (${rec.px.join(",")})`;
+      const sl = rec.slope ? ` ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}` : "";
+      return `${t}${sl}${rec.exit ? " " + rec.exit : ""}${rec.to ? "\u2192" + rec.to : ""} (${rec.px.join(",")})`;
     }
     function shortLabel(rec) {
       const t = TYPES[rec.type]?.label || rec.type;
+      if (rec.slope) return `\u5742 ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}`;
       return rec.exit ? `\u51FA\u53E3 ${rec.exit}` : rec.to ? `${t}\u2192${rec.to}` : rec.note ? `${t}: ${rec.note.slice(0, 10)}` : t;
     }
     function r1(v) {
@@ -33395,8 +33425,12 @@
         esc: { label: "ESC", color: 16761405, to: true },
         wall: { label: "\u58C1\u30FB\u884C\u304D\u6B62\u307E\u308A", color: 16734810, two: true },
         corridor: { label: "\u901A\u8DEF\u3042\u308A", color: 8257486, two: true },
+        slope: { label: "\u5742", color: 16755021, two: true, slope: true },
+        // 始まり→終わりの順に2点。上り/下りは2点目に向かって
         exit: { label: "\u51FA\u53E3\u756A\u53F7", color: 16777215, exit: true },
         shop: { label: "\u5E97", color: 16754893 },
+        landmark: { label: "\u76EE\u5370", color: 16769126 },
+        // 看板・柱・オブジェなど。写真は別送(撮影時刻と記録時刻で対応付ける)
         memo: { label: "\u30E1\u30E2", color: 13148927 }
       };
       FLOOR_SIGNS = ["B2F", "B1F", "1F", "2F"];

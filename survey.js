@@ -14,8 +14,10 @@ export const TYPES = {
   esc:      { label: 'ESC',         color: 0xffc23d, to: true },
   wall:     { label: '壁・行き止まり', color: 0xff5a5a, two: true },
   corridor: { label: '通路あり',    color: 0x7dffce, two: true },
+  slope:    { label: '坂',          color: 0xffa94d, two: true, slope: true }, // 始まり→終わりの順に2点。上り/下りは2点目に向かって
   exit:     { label: '出口番号',    color: 0xffffff, exit: true },
   shop:     { label: '店',          color: 0xffa8cd },
+  landmark: { label: '目印',        color: 0xffe066 }, // 看板・柱・オブジェなど。写真は別送(撮影時刻と記録時刻で対応付ける)
   memo:     { label: 'メモ',        color: 0xc8a2ff },
 };
 const FLOOR_SIGNS = ['B2F', 'B1F', '1F', '2F'];
@@ -37,7 +39,16 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   const ndc = new THREE.Vector2();
 
   // ---- UI ----
-  const typesEl = $('sv-types'), floorEl = $('sv-floor'), toEl = $('sv-to');
+  const typesEl = $('sv-types'), floorEl = $('sv-floor'), toEl = $('sv-to'), slopeEl = $('sv-slope');
+  const SLOPE_DIR = { up: '上り', down: '下り' }, SLOPE_GRADE = { gentle: 'ゆるい', normal: 'ふつう', steep: '急' };
+  for (const [k, v] of Object.entries(SLOPE_DIR)) {
+    const c = chip(v, () => { if (draft?.rec.slope) { draft.rec.slope.dir = k; renderChips(); } });
+    c.dataset.sdir = k; slopeEl.appendChild(c);
+  }
+  for (const [k, v] of Object.entries(SLOPE_GRADE)) {
+    const c = chip(v, () => { if (draft?.rec.slope) { draft.rec.slope.grade = k; renderChips(); } });
+    c.dataset.sgrade = k; slopeEl.appendChild(c);
+  }
   for (const [key, t] of Object.entries(TYPES)) {
     const c = chip(t.label, () => { selType = key; renderChips(); say(`${t.label}: 床をタップ`); });
     c.dataset.type = key; typesEl.appendChild(c);
@@ -144,6 +155,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
       zone: (pending || hit).zone, floor: (pending || hit).floor, floorSign,
       px: (pending || hit).px, px2: pending ? hit.px : null,
       to: null, exit: null, note: '', gps: null,
+      slope: t.slope ? { dir: 'up', grade: 'gentle' } : null, // 既定: 2点目に向かってゆるい上り
     };
     if (pending) { removeTemp(pending.marker); pending = null; }
     draft = { rec, hit2: hit };
@@ -214,6 +226,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     $('sv-form-title').textContent = `${t.label} @ ${rec.zone} ${rec.floorSign} (${rec.px.join(', ')})`;
     $('sv-to-row').hidden = !t.to;
     $('sv-exit-row').hidden = !t.exit;
+    $('sv-slope-row').hidden = !t.slope;
     $('sv-exit').value = '';
     $('sv-note').value = '';
     gpsBtn.disabled = false; gpsBtn.textContent = 'GPSを付ける';
@@ -313,14 +326,20 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     for (const c of typesEl.children) c.classList.toggle('on', c.dataset.type === selType);
     for (const c of floorEl.children) c.classList.toggle('on', c.dataset.sign === floorSign);
     for (const c of toEl.children) c.classList.toggle('on', !!draft && c.dataset.to === draft.rec.to);
+    for (const c of slopeEl.children) {
+      const sl = draft?.rec.slope;
+      c.classList.toggle('on', !!sl && (c.dataset.sdir ? c.dataset.sdir === sl.dir : c.dataset.sgrade === sl.grade));
+    }
   }
   function say(msg) { $('sv-msg').textContent = msg; }
   function describe(rec) {
     const t = TYPES[rec.type]?.label || rec.type;
-    return `${t}${rec.exit ? ' ' + rec.exit : ''}${rec.to ? '→' + rec.to : ''} (${rec.px.join(',')})`;
+    const sl = rec.slope ? ` ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}` : '';
+    return `${t}${sl}${rec.exit ? ' ' + rec.exit : ''}${rec.to ? '→' + rec.to : ''} (${rec.px.join(',')})`;
   }
   function shortLabel(rec) {
     const t = TYPES[rec.type]?.label || rec.type;
+    if (rec.slope) return `坂 ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}`;
     return rec.exit ? `出口 ${rec.exit}` : rec.to ? `${t}→${rec.to}` : rec.note ? `${t}: ${rec.note.slice(0, 10)}` : t;
   }
   function r1(v) { return Math.round(v * 10) / 10; }
