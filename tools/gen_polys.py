@@ -119,6 +119,12 @@ print(f'OSM ways adopted: {len(osm_ways)}')
 OSM_W = {'whity': 14, 'umechika': 12, 'diamor': 14, 'ekimae': 9, 'sonechika': 13,
          'dotica': 12, 'nishi_umeda': 13, 'osaka_sta': 13, 'sanban': 12}
 
+# --- 現地調査の壁・行き止まり: 床から除く範囲(floorごとに結合) ---
+_cuts = json.load(open(os.path.join(DATA, 'floor_cuts.json'))).get('cuts', [])
+FLOOR_CUTS = {}
+for c in _cuts:
+    FLOOR_CUTS[c['floor']] = unary_union([FLOOR_CUTS.get(c['floor'], Polygon()), Polygon(c['poly'])])
+
 # --- ビル外形プレート ---
 bld = json.load(open(os.path.join(DATA, 'osm_buildings.json')))
 bgeo = {}
@@ -321,6 +327,8 @@ for floor in ('S1', 'B1', 'B2'):
             u = u.difference(claimed.buffer(0.15))
         claimed = unary_union([claimed, u]) if claimed is not None else u
         u = u.intersection(BOUNDS)
+        if floor in FLOOR_CUTS:
+            u = u.difference(FLOOR_CUTS[floor])  # 現地調査の壁・行き止まり(tools/data/floor_cuts.json)
         u = u.simplify(1.0, preserve_topology=True).buffer(0)
         polys = list(u.geoms) if u.geom_type == 'MultiPolygon' else [u]
         first = True
