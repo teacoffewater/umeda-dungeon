@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { SHOP_AREAS, SHOPS_MANUAL, SHOPS_SCRAPED, ALIASES } from './shops.js';
 import { initSurvey } from './survey.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { OSM_BUILDINGS, OSM_ROADS } from './ground_data.js'; // tools/gen_ground.py が生成
 
 // ---------------------------------------------------------------------------
 // 梅田ダンジョン データ
@@ -890,15 +892,6 @@ scene.add(groundGroup);
     { poly: [[962.5, 1080.5], [979.3, 1130.6], [1008.7, 1119.6], [977.8, 1066.3], [961, 1076.2]], h: 55, name: 'イーマ' },
   ];
   // 街の地: 名もなきビル群（低層〜中層）で市街の質感を足す
-  const FILLER_BUILDINGS = [
-    [1067.2, 439.6, 1146.8, 504.7, 40], [1178.3, 443.8, 1280.3, 518.6, 30], [1301, 467, 1381.1, 549.9, 24], // 茶屋町
-    [1273.9, 654.7, 1365.1, 738, 26], [1177.7, 765.1, 1268.9, 848.3, 22], [1289, 779, 1380.6, 871.1, 20], // 阪急東通り
-    [1151.4, 979.9, 1242.7, 1063.2, 28], [1272.1, 940, 1363.7, 1032.2, 22],                          // 曽根崎・お初天神
-    [1134.5, 1140.9, 1225.8, 1224.2, 30], [1255.5, 1109.5, 1358.1, 1202.1, 24],                          // 曽根崎新地東
-    [631.9, 1372.2, 734, 1447, 30], [765.2, 1376.1, 878.3, 1451.2, 26], [908.9, 1362.1, 1022, 1437.2, 30],  // 北新地
-    [465.2, 1359.9, 578.6, 1444, 34], [310.7, 1382.8, 435.2, 1467.3, 40],                              // 堂島
-    [162.6, 925, 276.3, 1017.9, 36], [156.2, 1067.8, 269.9, 1160.8, 30],                               // 大阪駅西
-  ];
 
   const faceMat = new THREE.MeshBasicMaterial({
     color: 0x9fb6d4, transparent: true, opacity: 0.12, depthWrite: false,
@@ -963,7 +956,52 @@ scene.add(groundGroup);
     // 名前はランドマークのみ（全ビルに付けると引きの視点で文字が渋滞する）
     if (b.name && b.lm) addBldgLabel(b.name, (b.r[0] + b.r[2]) / 2, (b.r[1] + b.r[3]) / 2, GROUND_Y + b.h + 7);
   }
-  for (const [x1, y1, x2, y2, h] of FILLER_BUILDINGS) addBox([x1, y1, x2, y2], h, edgeMatFill);
+  // --- OSM全ビル(ランドマーク以外の約1,300棟)。面は1メッシュに結合、輪郭は上端のみ(描画負荷を抑える) ---
+  {
+    const geos = [];
+    const topPts = [];
+    for (const b of OSM_BUILDINGS) {
+      const shape = new THREE.Shape();
+      const wpts = b.p.map(([mx, my]) => M2W([mx, my]));
+      wpts.forEach(([x, z], i) => { if (i === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z); });
+      const g = new THREE.ExtrudeGeometry(shape, { depth: b.h, bevelEnabled: false, curveSegments: 1 });
+      g.rotateX(-Math.PI / 2);
+      g.translate(0, GROUND_Y + b.h, 0);
+      geos.push(g);
+      for (let i = 0; i < wpts.length; i++) {
+        const [x1, z1] = wpts[i], [x2, z2] = wpts[(i + 1) % wpts.length];
+        topPts.push(x1, GROUND_Y + b.h, z1, x2, GROUND_Y + b.h, z2);
+      }
+    }
+    const merged = mergeGeometries(geos, false);
+    const mass = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ color: 0x8fa6c2, transparent: true, opacity: 0.05, depthWrite: false }));
+    mass.renderOrder = 1;
+    const topGeo = new THREE.BufferGeometry();
+    topGeo.setAttribute('position', new THREE.Float32BufferAttribute(topPts, 3));
+    groundGroup.add(mass, new THREE.LineSegments(topGeo, edgeMatFill));
+  }
+  // --- OSM道路網(クラス別に結合済みポリゴン)。地面に薄く敷く ---
+  {
+    const roadMat = {
+      major: new THREE.MeshBasicMaterial({ color: 0x3a4a63, transparent: true, opacity: 0.35, depthWrite: false }),
+      minor: new THREE.MeshBasicMaterial({ color: 0x2c3a52, transparent: true, opacity: 0.22, depthWrite: false }),
+    };
+    for (const r of OSM_ROADS) {
+      const shape = new THREE.Shape();
+      r.p.forEach(([mx, my], i) => { const [x, z] = M2W([mx, my]); if (i === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z); });
+      for (const h of r.holes || []) {
+        const path = new THREE.Path();
+        h.forEach(([mx, my], i) => { const [x, z] = M2W([mx, my]); if (i === 0) path.moveTo(x, -z); else path.lineTo(x, -z); });
+        shape.holes.push(path);
+      }
+      const g = new THREE.ShapeGeometry(shape);
+      g.rotateX(-Math.PI / 2);
+      const mesh = new THREE.Mesh(g, roadMat[r.cls] || roadMat.minor);
+      mesh.position.y = GROUND_Y + (r.cls === 'major' ? 0.5 : 0.3);
+      mesh.renderOrder = 2;
+      groundGroup.add(mesh);
+    }
+  }
 
   // --- 梅田スカイビル: OSM building:part 実測。段丘状ツインタワー(吹き抜け側ほど高い)+
   //     空中庭園(39-40Fの板が両塔頂部と吹き抜けを覆い、中央に円形開口)+35F→39F斜行チューブ ---
