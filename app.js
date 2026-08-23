@@ -31614,8 +31614,8 @@
         { name: "\u962A\u795E\u6885\u7530\u672C\u5E97 B1F(\u98DF\u54C1\u9928)", floor: "B1", mx: 942.7, my: 1043.9, near: "hanshin", zone: "hanshin_dept" },
         { name: "\u5802\u5CF6\u30A2\u30D0\u30F3\u30B6 B1F(\u30EC\u30B9\u30C8\u30E9\u30F3\u8857)", floor: "B1", mx: 785.7, my: 1499.6, near: "j_avz", zone: "avanza" },
         { name: "\u962A\u795E\u6885\u7530\u672C\u5E97 B2F(\u962A\u795E\u30D0\u30EB\u6A2A\u4E01)", floor: "B2", mx: 934, my: 1049.6, near: "hanshin_home", zone: "hanshin_dept" },
-        { name: "\u6885\u7530\u30E1\u30F3\u30BF\u30EB\u30AF\u30EA\u30CB\u30C3\u30AF", floor: "B1", mx: 235.8, my: 1435.4, near: "exit_6_1", zone: "nishi_umeda" }
-        // 出口6-1のすぐ横(現地確認 2026-08-23)
+        { name: "\u6885\u7530\u30E1\u30F3\u30BF\u30EB\u30AF\u30EA\u30CB\u30C3\u30AF", floor: "B1", mx: 234, my: 1441.3, near: "exit_6_1", zone: "nishi_umeda" }
+        // 出口6-1の横、地下側から見て左側(エスカレーターの反対側。現地確認 2026-08-23)
       ];
       s = (name, area2, order, side) => ({ name, area: area2, order, side });
       g = (name, area2, cell) => ({ name, area: area2, cell });
@@ -33619,7 +33619,7 @@
           photo: "photos/yellow_object.jpg",
           note: "\u51FA\u53E36-1(\u5DE6)\u30686-2(\u53F3)\u306EY\u5B57\u8DEF\u306E\u80A1\u306B\u3042\u308B\u9EC4\u8272\u3044\u5186\u5F62\u306E\u91D1\u5C5E\u30AA\u30D6\u30B8\u30A7(KALEIDOSCOPE)\u3002\u30BF\u30C3\u30D7\u4F4D\u7F6E(346,1357)\u306F\u5199\u771F\u306B\u3088\u308A\u5206\u5C90\u70B9\u3078\u88DC\u6B63"
         },
-        { id: "lm_ev_sw", name: "EV(\u21921F)", floor: "B1", mx: 230.8, my: 1441.4, zone: "nishi_umeda", note: "\u51FA\u53E36-1\u306E\u3059\u3050\u6A2A\u3002\u5730\u4E0A1F\u3078\u306E\u30A8\u30EC\u30D9\u30FC\u30BF\u30FC(\u73FE\u5730\u78BA\u8A8D 2026-08-23)" }
+        { id: "lm_esc_6_1", name: "\u4E0A\u308A\u30A8\u30B9\u30AB\u30EC\u30FC\u30BF\u30FC(\u21921F)", floor: "B1", mx: 224.4, my: 1434.1, zone: "nishi_umeda", note: "\u51FA\u53E36-1\u3001\u5730\u4E0B\u5074\u304B\u3089\u898B\u3066\u53F3\u5074\u3002\u4E0A\u308A\u5C02\u7528(\u73FE\u5730\u78BA\u8A8D 2026-08-23)" }
       ];
       PHOTOS = {
         lm_yellow_obj: [
