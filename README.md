@@ -26,6 +26,9 @@ npx -y http-server . -p 8931 -c-1
 `https://teacoffewater.github.io/umeda-dungeon/?survey=1` をスマホで開く(地上かホテルで一度開いてから地下へ)。
 種別(階段 / EV / ESC / 壁・行き止まり / 通路あり / 出口番号 / 店 / メモ)を選んで床をタップ → 保存。
 記録はスマホ内(localStorage)に残り、「書き出し」でJSONを共有/コピーできる。座標はメートル(`frame: metric-v1`)。
+GPS: 地上(空が見える所)で「GPSテスト」か記録フォームの「GPSを付ける」。初回の許可ダイアログでは「Appの使用中は許可」を選ぶ。
+「User denied Geolocation」(拒否)になったら、Safariのアドレスバー左「ぁあ」→ Webサイトの設定 → 位置情報 →「許可」、
+または 設定 → Safari → 位置情報 →「確認」に戻す。Safari以外のアプリ内ブラウザ(LINE・メール等)では取れない。
 
 ## データの出典
 

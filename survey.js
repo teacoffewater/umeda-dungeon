@@ -59,18 +59,57 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   $('sv-cancel').addEventListener('click', cancelDraft);
   $('sv-copy').addEventListener('click', copyExport);
   $('sv-close').addEventListener('click', () => { $('sv-exportbox').hidden = true; });
-  const gpsBtn = $('sv-gps');
-  if (!navigator.geolocation) gpsBtn.hidden = true;
+  // ---- GPS ----
+  // 取得は watchPosition で最大40秒待ち、精度30m以下が出たら即採用、時間切れなら最良の1点を採用。
+  // 拒否(code 1)のときは iPhone 側の直し方を画面に出す(コードからは直せない)
+  const gpsBtn = $('sv-gps'), gpsTest = $('sv-gpstest'), gpsState = $('sv-gpsstate');
+  const GPS_MSG = {
+    1: '位置情報が拒否されています。アドレスバー左の「ぁあ」→ Webサイトの設定 → 位置情報 →「許可」。または 設定 → Safari → 位置情報 →「確認」',
+    2: '位置を測れません。地上の空が見える所で再試行してください',
+    3: '時間切れ(40秒)。地上で空が見える所でもう一度',
+  };
+  function setGpsState(text) { if (gpsState) gpsState.textContent = `GPS: ${text}`; }
+  if (!navigator.geolocation) { gpsBtn.hidden = true; if (gpsTest) gpsTest.hidden = true; setGpsState('この端末では使えません'); }
+  else if (navigator.permissions?.query) {
+    navigator.permissions.query({ name: 'geolocation' }).then(st => {
+      const label = { granted: '許可', denied: '拒否', prompt: '未確認(押すと許可を聞きます)' }[st.state] || st.state;
+      setGpsState(label);
+      st.onchange = () => setGpsState({ granted: '許可', denied: '拒否', prompt: '未確認' }[st.state] || st.state);
+    }).catch(() => setGpsState('未確認'));
+  } else setGpsState('未確認');
+  function acquireGps(onProgress) {
+    return new Promise((resolve, reject) => {
+      let best = null, done = false;
+      const finish = (ok, val) => { if (done) return; done = true; navigator.geolocation.clearWatch(id); clearTimeout(timer); ok ? resolve(val) : reject(val); };
+      const id = navigator.geolocation.watchPosition(pos => {
+        const g = { lat: +pos.coords.latitude.toFixed(6), lon: +pos.coords.longitude.toFixed(6), acc: Math.round(pos.coords.accuracy) };
+        if (!best || g.acc < best.acc) best = g;
+        onProgress?.(best);
+        if (best.acc <= 30) finish(true, best);
+      }, err => { if (best) finish(true, best); else finish(false, err); },
+      { enableHighAccuracy: true, timeout: 40000, maximumAge: 0 });
+      const timer = setTimeout(() => best ? finish(true, best) : finish(false, { code: 3, message: 'timeout' }), 40000);
+    });
+  }
+  async function runGps(btn, onOk) {
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'GPS取得中…(最大40秒)';
+    try {
+      const g = await acquireGps(b => { btn.textContent = `GPS取得中… 現在 ±${b.acc}m`; });
+      setGpsState('許可');
+      onOk(g);
+    } catch (err) {
+      btn.textContent = orig;
+      if (err.code === 1) setGpsState('拒否');
+      say(GPS_MSG[err.code] || `GPS失敗: ${err.message}`);
+    } finally { btn.disabled = false; }
+  }
   gpsBtn.addEventListener('click', () => {
     if (!draft) return;
-    gpsBtn.disabled = true; gpsBtn.textContent = 'GPS取得中…';
-    navigator.geolocation.getCurrentPosition(pos => {
-      draft.rec.gps = { lat: +pos.coords.latitude.toFixed(6), lon: +pos.coords.longitude.toFixed(6), acc: Math.round(pos.coords.accuracy) };
-      gpsBtn.disabled = false; gpsBtn.textContent = `GPS ±${draft.rec.gps.acc}m 付けました`;
-    }, err => {
-      gpsBtn.disabled = false; gpsBtn.textContent = 'GPS取得(失敗。もう一度)';
-      say(`GPS失敗: ${err.message}`);
-    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    runGps(gpsBtn, g => { draft.rec.gps = g; gpsBtn.textContent = `GPS ±${g.acc}m 付けました`; });
+  });
+  gpsTest?.addEventListener('click', () => {
+    runGps(gpsTest, g => { gpsTest.textContent = 'GPSテスト'; say(`GPS OK: ${g.lat}, ${g.lon} (±${g.acc}m)`); });
   });
 
   rebuildMarkers();

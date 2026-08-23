@@ -33016,21 +33016,82 @@
     $("sv-close").addEventListener("click", () => {
       $("sv-exportbox").hidden = true;
     });
-    const gpsBtn = $("sv-gps");
-    if (!navigator.geolocation) gpsBtn.hidden = true;
+    const gpsBtn = $("sv-gps"), gpsTest = $("sv-gpstest"), gpsState = $("sv-gpsstate");
+    const GPS_MSG = {
+      1: "\u4F4D\u7F6E\u60C5\u5831\u304C\u62D2\u5426\u3055\u308C\u3066\u3044\u307E\u3059\u3002\u30A2\u30C9\u30EC\u30B9\u30D0\u30FC\u5DE6\u306E\u300C\u3041\u3042\u300D\u2192 Web\u30B5\u30A4\u30C8\u306E\u8A2D\u5B9A \u2192 \u4F4D\u7F6E\u60C5\u5831 \u2192\u300C\u8A31\u53EF\u300D\u3002\u307E\u305F\u306F \u8A2D\u5B9A \u2192 Safari \u2192 \u4F4D\u7F6E\u60C5\u5831 \u2192\u300C\u78BA\u8A8D\u300D",
+      2: "\u4F4D\u7F6E\u3092\u6E2C\u308C\u307E\u305B\u3093\u3002\u5730\u4E0A\u306E\u7A7A\u304C\u898B\u3048\u308B\u6240\u3067\u518D\u8A66\u884C\u3057\u3066\u304F\u3060\u3055\u3044",
+      3: "\u6642\u9593\u5207\u308C(40\u79D2)\u3002\u5730\u4E0A\u3067\u7A7A\u304C\u898B\u3048\u308B\u6240\u3067\u3082\u3046\u4E00\u5EA6"
+    };
+    function setGpsState(text) {
+      if (gpsState) gpsState.textContent = `GPS: ${text}`;
+    }
+    if (!navigator.geolocation) {
+      gpsBtn.hidden = true;
+      if (gpsTest) gpsTest.hidden = true;
+      setGpsState("\u3053\u306E\u7AEF\u672B\u3067\u306F\u4F7F\u3048\u307E\u305B\u3093");
+    } else if (navigator.permissions?.query) {
+      navigator.permissions.query({ name: "geolocation" }).then((st) => {
+        const label = { granted: "\u8A31\u53EF", denied: "\u62D2\u5426", prompt: "\u672A\u78BA\u8A8D(\u62BC\u3059\u3068\u8A31\u53EF\u3092\u805E\u304D\u307E\u3059)" }[st.state] || st.state;
+        setGpsState(label);
+        st.onchange = () => setGpsState({ granted: "\u8A31\u53EF", denied: "\u62D2\u5426", prompt: "\u672A\u78BA\u8A8D" }[st.state] || st.state);
+      }).catch(() => setGpsState("\u672A\u78BA\u8A8D"));
+    } else setGpsState("\u672A\u78BA\u8A8D");
+    function acquireGps(onProgress) {
+      return new Promise((resolve, reject) => {
+        let best = null, done = false;
+        const finish = (ok, val) => {
+          if (done) return;
+          done = true;
+          navigator.geolocation.clearWatch(id);
+          clearTimeout(timer);
+          ok ? resolve(val) : reject(val);
+        };
+        const id = navigator.geolocation.watchPosition(
+          (pos) => {
+            const g2 = { lat: +pos.coords.latitude.toFixed(6), lon: +pos.coords.longitude.toFixed(6), acc: Math.round(pos.coords.accuracy) };
+            if (!best || g2.acc < best.acc) best = g2;
+            onProgress?.(best);
+            if (best.acc <= 30) finish(true, best);
+          },
+          (err) => {
+            if (best) finish(true, best);
+            else finish(false, err);
+          },
+          { enableHighAccuracy: true, timeout: 4e4, maximumAge: 0 }
+        );
+        const timer = setTimeout(() => best ? finish(true, best) : finish(false, { code: 3, message: "timeout" }), 4e4);
+      });
+    }
+    async function runGps(btn, onOk) {
+      const orig = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "GPS\u53D6\u5F97\u4E2D\u2026(\u6700\u592740\u79D2)";
+      try {
+        const g2 = await acquireGps((b) => {
+          btn.textContent = `GPS\u53D6\u5F97\u4E2D\u2026 \u73FE\u5728 \xB1${b.acc}m`;
+        });
+        setGpsState("\u8A31\u53EF");
+        onOk(g2);
+      } catch (err) {
+        btn.textContent = orig;
+        if (err.code === 1) setGpsState("\u62D2\u5426");
+        say(GPS_MSG[err.code] || `GPS\u5931\u6557: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+      }
+    }
     gpsBtn.addEventListener("click", () => {
       if (!draft) return;
-      gpsBtn.disabled = true;
-      gpsBtn.textContent = "GPS\u53D6\u5F97\u4E2D\u2026";
-      navigator.geolocation.getCurrentPosition((pos) => {
-        draft.rec.gps = { lat: +pos.coords.latitude.toFixed(6), lon: +pos.coords.longitude.toFixed(6), acc: Math.round(pos.coords.accuracy) };
-        gpsBtn.disabled = false;
-        gpsBtn.textContent = `GPS \xB1${draft.rec.gps.acc}m \u4ED8\u3051\u307E\u3057\u305F`;
-      }, (err) => {
-        gpsBtn.disabled = false;
-        gpsBtn.textContent = "GPS\u53D6\u5F97(\u5931\u6557\u3002\u3082\u3046\u4E00\u5EA6)";
-        say(`GPS\u5931\u6557: ${err.message}`);
-      }, { enableHighAccuracy: true, timeout: 15e3, maximumAge: 0 });
+      runGps(gpsBtn, (g2) => {
+        draft.rec.gps = g2;
+        gpsBtn.textContent = `GPS \xB1${g2.acc}m \u4ED8\u3051\u307E\u3057\u305F`;
+      });
+    });
+    gpsTest?.addEventListener("click", () => {
+      runGps(gpsTest, (g2) => {
+        gpsTest.textContent = "GPS\u30C6\u30B9\u30C8";
+        say(`GPS OK: ${g2.lat}, ${g2.lon} (\xB1${g2.acc}m)`);
+      });
     });
     rebuildMarkers();
     renderChips();
