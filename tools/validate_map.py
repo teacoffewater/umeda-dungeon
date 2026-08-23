@@ -20,7 +20,8 @@ from geo import ll2m as to_px  # noqa: E402
 # 既知の許容(理由付き)
 KNOWN_SHOP_OK = {"麺's room 神虎"}   # 第4ビル北縁×バラエティ帯の境界密着(2.4px)
 # 店ゾーン→乗ってよい他ゾーン床: バラエティストリート(diamor)は第4ビルB2F(中枢層)を貫通し、店は通り沿いに並ぶ
-SHOP_ZONE_PAIR_OK = {('ekimae', 'diamor'),
+SHOP_ZONE_PAIR_OK = {
+    ('whity', 'hep'),  # ノースモール2は HEP NAVIO のビル際を通る(実在)('ekimae', 'diamor'),
     ('umechika', 'whity'),  # ekimo(御堂筋線梅田駅の店)はホワイティ西端と同じ通路面に接する(2026-08-23 OSM取り込み後)
 }
 INTRUSION_WHITELIST = {('whity', 'sanban'), ('whity', 'hankyu_dept'), ('diamor', 'ekimae'),
@@ -69,7 +70,8 @@ FAC = {'sanban': bp(*byname['大阪梅田']), 'links': bp(*byname['ヨドバシ�
        'grandfront': bp(178942581), 'lucua': bp(162183788), 'hilton': bp(162158150, 162158151),
        'herbis': bp(162158152, 162158418), 'kitte': bp(1146510724), 'ema': bp(162158020), 'daimaru': bp(161450829),
        'hankyu_dept': bp(588689735), 'hanshin_dept': bp(502411898), 'avanza': bp(178958655),
-       'ekimae': bp(70561756, 70561758, 135624699, 135624700)}
+       'ekimae': bp(70561756, 70561758, 135624699, 135624700),
+       'hep': bp(161451126, 174789734), 'osbld': bp(162157817)}  # HEP FIVE+NAVIO / OSビル(2026-08-23)
 for fl, zone, poly in finals:
     for fk, fp in FAC.items():
         if zone == fk or (zone, fk) in INTRUSION_WHITELIST:
