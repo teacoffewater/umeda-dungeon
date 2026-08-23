@@ -15,6 +15,7 @@ import { OSM_EXITS } from './exits_data.js'; // tools/gen_exits.py が生成(OSM
 // ---------------------------------------------------------------------------
 // 視認性のためフロア間隔は誇張。S1=浅層(中枢層B1の1段上)。全層とも66間隔で等間隔スタック
 const FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
+const GROUND_Y = 112; // 地上レベル。浅層S1=66の上に46の土被りを確保（浅層↔中枢層↔深層は各66で等間隔）
 // フロアの表示名（地下ダンジョンの層区分）。内部キーはそのまま、UI表記だけ層名に置換
 const FLOOR_LABEL = { S1: '浅層', B1: '中枢層', B2: '深層' };
 const fl = f => FLOOR_LABEL[f] || `${f}F`;
@@ -190,8 +191,8 @@ const NODES = [
   J('nishi_y_k1',  236.0, 1423.4),    // 6-1側の枝の折れ(左に振ってから出口へ。現地スケッチ 2026-08-23)
   J('exit_6_1',    228.8, 1437.4),    // 出口6-1(OSM)
   J('exit_6_2',    236.8, 1405.5),    // 出口6-2(OSM)
-  J('nishi_a1_j',  430.8, 1300.1),   // ガーデンアベニュー上の分岐点(出口A-1への通路の付け根)
-  J('nishi_a1',    369.6, 1222.2),   // 出口A-1(階段→1F)の地下側。現地GPS 2026-08-23(34.699496,135.491823)
+  J('nishi_a1_j',  412.3, 1314.6),   // ガーデンアベニュー上の分岐点(出口A-1への通路の付け根)
+  J('nishi_a1',    341.5, 1224.5),   // 出口A-1(階段→1F)の地下側 = OSMの出入口位置。本線へ垂直に接続
   J('j_nishi_x', 630.4, 1147.8),
   J('nishi_umeda_01', 319.2, 1387.7),
   J('nishi_umeda_02', 528.7, 1223.2),
@@ -669,7 +670,7 @@ const FLOOR_POLYS = [
   { floor: 'B1', zone: 'sonechika', pts: [[1039.7, 1383.5], [1062.2, 1383.5], [1062.2, 1381.5], [1066.7, 1381.5], [1066.7, 1372.5], [1062.2, 1372.5], [1062.2, 1368.2], [1144.7, 1369.7], [1149.1, 1382.0], [1151.0, 1381.3], [1152.4, 1385.5], [1160.9, 1382.6], [1159.5, 1378.3], [1161.3, 1377.7], [1153.1, 1354.2], [1148.9, 1348.6], [1147.7, 1349.1], [1135.6, 1337.2], [1132.7, 1337.4], [1136.6, 1340.6], [1130.3, 1350.2], [1136.8, 1356.6], [1018.1, 1354.3], [1021.5, 1365.3], [1015.6, 1367.3], [1038.9, 1367.7]], covers: [['j_sone_w', 'j_sone_c'], ['j_sone_c', 'j_sone_e'], ['j_sone_e', 'sonechika_08'], ['j_sone_e', 'sonechika_13'], ['sonechika_01', 'sonechika_03'], ['sonechika_02', 'sonechika_04'], ['sonechika_03', 'sonechika_06'], ['sonechika_04', 'sonechika_03'], ['sonechika_04', 'sonechika_07'], ['sonechika_06', 'j_sone_e'], ['sonechika_06', 'sonechika_05'], ['sonechika_08', 'sonechika_09'], ['sonechika_11', 'sonechika_10'], ['sonechika_13', 'sonechika_12'], ['sonechika_14', 'sonechika_13'], ['sonechika_12', 'sonechika_p1_sonechika'], ['sonechika_p1_sonechika', 'sonechika_11'], ['sonechika', 'sonechika_p1_sonechika']] },
   { floor: 'B1', zone: 'sonechika', pts: [[912.3, 1361.5], [995.5, 1366.2], [995.6, 1370.5], [980.8, 1370.5], [980.8, 1383.5], [1013.9, 1383.5], [1013.9, 1381.5], [1018.4, 1381.5], [1018.4, 1372.5], [1013.9, 1372.5], [1013.9, 1370.5], [1008.6, 1370.5], [1002.9, 1353.6], [877.7, 1346.4], [876.8, 1359.4]] },
   { floor: 'B1', zone: 'sonechika', pts: [[762.3, 1349.6], [852.2, 1357.6], [851.9, 1362.9], [829.8, 1361.2], [828.8, 1374.1], [893.3, 1379.2], [894.4, 1366.3], [864.8, 1363.9], [865.1, 1359.5], [856.1, 1358.5], [856.8, 1349.2], [851.2, 1344.4], [730.4, 1333.7], [719.1, 1340.1], [718.8, 1345.7]] },
-  { floor: 'B1', zone: 'nishi_umeda', pts: [[316.4, 1398.0], [326.5, 1397.3], [331.1, 1398.8], [335.6, 1385.2], [333.0, 1385.2], [528.5, 1231.7], [529.3, 1232.4], [537.8, 1224.3], [537.2, 1223.4], [575.6, 1179.8], [585.7, 1185.5], [595.2, 1177.1], [581.7, 1169.4], [603.7, 1169.9], [614.2, 1161.2], [596.7, 1160.7], [620.6, 1142.9], [622.4, 1155.3], [627.1, 1152.3], [654.3, 1215.6], [655.2, 1193.0], [635.5, 1147.1], [650.3, 1140.4], [665.4, 1137.8], [673.5, 1139.0], [679.5, 1142.4], [679.9, 1144.3], [709.6, 1145.0], [709.5, 1148.3], [712.7, 1148.5], [712.8, 1160.8], [704.8, 1159.1], [704.0, 1172.3], [712.9, 1172.5], [712.9, 1175.9], [725.9, 1175.8], [725.9, 1172.9], [730.5, 1172.9], [731.4, 1164.8], [725.8, 1163.8], [725.4, 1142.7], [741.0, 1140.3], [743.9, 1121.7], [725.7, 1124.4], [718.5, 1095.2], [722.9, 1079.6], [735.5, 1072.5], [738.1, 1081.1], [750.5, 1077.3], [747.1, 1066.0], [765.3, 1055.4], [758.9, 1044.2], [736.6, 1056.9], [731.2, 1058.6], [731.5, 1059.8], [719.6, 1066.5], [695.9, 1028.3], [684.9, 1035.2], [710.4, 1076.2], [706.5, 1089.9], [683.5, 1097.2], [679.6, 1095.7], [677.4, 1101.3], [651.8, 1014.6], [642.6, 1025.8], [665.1, 1102.2], [612.6, 1131.8], [575.5, 1160.2], [565.5, 1160.0], [566.4, 1155.2], [542.1, 1176.5], [552.6, 1186.2], [524.2, 1218.5], [429.1, 1293.1], [370.1, 1218.0], [365.4, 1221.7], [424.4, 1296.8], [316.0, 1381.9], [309.8, 1384.1], [304.5, 1369.5], [295.1, 1372.9], [300.5, 1387.6], [243.4, 1408.5], [238.1, 1400.0], [231.3, 1404.2], [235.7, 1411.3], [220.1, 1417.0], [224.6, 1429.2], [229.4, 1427.4], [223.4, 1439.1], [230.5, 1442.8], [239.2, 1425.9], [315.5, 1396.0]], holes: [[[690.6, 1109.7], [706.9, 1103.6], [711.6, 1126.5], [679.7, 1131.3], [688.3, 1110.0]], [[668.3, 1124.9], [666.0, 1130.9], [670.6, 1132.7], [643.2, 1136.8], [639.8, 1131.4], [673.0, 1112.7]]], covers: [['j_hilton_e', 'j_nishi_x'], ['j_nishi_x', 'hilton'], ['hilton', 'garden'], ['j_c1', 'j_kitte_e'], ['garden', 'herbis'], ['garden', 'kitte'], ['herbis', 'j_nishi_x'], ['j_nishi_x', 'j_sone_w'], ['j_kitte_e', 'nishi_umeda_08'], ['nishi_umeda_05', 'nishi_umeda_02'], ['nishi_umeda_05', 'nishi_umeda_03'], ['nishi_umeda_06', 'nishi_umeda_05'], ['nishi_umeda_07', 'nishi_umeda_06'], ['nishi_umeda_08', 'nishi_umeda_07'], ['nishi_umeda_08', 'nishi_umeda_09'], ['nishi_umeda_09', 'j_nishi_x'], ['nishi_umeda_11', 'j_kitte_e'], ['nishi_umeda_11', 'nishi_umeda_10'], ['nishi_umeda_12', 'nishi_umeda_14'], ['nishi_umeda_13', 'nishi_umeda_11'], ['nishi_umeda_13', 'nishi_umeda_15'], ['nishi_umeda_14', 'nishi_umeda_13'], ['nishi_umeda_16', 'nishi_umeda_14'], ['nishi_umeda_16', 'nishi_umeda_17'], ['nishi_umeda_03', 'nishi_umeda_p2_garden'], ['nishi_umeda_p2_garden', 'nishi_umeda_04'], ['garden', 'nishi_umeda_p2_garden'], ['nishi_umeda_01', 'nishi_umeda_p2_ritz'], ['ritz', 'nishi_umeda_p2_ritz'], ['nishi_umeda_02', 'nishi_a1_j'], ['nishi_a1_j', 'nishi_umeda_01'], ['nishi_a1_j', 'nishi_a1'], ['nishi_umeda_p2_ritz', 'nishi_y'], ['nishi_y', 'nishi_y_k1'], ['nishi_y_k1', 'exit_6_1'], ['nishi_y', 'exit_6_2']] },
+  { floor: 'B1', zone: 'nishi_umeda', pts: [[316.4, 1398.0], [326.5, 1397.3], [331.1, 1398.8], [335.6, 1385.2], [333.0, 1385.2], [528.5, 1231.7], [529.3, 1232.4], [537.8, 1224.3], [537.2, 1223.4], [575.6, 1179.8], [585.7, 1185.5], [595.2, 1177.1], [581.7, 1169.4], [603.7, 1169.9], [614.2, 1161.2], [596.7, 1160.7], [620.6, 1142.9], [622.4, 1155.3], [627.1, 1152.3], [654.3, 1215.6], [655.2, 1193.0], [635.5, 1147.1], [650.3, 1140.4], [665.4, 1137.8], [673.5, 1139.0], [679.5, 1142.4], [679.9, 1144.3], [709.6, 1145.0], [709.5, 1148.3], [712.7, 1148.5], [712.8, 1160.8], [704.8, 1159.1], [704.0, 1172.3], [712.9, 1172.5], [712.9, 1175.9], [725.9, 1175.8], [725.9, 1172.9], [730.5, 1172.9], [731.4, 1164.8], [725.8, 1163.8], [725.4, 1142.7], [741.0, 1140.3], [743.9, 1121.7], [725.7, 1124.4], [718.5, 1095.2], [722.9, 1079.6], [735.5, 1072.5], [738.1, 1081.1], [750.5, 1077.3], [747.1, 1066.0], [765.3, 1055.4], [758.9, 1044.2], [736.6, 1056.9], [731.2, 1058.6], [731.5, 1059.8], [719.6, 1066.5], [695.9, 1028.3], [684.9, 1035.2], [710.4, 1076.2], [706.5, 1089.9], [683.5, 1097.2], [679.6, 1095.7], [677.4, 1101.3], [651.8, 1014.6], [642.6, 1025.8], [665.1, 1102.2], [612.6, 1131.8], [575.5, 1160.2], [565.5, 1160.0], [566.4, 1155.2], [542.1, 1176.5], [552.6, 1186.2], [524.2, 1218.5], [410.6, 1307.6], [342.0, 1220.3], [337.3, 1224.0], [405.9, 1311.3], [316.0, 1381.9], [309.8, 1384.1], [304.5, 1369.5], [295.1, 1372.9], [300.5, 1387.6], [243.4, 1408.5], [238.1, 1400.0], [231.3, 1404.2], [235.7, 1411.3], [220.1, 1417.0], [224.6, 1429.2], [229.4, 1427.4], [223.4, 1439.1], [230.5, 1442.8], [239.2, 1425.9], [315.5, 1396.0]], holes: [[[690.6, 1109.7], [706.9, 1103.6], [711.6, 1126.5], [679.7, 1131.3], [688.3, 1110.0]], [[668.3, 1124.9], [666.0, 1130.9], [670.6, 1132.7], [643.2, 1136.8], [639.8, 1131.4], [673.0, 1112.7]]], covers: [['j_hilton_e', 'j_nishi_x'], ['j_nishi_x', 'hilton'], ['hilton', 'garden'], ['j_c1', 'j_kitte_e'], ['garden', 'herbis'], ['garden', 'kitte'], ['herbis', 'j_nishi_x'], ['j_nishi_x', 'j_sone_w'], ['j_kitte_e', 'nishi_umeda_08'], ['nishi_umeda_05', 'nishi_umeda_02'], ['nishi_umeda_05', 'nishi_umeda_03'], ['nishi_umeda_06', 'nishi_umeda_05'], ['nishi_umeda_07', 'nishi_umeda_06'], ['nishi_umeda_08', 'nishi_umeda_07'], ['nishi_umeda_08', 'nishi_umeda_09'], ['nishi_umeda_09', 'j_nishi_x'], ['nishi_umeda_11', 'j_kitte_e'], ['nishi_umeda_11', 'nishi_umeda_10'], ['nishi_umeda_12', 'nishi_umeda_14'], ['nishi_umeda_13', 'nishi_umeda_11'], ['nishi_umeda_13', 'nishi_umeda_15'], ['nishi_umeda_14', 'nishi_umeda_13'], ['nishi_umeda_16', 'nishi_umeda_14'], ['nishi_umeda_16', 'nishi_umeda_17'], ['nishi_umeda_03', 'nishi_umeda_p2_garden'], ['nishi_umeda_p2_garden', 'nishi_umeda_04'], ['garden', 'nishi_umeda_p2_garden'], ['nishi_umeda_01', 'nishi_umeda_p2_ritz'], ['ritz', 'nishi_umeda_p2_ritz'], ['nishi_umeda_02', 'nishi_a1_j'], ['nishi_a1_j', 'nishi_umeda_01'], ['nishi_a1_j', 'nishi_a1'], ['nishi_umeda_p2_ritz', 'nishi_y'], ['nishi_y', 'nishi_y_k1'], ['nishi_y_k1', 'exit_6_1'], ['nishi_y', 'exit_6_2']] },
   { floor: 'B1', zone: 'nishi_umeda', pts: [[706.9, 1338.4], [708.6, 1334.0], [712.7, 1334.3], [713.5, 1332.1], [719.9, 1330.2], [722.8, 1257.7], [709.8, 1257.2], [707.5, 1314.1], [666.7, 1219.5], [657.0, 1221.8]] },
   { floor: 'B1', zone: '_neutral', pts: [[1047.9, 1128.6], [1047.8, 1136.5], [1055.9, 1139.1], [1079.1, 1208.1], [1072.5, 1215.7], [1075.8, 1234.4], [1080.9, 1250.4], [1090.5, 1258.9], [1105.7, 1304.0], [1110.2, 1302.7], [1121.1, 1329.5], [1133.9, 1337.2], [1081.0, 1206.2], [1065.5, 1138.6], [1102.0, 1127.2], [1099.1, 1117.7], [1063.3, 1128.8], [1059.1, 1110.5], [1047.7, 1113.5]], covers: [['j_f40', 'j_mido_s'], ['j_mido_s', 'sonechika']] },
   { floor: 'B2', zone: 'hilton', pts: [[744.0, 1121.9], [741.1, 1139.4], [739.6, 1171.8], [735.8, 1177.8], [734.9, 1186.4], [737.7, 1196.4], [738.1, 1207.0], [741.7, 1211.8], [741.7, 1217.8], [786.6, 1217.4], [791.0, 1215.2], [792.7, 1210.9], [794.6, 1169.4], [797.0, 1161.3], [805.7, 1147.4], [819.4, 1136.7], [789.5, 1086.8], [764.4, 1101.1], [758.8, 1099.9], [756.7, 1106.0], [748.4, 1113.5]] },
@@ -853,8 +854,13 @@ controls.zoomToCursor = true; // カーソル位置に向かって拡大縮小(t
 controls.minDistance = 15;
 controls.maxDistance = 1600;
 // タッチ: ピンチは「指を広げた比率=拡大率」(等倍)。zoomSpeed=3 だと比率が3乗されて感度が高すぎる
-renderer.domElement.addEventListener('pointerdown', e => { controls.zoomSpeed = e.pointerType === 'touch' ? 1 : 3; }, { capture: true });
-renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; }, { capture: true, passive: true });
+// タッチのピンチは自前で指の下にピボットを置くので zoomToCursor は切る(二重に効いてズレが溜まる)
+renderer.domElement.addEventListener('pointerdown', e => {
+  const touch = e.pointerType === 'touch';
+  controls.zoomSpeed = touch ? 1 : 3;
+  controls.zoomToCursor = !touch;
+}, { capture: true });
+renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; controls.zoomToCursor = true; }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
 window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
@@ -889,7 +895,7 @@ const groundGroup = new THREE.Group(); // 「ビル」トグルで一括ON/OFF
 const groundLabelObjs = [];            // CSS2Dラベルはグループ非表示に連動しないため個別管理
 scene.add(groundGroup);
 {
-  const GROUND_Y = 112; // 地上レベル。浅層S1=66の上に46の土被りを確保（浅層↔中枢層↔深層は各66で等間隔）
+  // GROUND_Y はトップレベル(FLOOR_Y の隣)で定義
   // r: [x1, y1, x2, y2](地図px), h: 高さ(world), name: 屋上ラベル, lm: ランドマーク(輪郭強調)
   // 高さは実際の建物高(m)×0.75で統一(相対的な高さ関係を実物に合わせる)
   const GROUND_BUILDINGS = [
@@ -1340,25 +1346,19 @@ const landmarkById = {};
 {
   const pinGeo = new THREE.ConeGeometry(2.2, 6, 6);
   const pinMat = new THREE.MeshBasicMaterial({ color: 0xffd23f });
-  const VERT_PIN_COLOR = { ev: 0x7aa7ff, esc: 0xffc23d, stairs: 0x7a8699 };
   for (const lm of LANDMARKS) {
     const [x, z] = M2W([lm.mx, lm.my]);
     lm.x = x; lm.z = z;
     landmarkById[lm.id] = lm;
-    const pin = new THREE.Mesh(pinGeo, lm.vert ? new THREE.MeshBasicMaterial({ color: VERT_PIN_COLOR[lm.vert] }) : pinMat);
+    if (lm.vert) { lm.x = x; lm.z = z; continue; } // 地上への昇降設備は VERTICALS と同じ立体で描く(下の drawVertical)
+    const pin = new THREE.Mesh(pinGeo, pinMat);
     pin.rotation.x = Math.PI; // 先端を下に
     pin.position.set(x, FLOOR_Y[lm.floor] + 7, z);
     pin.userData.landmarkId = lm.id;
     pin.renderOrder = 5;
     const div = document.createElement('div');
-    if (lm.vert) {
-      // 地上(1F)への昇降設備は、地図内の階をつなぐ VERTICALS と同じ EV/ESC/階段 バッジで表す
-      div.className = 'landmark-label vert-pin';
-      div.innerHTML = `<span class="vert-badge ${lm.vert}">${{ ev: 'EV', esc: 'ESC', stairs: '階段' }[lm.vert]}</span> ${lm.to || ''}${lm.photo ? ' 📷' : ''}`;
-    } else {
-      div.className = 'landmark-label';
-      div.textContent = (lm.photo ? '📷 ' : '') + lm.name;
-    }
+    div.className = 'landmark-label';
+    div.textContent = (lm.photo ? '📷 ' : '') + lm.name;
     const lab = new CSS2DObject(div);
     lab.position.set(0, 5, 0);
     pin.add(lab);
@@ -1583,6 +1583,41 @@ function makeEscalator(floorKey, mat) {
 
 const concourseMat = new THREE.MeshStandardMaterial({ color: 0x31435f, emissive: 0x0d1522, roughness: 0.65 });
 neutralMats.push(concourseMat);
+// 昇降設備の立体表現。VERTICALS(地図内の2階を結ぶ)と、地上1Fへ上がる設備(LANDMARKS の vert)の両方で使う。
+// type: ev|esc|stairs, (x,z): 位置, yB2/yB1: 下段/上段の高さ, dir: 上り方向の水平ベクトル, opts.skipLower: 下段アイコン省略
+function drawVertical(type, x, z, yB2, yB1, dir, opts = {}) {
+  const span = yB1 - yB2;
+  if (type === 'ev') {
+    // EV: 半透明シャフト+上下するかご
+    const shaftGeo = span === FLOOR_Y.B1 - FLOOR_Y.B2 ? evShaftGeo : new THREE.BoxGeometry(3.6, span + 8, 3.6);
+    const shaftY = yB2 + (span + 8) / 2;
+    const fill = new THREE.Mesh(shaftGeo, evShaftMat);
+    fill.position.set(x, shaftY, z);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(shaftGeo), evShaftEdgeMat);
+    edges.position.set(x, shaftY, z);
+    const cage = new THREE.Mesh(evCageGeo, padMats.ev);
+    cage.position.set(x, yB2 + 3.5, z);
+    vertGroup.add(fill, edges, cage);
+    evCages.push({ mesh: cage, low: yB2 + 3.5, high: yB1 + 3.5, phase: evCages.length * 1.73 });
+    return;
+  }
+  const beam = new THREE.Mesh(span === FLOOR_Y.B1 - FLOOR_Y.B2 ? beamGeo : new THREE.CylinderGeometry(0.7, 0.7, span, 8), beamMats[type]);
+  beam.position.set(x, (yB1 + yB2) / 2, z);
+  vertGroup.add(beam);
+  let [dx, dz] = dir;
+  if (Math.hypot(dx, dz) < 1) { dx = 1; dz = 0; }
+  const rotY = Math.atan2(-dz, dx);
+  const FLOOR_TOP = 1.9; // 床スラブ上面
+  for (const y of [yB1, yB2]) {
+    if (opts.skipLower && y === yB2) continue;
+    if (opts.skipUpper && y === yB1) continue;
+    const m = type === 'esc' ? makeEscalator(y === yB1 ? 'B1' : 'B2', padMats.esc) : new THREE.Mesh(stairsGeo, padMats.stairs);
+    m.rotation.y = rotY;
+    m.position.set(x, y + FLOOR_TOP, z);
+    vertGroup.add(m);
+  }
+}
+
 for (const v of VERTICALS) {
   // 接続先が駅(ホーム=改札内・フロア未描画)の設備は、B2側のアイコンだけ省略する。
   // EVシャフトはフロアを貫く柱なので常に描画(以前は丸ごとスキップしていてEVが1本も出ていなかった)
@@ -1610,49 +1645,19 @@ for (const v of VERTICALS) {
     }
   }
 
-  if (v.type === 'ev') {
-    // EV: 半透明シャフト+上下するかご
-    const shaftY = yB2 + ((yB1 - yB2) + 8) / 2;
-    const fill = new THREE.Mesh(evShaftGeo, evShaftMat);
-    fill.position.set(x, shaftY, z);
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(evShaftGeo), evShaftEdgeMat);
-    edges.position.set(x, shaftY, z);
-    const cage = new THREE.Mesh(evCageGeo, padMats.ev);
-    cage.position.set(x, yB2 + 3.5, z);
-    vertGroup.add(fill, edges, cage);
-    // かごの可動域はこのEVが実際につなぐ2フロア(浅層⇔中枢層のEVを深層まで動かさない)
-    evCages.push({ mesh: cage, low: yB2 + 3.5, high: yB1 + 3.5, phase: evCages.length * 1.73 });
-  } else {
-    const beam = new THREE.Mesh(beamGeo, beamMats[v.type]);
-    beam.position.set(x, (yB1 + yB2) / 2, z);
-    vertGroup.add(beam);
-    // 実際の進行方向: 下フロアのノード(b)から上フロアのノード(a)へ向かう
-    // 水平ベクトルを「上り」とみなす。同じ位置に重なる館内設備は設備→aノード方向で代用
-    const pa = nodeById[v.a], pb = nodeById[v.b];
-    let dx = pa.x - pb.x, dz = pa.z - pb.z;
-    if (Math.hypot(dx, dz) < 3) { dx = pa.x - x; dz = pa.z - z; }
-    if (Math.hypot(dx, dz) < 1) { dx = 1; dz = 0; }
-    const rotY = Math.atan2(-dz, dx);
-    // 床スラブ(厚み3・中心が階の高さ+ジッタ最大0.375)の上面に着地させる
-    const FLOOR_TOP = 1.9;
-    for (const y of [yB1, yB2]) {
-      if (bIsStation && y === yB2) continue; // 駅構内(未描画)側は省略
-      if (v.type === 'esc') {
-        // 実際の勾配の向き(上り=aノード方向)+フロアごとの形(B1=下り/B2=上り)
-        const m = makeEscalator(y === yB1 ? 'B1' : 'B2', padMats.esc);
-        m.rotation.y = rotY;
-        m.position.set(x, y + FLOOR_TOP, z);
-        vertGroup.add(m);
-      } else {
-        // 階段: 3段ステップのソリッド。上り方向へ向けて置く
-        const m = new THREE.Mesh(stairsGeo, padMats.stairs);
-        m.rotation.y = rotY;
-        m.position.set(x, y + FLOOR_TOP, z);
-        vertGroup.add(m);
-      }
-    }
-  }
+  // 実際の進行方向: 下フロアのノード(b)から上フロアのノード(a)へ向かう水平ベクトルを「上り」とみなす
+  const pa = nodeById[v.a], pb = nodeById[v.b];
+  let dx = pa.x - pb.x, dz = pa.z - pb.z;
+  if (Math.hypot(dx, dz) < 3) { dx = pa.x - x; dz = pa.z - z; }
+  drawVertical(v.type, x, z, yB2, yB1, [dx, dz], { skipLower: bIsStation });
+}
 
+// 地上1Fへ上がる設備(LANDMARKS の vert)。地図に1Fの床は無いので、柱・帯を地上レベル(GROUND_Y)まで伸ばす
+for (const lm of LANDMARKS) {
+  if (!lm.vert) continue;
+  const [x, z] = M2W([lm.mx, lm.my]);
+  const dir = lm.dir ? [lm.dir[0], lm.dir[1]] : [1, 0];
+  drawVertical(lm.vert, x, z, FLOOR_Y[lm.floor], GROUND_Y, dir, { skipUpper: true });
 }
 
 // --- B2: 路線・駅ホーム・改札内コンコース（見やすさのため一旦非表示。trueで復活） ---
@@ -2597,17 +2602,23 @@ let multiTouch = false;
 const releasePtr = e => { activePtrs.delete(e.pointerId); ptrPos.delete(e.pointerId); if (activePtrs.size === 0) multiTouch = false; };
 const ptrPos = new Map(); // pointerId -> [x, y](ピンチ中心の計算用)
 renderer.domElement.addEventListener('pointermove', e => { if (ptrPos.has(e.pointerId)) ptrPos.set(e.pointerId, [e.clientX, e.clientY]); });
-// 2本指で触れた瞬間、指の中央の真下(現在の基準点と同じ高さの水平面)を回転・ズームの基準点にする。
-// カメラは動かさないので画面は飛ばず、以後のピンチはその地点に向かって拡大する
+// 2本指で触れた瞬間、指の中央の真下(表示中のフロアの床)を回転・ズームの基準点にする。
+// 基準点の高さは必ず床に戻す(zoomToCursor で少しずつ浮き上がって、狙った所に寄れなくなるのを防ぐ)
+function floorPivotY() {
+  for (const f of ['B1', 'S1', 'B2']) if (floorGroups[f].visible) return FLOOR_Y[f];
+  return FLOOR_Y.B1;
+}
 function pivotToPinchCenter() {
   const pts = [...ptrPos.values()];
   if (pts.length < 2) return;
   const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
   const rc = new THREE.Raycaster();
   rc.setFromCamera(new THREE.Vector2((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1), camera);
-  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -controls.target.y);
+  const y = floorPivotY();
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -y);
   const hit = new THREE.Vector3();
   if (rc.ray.intersectPlane(plane, hit) && hit.distanceTo(camera.position) < 3000) controls.target.copy(hit);
+  else controls.target.y = y;
 }
 renderer.domElement.addEventListener('pointerdown', e => {
   downAt = [e.clientX, e.clientY];

@@ -33608,7 +33608,6 @@
     "landmarks.js"() {
       LANDMARKS = [
         // --- 西梅田(ガーデンアベニュー南西端)。現地調査 2026-08-23 (tools/data/survey/2026-08-23_nishi_umeda.json) ---
-        { id: "lm_exit_a1", name: "\u51FA\u53E3 A-1(\u968E\u6BB5\u21921F)", floor: "B1", mx: 369.6, my: 1222.2, zone: "nishi_umeda", note: "\u30DB\u30C6\u30EB\u30E2\u30F3\u30C8\u30EC\u5927\u962A\u30FB\u30A8\u30B9\u30BF\u30DC\u30FC\u30C8(\u30AF\u30AA\u30FC\u30EB\u85AC\u5C40\u30FB\u30B5\u30A4\u30BC\u30EA\u30E4)\u3078\u4E0A\u304C\u308B\u968E\u6BB5\u3002\u4F4D\u7F6E\u306F\u73FE\u5730GPS\u3002\u30AC\u30FC\u30C7\u30F3\u30A2\u30D9\u30CB\u30E5\u30FC\u304B\u3089\u9023\u7D61\u901A\u8DEF(\u7D0499m)\u3067\u3064\u306A\u304C\u308B" },
         {
           id: "lm_yellow_obj",
           name: "\u9EC4\u8272\u3044\u5186\u5F62\u306E\u30AA\u30D6\u30B8\u30A7",
@@ -33619,7 +33618,7 @@
           photo: "photos/yellow_object.jpg",
           note: "\u51FA\u53E36-1(\u5DE6)\u30686-2(\u53F3)\u306EY\u5B57\u8DEF\u306E\u80A1\u306B\u3042\u308B\u9EC4\u8272\u3044\u5186\u5F62\u306E\u91D1\u5C5E\u30AA\u30D6\u30B8\u30A7(KALEIDOSCOPE)\u3002\u30BF\u30C3\u30D7\u4F4D\u7F6E(346,1357)\u306F\u5199\u771F\u306B\u3088\u308A\u5206\u5C90\u70B9\u3078\u88DC\u6B63"
         },
-        { id: "lm_esc_6_1", name: "\u30A8\u30B9\u30AB\u30EC\u30FC\u30BF\u30FC(\u21921F\u3001\u4E0A\u308A\u5C02\u7528)", floor: "B1", mx: 224.4, my: 1434.1, zone: "nishi_umeda", vert: "esc", to: "\u21921F", note: "\u51FA\u53E36-1\u3001\u5730\u4E0B\u5074\u304B\u3089\u898B\u3066\u53F3\u5074\u3002\u4E0A\u308A\u5C02\u7528(\u73FE\u5730\u78BA\u8A8D 2026-08-23)" }
+        { id: "lm_esc_6_1", name: "\u30A8\u30B9\u30AB\u30EC\u30FC\u30BF\u30FC(\u21921F\u3001\u4E0A\u308A\u5C02\u7528)", floor: "B1", mx: 224.4, my: 1434.1, zone: "nishi_umeda", vert: "esc", to: "\u21921F", dir: [-7.6, 10.2], note: "\u51FA\u53E36-1\u3001\u5730\u4E0B\u5074\u304B\u3089\u898B\u3066\u53F3\u5074\u3002\u4E0A\u308A\u5C02\u7528(\u73FE\u5730\u78BA\u8A8D 2026-08-23)" }
       ];
       PHOTOS = {
         lm_yellow_obj: [
@@ -33653,6 +33652,7 @@
       init_landmarks();
       init_exits_data();
       var FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
+      var GROUND_Y = 112;
       var FLOOR_LABEL = { S1: "\u6D45\u5C64", B1: "\u4E2D\u67A2\u5C64", B2: "\u6DF1\u5C64" };
       var fl = (f) => FLOOR_LABEL[f] || `${f}F`;
       var UNIT_M = 2;
@@ -33861,10 +33861,10 @@
         // 出口6-1(OSM)
         J("exit_6_2", 236.8, 1405.5),
         // 出口6-2(OSM)
-        J("nishi_a1_j", 430.8, 1300.1),
+        J("nishi_a1_j", 412.3, 1314.6),
         // ガーデンアベニュー上の分岐点(出口A-1への通路の付け根)
-        J("nishi_a1", 369.6, 1222.2),
-        // 出口A-1(階段→1F)の地下側。現地GPS 2026-08-23(34.699496,135.491823)
+        J("nishi_a1", 341.5, 1224.5),
+        // 出口A-1(階段→1F)の地下側 = OSMの出入口位置。本線へ垂直に接続
         J("j_nishi_x", 630.4, 1147.8),
         J("nishi_umeda_01", 319.2, 1387.7),
         J("nishi_umeda_02", 528.7, 1223.2),
@@ -34527,7 +34527,7 @@
         { floor: "B1", zone: "sonechika", pts: [[1039.7, 1383.5], [1062.2, 1383.5], [1062.2, 1381.5], [1066.7, 1381.5], [1066.7, 1372.5], [1062.2, 1372.5], [1062.2, 1368.2], [1144.7, 1369.7], [1149.1, 1382], [1151, 1381.3], [1152.4, 1385.5], [1160.9, 1382.6], [1159.5, 1378.3], [1161.3, 1377.7], [1153.1, 1354.2], [1148.9, 1348.6], [1147.7, 1349.1], [1135.6, 1337.2], [1132.7, 1337.4], [1136.6, 1340.6], [1130.3, 1350.2], [1136.8, 1356.6], [1018.1, 1354.3], [1021.5, 1365.3], [1015.6, 1367.3], [1038.9, 1367.7]], covers: [["j_sone_w", "j_sone_c"], ["j_sone_c", "j_sone_e"], ["j_sone_e", "sonechika_08"], ["j_sone_e", "sonechika_13"], ["sonechika_01", "sonechika_03"], ["sonechika_02", "sonechika_04"], ["sonechika_03", "sonechika_06"], ["sonechika_04", "sonechika_03"], ["sonechika_04", "sonechika_07"], ["sonechika_06", "j_sone_e"], ["sonechika_06", "sonechika_05"], ["sonechika_08", "sonechika_09"], ["sonechika_11", "sonechika_10"], ["sonechika_13", "sonechika_12"], ["sonechika_14", "sonechika_13"], ["sonechika_12", "sonechika_p1_sonechika"], ["sonechika_p1_sonechika", "sonechika_11"], ["sonechika", "sonechika_p1_sonechika"]] },
         { floor: "B1", zone: "sonechika", pts: [[912.3, 1361.5], [995.5, 1366.2], [995.6, 1370.5], [980.8, 1370.5], [980.8, 1383.5], [1013.9, 1383.5], [1013.9, 1381.5], [1018.4, 1381.5], [1018.4, 1372.5], [1013.9, 1372.5], [1013.9, 1370.5], [1008.6, 1370.5], [1002.9, 1353.6], [877.7, 1346.4], [876.8, 1359.4]] },
         { floor: "B1", zone: "sonechika", pts: [[762.3, 1349.6], [852.2, 1357.6], [851.9, 1362.9], [829.8, 1361.2], [828.8, 1374.1], [893.3, 1379.2], [894.4, 1366.3], [864.8, 1363.9], [865.1, 1359.5], [856.1, 1358.5], [856.8, 1349.2], [851.2, 1344.4], [730.4, 1333.7], [719.1, 1340.1], [718.8, 1345.7]] },
-        { floor: "B1", zone: "nishi_umeda", pts: [[316.4, 1398], [326.5, 1397.3], [331.1, 1398.8], [335.6, 1385.2], [333, 1385.2], [528.5, 1231.7], [529.3, 1232.4], [537.8, 1224.3], [537.2, 1223.4], [575.6, 1179.8], [585.7, 1185.5], [595.2, 1177.1], [581.7, 1169.4], [603.7, 1169.9], [614.2, 1161.2], [596.7, 1160.7], [620.6, 1142.9], [622.4, 1155.3], [627.1, 1152.3], [654.3, 1215.6], [655.2, 1193], [635.5, 1147.1], [650.3, 1140.4], [665.4, 1137.8], [673.5, 1139], [679.5, 1142.4], [679.9, 1144.3], [709.6, 1145], [709.5, 1148.3], [712.7, 1148.5], [712.8, 1160.8], [704.8, 1159.1], [704, 1172.3], [712.9, 1172.5], [712.9, 1175.9], [725.9, 1175.8], [725.9, 1172.9], [730.5, 1172.9], [731.4, 1164.8], [725.8, 1163.8], [725.4, 1142.7], [741, 1140.3], [743.9, 1121.7], [725.7, 1124.4], [718.5, 1095.2], [722.9, 1079.6], [735.5, 1072.5], [738.1, 1081.1], [750.5, 1077.3], [747.1, 1066], [765.3, 1055.4], [758.9, 1044.2], [736.6, 1056.9], [731.2, 1058.6], [731.5, 1059.8], [719.6, 1066.5], [695.9, 1028.3], [684.9, 1035.2], [710.4, 1076.2], [706.5, 1089.9], [683.5, 1097.2], [679.6, 1095.7], [677.4, 1101.3], [651.8, 1014.6], [642.6, 1025.8], [665.1, 1102.2], [612.6, 1131.8], [575.5, 1160.2], [565.5, 1160], [566.4, 1155.2], [542.1, 1176.5], [552.6, 1186.2], [524.2, 1218.5], [429.1, 1293.1], [370.1, 1218], [365.4, 1221.7], [424.4, 1296.8], [316, 1381.9], [309.8, 1384.1], [304.5, 1369.5], [295.1, 1372.9], [300.5, 1387.6], [243.4, 1408.5], [238.1, 1400], [231.3, 1404.2], [235.7, 1411.3], [220.1, 1417], [224.6, 1429.2], [229.4, 1427.4], [223.4, 1439.1], [230.5, 1442.8], [239.2, 1425.9], [315.5, 1396]], holes: [[[690.6, 1109.7], [706.9, 1103.6], [711.6, 1126.5], [679.7, 1131.3], [688.3, 1110]], [[668.3, 1124.9], [666, 1130.9], [670.6, 1132.7], [643.2, 1136.8], [639.8, 1131.4], [673, 1112.7]]], covers: [["j_hilton_e", "j_nishi_x"], ["j_nishi_x", "hilton"], ["hilton", "garden"], ["j_c1", "j_kitte_e"], ["garden", "herbis"], ["garden", "kitte"], ["herbis", "j_nishi_x"], ["j_nishi_x", "j_sone_w"], ["j_kitte_e", "nishi_umeda_08"], ["nishi_umeda_05", "nishi_umeda_02"], ["nishi_umeda_05", "nishi_umeda_03"], ["nishi_umeda_06", "nishi_umeda_05"], ["nishi_umeda_07", "nishi_umeda_06"], ["nishi_umeda_08", "nishi_umeda_07"], ["nishi_umeda_08", "nishi_umeda_09"], ["nishi_umeda_09", "j_nishi_x"], ["nishi_umeda_11", "j_kitte_e"], ["nishi_umeda_11", "nishi_umeda_10"], ["nishi_umeda_12", "nishi_umeda_14"], ["nishi_umeda_13", "nishi_umeda_11"], ["nishi_umeda_13", "nishi_umeda_15"], ["nishi_umeda_14", "nishi_umeda_13"], ["nishi_umeda_16", "nishi_umeda_14"], ["nishi_umeda_16", "nishi_umeda_17"], ["nishi_umeda_03", "nishi_umeda_p2_garden"], ["nishi_umeda_p2_garden", "nishi_umeda_04"], ["garden", "nishi_umeda_p2_garden"], ["nishi_umeda_01", "nishi_umeda_p2_ritz"], ["ritz", "nishi_umeda_p2_ritz"], ["nishi_umeda_02", "nishi_a1_j"], ["nishi_a1_j", "nishi_umeda_01"], ["nishi_a1_j", "nishi_a1"], ["nishi_umeda_p2_ritz", "nishi_y"], ["nishi_y", "nishi_y_k1"], ["nishi_y_k1", "exit_6_1"], ["nishi_y", "exit_6_2"]] },
+        { floor: "B1", zone: "nishi_umeda", pts: [[316.4, 1398], [326.5, 1397.3], [331.1, 1398.8], [335.6, 1385.2], [333, 1385.2], [528.5, 1231.7], [529.3, 1232.4], [537.8, 1224.3], [537.2, 1223.4], [575.6, 1179.8], [585.7, 1185.5], [595.2, 1177.1], [581.7, 1169.4], [603.7, 1169.9], [614.2, 1161.2], [596.7, 1160.7], [620.6, 1142.9], [622.4, 1155.3], [627.1, 1152.3], [654.3, 1215.6], [655.2, 1193], [635.5, 1147.1], [650.3, 1140.4], [665.4, 1137.8], [673.5, 1139], [679.5, 1142.4], [679.9, 1144.3], [709.6, 1145], [709.5, 1148.3], [712.7, 1148.5], [712.8, 1160.8], [704.8, 1159.1], [704, 1172.3], [712.9, 1172.5], [712.9, 1175.9], [725.9, 1175.8], [725.9, 1172.9], [730.5, 1172.9], [731.4, 1164.8], [725.8, 1163.8], [725.4, 1142.7], [741, 1140.3], [743.9, 1121.7], [725.7, 1124.4], [718.5, 1095.2], [722.9, 1079.6], [735.5, 1072.5], [738.1, 1081.1], [750.5, 1077.3], [747.1, 1066], [765.3, 1055.4], [758.9, 1044.2], [736.6, 1056.9], [731.2, 1058.6], [731.5, 1059.8], [719.6, 1066.5], [695.9, 1028.3], [684.9, 1035.2], [710.4, 1076.2], [706.5, 1089.9], [683.5, 1097.2], [679.6, 1095.7], [677.4, 1101.3], [651.8, 1014.6], [642.6, 1025.8], [665.1, 1102.2], [612.6, 1131.8], [575.5, 1160.2], [565.5, 1160], [566.4, 1155.2], [542.1, 1176.5], [552.6, 1186.2], [524.2, 1218.5], [410.6, 1307.6], [342, 1220.3], [337.3, 1224], [405.9, 1311.3], [316, 1381.9], [309.8, 1384.1], [304.5, 1369.5], [295.1, 1372.9], [300.5, 1387.6], [243.4, 1408.5], [238.1, 1400], [231.3, 1404.2], [235.7, 1411.3], [220.1, 1417], [224.6, 1429.2], [229.4, 1427.4], [223.4, 1439.1], [230.5, 1442.8], [239.2, 1425.9], [315.5, 1396]], holes: [[[690.6, 1109.7], [706.9, 1103.6], [711.6, 1126.5], [679.7, 1131.3], [688.3, 1110]], [[668.3, 1124.9], [666, 1130.9], [670.6, 1132.7], [643.2, 1136.8], [639.8, 1131.4], [673, 1112.7]]], covers: [["j_hilton_e", "j_nishi_x"], ["j_nishi_x", "hilton"], ["hilton", "garden"], ["j_c1", "j_kitte_e"], ["garden", "herbis"], ["garden", "kitte"], ["herbis", "j_nishi_x"], ["j_nishi_x", "j_sone_w"], ["j_kitte_e", "nishi_umeda_08"], ["nishi_umeda_05", "nishi_umeda_02"], ["nishi_umeda_05", "nishi_umeda_03"], ["nishi_umeda_06", "nishi_umeda_05"], ["nishi_umeda_07", "nishi_umeda_06"], ["nishi_umeda_08", "nishi_umeda_07"], ["nishi_umeda_08", "nishi_umeda_09"], ["nishi_umeda_09", "j_nishi_x"], ["nishi_umeda_11", "j_kitte_e"], ["nishi_umeda_11", "nishi_umeda_10"], ["nishi_umeda_12", "nishi_umeda_14"], ["nishi_umeda_13", "nishi_umeda_11"], ["nishi_umeda_13", "nishi_umeda_15"], ["nishi_umeda_14", "nishi_umeda_13"], ["nishi_umeda_16", "nishi_umeda_14"], ["nishi_umeda_16", "nishi_umeda_17"], ["nishi_umeda_03", "nishi_umeda_p2_garden"], ["nishi_umeda_p2_garden", "nishi_umeda_04"], ["garden", "nishi_umeda_p2_garden"], ["nishi_umeda_01", "nishi_umeda_p2_ritz"], ["ritz", "nishi_umeda_p2_ritz"], ["nishi_umeda_02", "nishi_a1_j"], ["nishi_a1_j", "nishi_umeda_01"], ["nishi_a1_j", "nishi_a1"], ["nishi_umeda_p2_ritz", "nishi_y"], ["nishi_y", "nishi_y_k1"], ["nishi_y_k1", "exit_6_1"], ["nishi_y", "exit_6_2"]] },
         { floor: "B1", zone: "nishi_umeda", pts: [[706.9, 1338.4], [708.6, 1334], [712.7, 1334.3], [713.5, 1332.1], [719.9, 1330.2], [722.8, 1257.7], [709.8, 1257.2], [707.5, 1314.1], [666.7, 1219.5], [657, 1221.8]] },
         { floor: "B1", zone: "_neutral", pts: [[1047.9, 1128.6], [1047.8, 1136.5], [1055.9, 1139.1], [1079.1, 1208.1], [1072.5, 1215.7], [1075.8, 1234.4], [1080.9, 1250.4], [1090.5, 1258.9], [1105.7, 1304], [1110.2, 1302.7], [1121.1, 1329.5], [1133.9, 1337.2], [1081, 1206.2], [1065.5, 1138.6], [1102, 1127.2], [1099.1, 1117.7], [1063.3, 1128.8], [1059.1, 1110.5], [1047.7, 1113.5]], covers: [["j_f40", "j_mido_s"], ["j_mido_s", "sonechika"]] },
         { floor: "B2", zone: "hilton", pts: [[744, 1121.9], [741.1, 1139.4], [739.6, 1171.8], [735.8, 1177.8], [734.9, 1186.4], [737.7, 1196.4], [738.1, 1207], [741.7, 1211.8], [741.7, 1217.8], [786.6, 1217.4], [791, 1215.2], [792.7, 1210.9], [794.6, 1169.4], [797, 1161.3], [805.7, 1147.4], [819.4, 1136.7], [789.5, 1086.8], [764.4, 1101.1], [758.8, 1099.9], [756.7, 1106], [748.4, 1113.5]] },
@@ -34724,10 +34724,13 @@
       controls.minDistance = 15;
       controls.maxDistance = 1600;
       renderer.domElement.addEventListener("pointerdown", (e) => {
-        controls.zoomSpeed = e.pointerType === "touch" ? 1 : 3;
+        const touch = e.pointerType === "touch";
+        controls.zoomSpeed = touch ? 1 : 3;
+        controls.zoomToCursor = !touch;
       }, { capture: true });
       renderer.domElement.addEventListener("wheel", () => {
         controls.zoomSpeed = 3;
+        controls.zoomToCursor = true;
       }, { capture: true, passive: true });
       controls.maxPolarAngle = Math.PI * 0.49;
       window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE: three_module_exports, scene };
@@ -34753,7 +34756,6 @@
       var groundLabelObjs = [];
       scene.add(groundGroup);
       {
-        const GROUND_Y = 112;
         const GROUND_BUILDINGS = [
           // 実外形はOSM building footprint(簡略化3.5px)。高さは従来値を踏襲
           { poly: [[953.6, 720.4], [1001.4, 711.8], [1042.6, 694], [1023.5, 574], [987.1, 448.3], [916.6, 460.9], [898.5, 492.4], [939.8, 694.3], [926.3, 688.4], [932.6, 723.7]], h: 24, name: "\u962A\u6025 \u5927\u962A\u6885\u7530\u99C5", lm: true },
@@ -35238,25 +35240,24 @@
       {
         const pinGeo = new ConeGeometry(2.2, 6, 6);
         const pinMat = new MeshBasicMaterial({ color: 16765503 });
-        const VERT_PIN_COLOR = { ev: 8038399, esc: 16761405, stairs: 8029849 };
         for (const lm of LANDMARKS) {
           const [x, z] = M2W([lm.mx, lm.my]);
           lm.x = x;
           lm.z = z;
           landmarkById[lm.id] = lm;
-          const pin = new Mesh(pinGeo, lm.vert ? new MeshBasicMaterial({ color: VERT_PIN_COLOR[lm.vert] }) : pinMat);
+          if (lm.vert) {
+            lm.x = x;
+            lm.z = z;
+            continue;
+          }
+          const pin = new Mesh(pinGeo, pinMat);
           pin.rotation.x = Math.PI;
           pin.position.set(x, FLOOR_Y[lm.floor] + 7, z);
           pin.userData.landmarkId = lm.id;
           pin.renderOrder = 5;
           const div = document.createElement("div");
-          if (lm.vert) {
-            div.className = "landmark-label vert-pin";
-            div.innerHTML = `<span class="vert-badge ${lm.vert}">${{ ev: "EV", esc: "ESC", stairs: "\u968E\u6BB5" }[lm.vert]}</span> ${lm.to || ""}${lm.photo ? " \u{1F4F7}" : ""}`;
-          } else {
-            div.className = "landmark-label";
-            div.textContent = (lm.photo ? "\u{1F4F7} " : "") + lm.name;
-          }
+          div.className = "landmark-label";
+          div.textContent = (lm.photo ? "\u{1F4F7} " : "") + lm.name;
           const lab = new CSS2DObject(div);
           lab.position.set(0, 5, 0);
           pin.add(lab);
@@ -35468,65 +35469,71 @@
       }
       var concourseMat = new MeshStandardMaterial({ color: 3228511, emissive: 857378, roughness: 0.65 });
       neutralMats.push(concourseMat);
+      function drawVertical(type, x, z, yB2, yB1, dir3, opts = {}) {
+        const span = yB1 - yB2;
+        if (type === "ev") {
+          const shaftGeo = span === FLOOR_Y.B1 - FLOOR_Y.B2 ? evShaftGeo : new BoxGeometry(3.6, span + 8, 3.6);
+          const shaftY = yB2 + (span + 8) / 2;
+          const fill = new Mesh(shaftGeo, evShaftMat);
+          fill.position.set(x, shaftY, z);
+          const edges = new LineSegments(new EdgesGeometry(shaftGeo), evShaftEdgeMat);
+          edges.position.set(x, shaftY, z);
+          const cage = new Mesh(evCageGeo, padMats.ev);
+          cage.position.set(x, yB2 + 3.5, z);
+          vertGroup.add(fill, edges, cage);
+          evCages.push({ mesh: cage, low: yB2 + 3.5, high: yB1 + 3.5, phase: evCages.length * 1.73 });
+          return;
+        }
+        const beam = new Mesh(span === FLOOR_Y.B1 - FLOOR_Y.B2 ? beamGeo : new CylinderGeometry(0.7, 0.7, span, 8), beamMats[type]);
+        beam.position.set(x, (yB1 + yB2) / 2, z);
+        vertGroup.add(beam);
+        let [dx, dz] = dir3;
+        if (Math.hypot(dx, dz) < 1) {
+          dx = 1;
+          dz = 0;
+        }
+        const rotY = Math.atan2(-dz, dx);
+        const FLOOR_TOP = 1.9;
+        for (const y of [yB1, yB2]) {
+          if (opts.skipLower && y === yB2) continue;
+          if (opts.skipUpper && y === yB1) continue;
+          const m = type === "esc" ? makeEscalator(y === yB1 ? "B1" : "B2", padMats.esc) : new Mesh(stairsGeo, padMats.stairs);
+          m.rotation.y = rotY;
+          m.position.set(x, y + FLOOR_TOP, z);
+          vertGroup.add(m);
+        }
+      }
       for (const v of VERTICALS) {
         const bIsStation = nodeById[v.b].type === "station";
         const [x, z] = M2W([v.mx, v.my]);
         const yB1 = Math.max(FLOOR_Y[nodeById[v.a].floor], FLOOR_Y[nodeById[v.b].floor]);
         const yB2 = Math.min(FLOOR_Y[nodeById[v.a].floor], FLOOR_Y[nodeById[v.b].floor]);
         if (SHOW_STATION_INTERIOR) {
-          const pb = posOf(nodeById[v.b]);
-          const len = Math.hypot(pb.x - x, pb.z - z);
+          const pb2 = posOf(nodeById[v.b]);
+          const len = Math.hypot(pb2.x - x, pb2.z - z);
           if (len > 6) {
             const stub = new Mesh(new BoxGeometry(len + 5, 2.6, 7), concourseMat);
-            stub.position.set((pb.x + x) / 2, yB2, (pb.z + z) / 2);
+            stub.position.set((pb2.x + x) / 2, yB2, (pb2.z + z) / 2);
             stub.quaternion.setFromUnitVectors(
               new Vector3(1, 0, 0),
-              new Vector3(pb.x - x, 0, pb.z - z).normalize()
+              new Vector3(pb2.x - x, 0, pb2.z - z).normalize()
             );
             floorGroups.B2.add(stub);
           }
         }
-        if (v.type === "ev") {
-          const shaftY = yB2 + (yB1 - yB2 + 8) / 2;
-          const fill = new Mesh(evShaftGeo, evShaftMat);
-          fill.position.set(x, shaftY, z);
-          const edges = new LineSegments(new EdgesGeometry(evShaftGeo), evShaftEdgeMat);
-          edges.position.set(x, shaftY, z);
-          const cage = new Mesh(evCageGeo, padMats.ev);
-          cage.position.set(x, yB2 + 3.5, z);
-          vertGroup.add(fill, edges, cage);
-          evCages.push({ mesh: cage, low: yB2 + 3.5, high: yB1 + 3.5, phase: evCages.length * 1.73 });
-        } else {
-          const beam = new Mesh(beamGeo, beamMats[v.type]);
-          beam.position.set(x, (yB1 + yB2) / 2, z);
-          vertGroup.add(beam);
-          const pa = nodeById[v.a], pb = nodeById[v.b];
-          let dx = pa.x - pb.x, dz = pa.z - pb.z;
-          if (Math.hypot(dx, dz) < 3) {
-            dx = pa.x - x;
-            dz = pa.z - z;
-          }
-          if (Math.hypot(dx, dz) < 1) {
-            dx = 1;
-            dz = 0;
-          }
-          const rotY = Math.atan2(-dz, dx);
-          const FLOOR_TOP = 1.9;
-          for (const y of [yB1, yB2]) {
-            if (bIsStation && y === yB2) continue;
-            if (v.type === "esc") {
-              const m = makeEscalator(y === yB1 ? "B1" : "B2", padMats.esc);
-              m.rotation.y = rotY;
-              m.position.set(x, y + FLOOR_TOP, z);
-              vertGroup.add(m);
-            } else {
-              const m = new Mesh(stairsGeo, padMats.stairs);
-              m.rotation.y = rotY;
-              m.position.set(x, y + FLOOR_TOP, z);
-              vertGroup.add(m);
-            }
-          }
+        const pa = nodeById[v.a], pb = nodeById[v.b];
+        let dx = pa.x - pb.x, dz = pa.z - pb.z;
+        if (Math.hypot(dx, dz) < 3) {
+          dx = pa.x - x;
+          dz = pa.z - z;
         }
+        drawVertical(v.type, x, z, yB2, yB1, [dx, dz], { skipLower: bIsStation });
+      }
+      for (const lm of LANDMARKS) {
+        if (!lm.vert) continue;
+        const [x, z] = M2W([lm.mx, lm.my]);
+        const dir3 = lm.dir ? [lm.dir[0], lm.dir[1]] : [1, 0];
+        drawVertical(lm.vert, x, z, FLOOR_Y[lm.floor], GROUND_Y, dir3, { skipUpper: true });
       }
       var SHOW_STATION_INTERIOR = false;
       if (SHOW_STATION_INTERIOR) for (const line of RAIL_LINES) {
@@ -36395,15 +36402,21 @@
       renderer.domElement.addEventListener("pointermove", (e) => {
         if (ptrPos.has(e.pointerId)) ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
       });
+      function floorPivotY() {
+        for (const f of ["B1", "S1", "B2"]) if (floorGroups[f].visible) return FLOOR_Y[f];
+        return FLOOR_Y.B1;
+      }
       function pivotToPinchCenter() {
         const pts = [...ptrPos.values()];
         if (pts.length < 2) return;
         const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
         const rc = new Raycaster();
         rc.setFromCamera(new Vector2(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1), camera);
-        const plane = new Plane(new Vector3(0, 1, 0), -controls.target.y);
+        const y = floorPivotY();
+        const plane = new Plane(new Vector3(0, 1, 0), -y);
         const hit = new Vector3();
         if (rc.ray.intersectPlane(plane, hit) && hit.distanceTo(camera.position) < 3e3) controls.target.copy(hit);
+        else controls.target.y = y;
       }
       renderer.domElement.addEventListener("pointerdown", (e) => {
         downAt = [e.clientX, e.clientY];
