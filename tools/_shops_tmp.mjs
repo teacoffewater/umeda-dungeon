@@ -103,7 +103,7 @@ export const SHOPS_MANUAL = [
   { name: '阪神梅田本店 B1F(食品館)',         floor: 'B1', mx: 942.7, my: 1043.9, near: 'hanshin',      zone: 'hanshin_dept' },
   { name: '堂島アバンザ B1F(レストラン街)',   floor: 'B1', mx: 785.7, my: 1499.6, near: 'j_avz',        zone: 'avanza' },
   { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 934.0, my: 1049.6, near: 'hanshin_home', zone: 'hanshin_dept' },
-  { name: '梅田メンタルクリニック', floor: 'B1', mx: 318.5, my: 1392, near: 'nishi_umeda_01', zone: 'nishi_umeda' }, // 現地調査 2026-08-23
+  { name: '梅田メンタルクリニック', floor: 'B1', mx: 235.6, my: 1437.6, near: 'exit_6_1', zone: 'nishi_umeda' }, // 出口6-1のすぐ横(現地確認 2026-08-23)
 ];
 
 // order: 公式マップ上の歩く順 / side: 通路のどちら側か（方角） / cell: 3×3グリッド位置
