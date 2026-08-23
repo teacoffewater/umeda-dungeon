@@ -1329,18 +1329,25 @@ const landmarkById = {};
 {
   const pinGeo = new THREE.ConeGeometry(2.2, 6, 6);
   const pinMat = new THREE.MeshBasicMaterial({ color: 0xffd23f });
+  const VERT_PIN_COLOR = { ev: 0x7aa7ff, esc: 0xffc23d, stairs: 0x7a8699 };
   for (const lm of LANDMARKS) {
     const [x, z] = M2W([lm.mx, lm.my]);
     lm.x = x; lm.z = z;
     landmarkById[lm.id] = lm;
-    const pin = new THREE.Mesh(pinGeo, pinMat);
+    const pin = new THREE.Mesh(pinGeo, lm.vert ? new THREE.MeshBasicMaterial({ color: VERT_PIN_COLOR[lm.vert] }) : pinMat);
     pin.rotation.x = Math.PI; // 先端を下に
     pin.position.set(x, FLOOR_Y[lm.floor] + 7, z);
     pin.userData.landmarkId = lm.id;
     pin.renderOrder = 5;
     const div = document.createElement('div');
-    div.className = 'landmark-label';
-    div.textContent = (lm.photo ? '📷 ' : '') + lm.name;
+    if (lm.vert) {
+      // 地上(1F)への昇降設備は、地図内の階をつなぐ VERTICALS と同じ EV/ESC/階段 バッジで表す
+      div.className = 'landmark-label vert-pin';
+      div.innerHTML = `<span class="vert-badge ${lm.vert}">${{ ev: 'EV', esc: 'ESC', stairs: '階段' }[lm.vert]}</span> ${lm.to || ''}${lm.photo ? ' 📷' : ''}`;
+    } else {
+      div.className = 'landmark-label';
+      div.textContent = (lm.photo ? '📷 ' : '') + lm.name;
+    }
     const lab = new CSS2DObject(div);
     lab.position.set(0, 5, 0);
     pin.add(lab);

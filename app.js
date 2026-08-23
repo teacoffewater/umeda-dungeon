@@ -33619,7 +33619,7 @@
           photo: "photos/yellow_object.jpg",
           note: "\u51FA\u53E36-1(\u5DE6)\u30686-2(\u53F3)\u306EY\u5B57\u8DEF\u306E\u80A1\u306B\u3042\u308B\u9EC4\u8272\u3044\u5186\u5F62\u306E\u91D1\u5C5E\u30AA\u30D6\u30B8\u30A7(KALEIDOSCOPE)\u3002\u30BF\u30C3\u30D7\u4F4D\u7F6E(346,1357)\u306F\u5199\u771F\u306B\u3088\u308A\u5206\u5C90\u70B9\u3078\u88DC\u6B63"
         },
-        { id: "lm_esc_6_1", name: "\u4E0A\u308A\u30A8\u30B9\u30AB\u30EC\u30FC\u30BF\u30FC(\u21921F)", floor: "B1", mx: 224.4, my: 1434.1, zone: "nishi_umeda", note: "\u51FA\u53E36-1\u3001\u5730\u4E0B\u5074\u304B\u3089\u898B\u3066\u53F3\u5074\u3002\u4E0A\u308A\u5C02\u7528(\u73FE\u5730\u78BA\u8A8D 2026-08-23)" }
+        { id: "lm_esc_6_1", name: "\u30A8\u30B9\u30AB\u30EC\u30FC\u30BF\u30FC(\u21921F\u3001\u4E0A\u308A\u5C02\u7528)", floor: "B1", mx: 224.4, my: 1434.1, zone: "nishi_umeda", vert: "esc", to: "\u21921F", note: "\u51FA\u53E36-1\u3001\u5730\u4E0B\u5074\u304B\u3089\u898B\u3066\u53F3\u5074\u3002\u4E0A\u308A\u5C02\u7528(\u73FE\u5730\u78BA\u8A8D 2026-08-23)" }
       ];
       PHOTOS = {
         lm_yellow_obj: [
@@ -35222,19 +35222,25 @@
       {
         const pinGeo = new ConeGeometry(2.2, 6, 6);
         const pinMat = new MeshBasicMaterial({ color: 16765503 });
+        const VERT_PIN_COLOR = { ev: 8038399, esc: 16761405, stairs: 8029849 };
         for (const lm of LANDMARKS) {
           const [x, z] = M2W([lm.mx, lm.my]);
           lm.x = x;
           lm.z = z;
           landmarkById[lm.id] = lm;
-          const pin = new Mesh(pinGeo, pinMat);
+          const pin = new Mesh(pinGeo, lm.vert ? new MeshBasicMaterial({ color: VERT_PIN_COLOR[lm.vert] }) : pinMat);
           pin.rotation.x = Math.PI;
           pin.position.set(x, FLOOR_Y[lm.floor] + 7, z);
           pin.userData.landmarkId = lm.id;
           pin.renderOrder = 5;
           const div = document.createElement("div");
-          div.className = "landmark-label";
-          div.textContent = (lm.photo ? "\u{1F4F7} " : "") + lm.name;
+          if (lm.vert) {
+            div.className = "landmark-label vert-pin";
+            div.innerHTML = `<span class="vert-badge ${lm.vert}">${{ ev: "EV", esc: "ESC", stairs: "\u968E\u6BB5" }[lm.vert]}</span> ${lm.to || ""}${lm.photo ? " \u{1F4F7}" : ""}`;
+          } else {
+            div.className = "landmark-label";
+            div.textContent = (lm.photo ? "\u{1F4F7} " : "") + lm.name;
+          }
           const lab = new CSS2DObject(div);
           lab.position.set(0, 5, 0);
           pin.add(lab);
