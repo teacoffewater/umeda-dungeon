@@ -3,27 +3,86 @@
 
 入力: tools/data/whity_2016.json (extract_whity_pdf.py の出力)
 出力: detail_whity.js
-  - WHITY_BLOCKS: テナントブロックの外形(ホワイティ床の近く30m以内のみ。案内図の飾り由来のノイズを除く)
+  - WHITY_FLOOR: 床の外形(通路含む)。区画+白塗り片の結合を閉包(膨張→収縮)して
+    「区画列の隙間=通路」を埋めたもの。OSM由来の形は使わない
+  - WHITY_BLOCKS: テナントブロックの外形(飾り帯ノイズを除去したもの)
   - WHITY_REAL_POS: 現在の店(shops.js)のうち2016年版と名前が一致した店の実位置 {店名: [mx,my]}
 """
-import json, os, re, sys
-from shapely.geometry import Polygon, Point
-from shapely.ops import unary_union
+import json, os, re
+from shapely.geometry import Polygon, Point, MultiPolygon, LineString
+from shapely.ops import unary_union, nearest_points
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 d = json.load(open(os.path.join(ROOT, 'tools/data/whity_2016.json')))
-src = open(os.path.join(ROOT, 'tools/floor_polys_generated.js')).read()
-whity = unary_union([Polygon(json.loads(m.group(1))) for m in re.finditer(r"zone: 'whity', pts: (\[\[.*?\]\])", src)])
-blocks = []
-for b in d['blocks']:
-    if b['mall'] == 'その他':
-        continue
-    p = Polygon(b['m'])
-    if p.is_valid and p.distance(whity) <= 30:
-        blocks.append(b)
-print(f'ブロック {len(d["blocks"])} → 床の近く {len(blocks)}')
 
+CLOSE_R = 8.0     # 閉包半径(m)。これ×2 までの通路幅の隙間が床として埋まる
+MIN_COMP = 1200   # 床の連結成分の最小面積(m²)。小さな孤立片は捨てる
+
+
+def to_poly(pts):
+    try:
+        p = Polygon(pts).buffer(0)
+        return None if p.is_empty else p
+    except Exception:
+        return None
+
+
+# --- 1) 飾り帯ノイズの除去: 細長すぎるブロック(路線図の帯・モール名バナー) ---
+blocks = []
+dropped = 0
+for b in d['blocks']:
+    p = to_poly(b['m'])
+    if p is None:
+        continue
+    r = p.minimum_rotated_rectangle
+    xs = list(r.exterior.coords)
+    e1 = ((xs[1][0]-xs[0][0])**2 + (xs[1][1]-xs[0][1])**2) ** 0.5
+    e2 = ((xs[2][0]-xs[1][0])**2 + (xs[2][1]-xs[1][1])**2) ** 0.5
+    L, W = max(e1, e2), min(e1, e2)
+    if L > 40 and W < 8:  # 40m超×8m未満の細帯は地図の飾り
+        dropped += 1
+        continue
+    blocks.append((b, p))
+print(f"ブロック {len(d['blocks'])} → 飾り帯除去後 {len(blocks)} (除去 {dropped})")
+
+# --- 2) 床 = 閉包(ブロック ∪ 白塗り片) ---
+walks = [w for w in (to_poly(w) for w in d.get('walks', [])) if w]
+base = unary_union([p for _, p in blocks] + walks)
+closed = base.buffer(CLOSE_R, join_style=2).buffer(-CLOSE_R, join_style=2)
+comps = list(closed.geoms) if isinstance(closed, MultiPolygon) else [closed]
+comps = [c for c in comps if c.area >= MIN_COMP]
+# 店のない通路区間は地図上で塗られておらず成分が分断されることがある → 最近接点同士を通路幅の帯でつなぐ
+while len(comps) > 1:
+    comps.sort(key=lambda c: c.area, reverse=True)
+    main = comps[0]
+    dist, near = min((main.distance(c), c) for c in comps[1:])
+    p1, p2 = nearest_points(main, near)
+    print(f'分断成分を接続: 距離 {dist:.0f}m')
+    bridge = LineString([p1, p2]).buffer(4.0)  # 幅8mの通路帯(丸端で両成分に食い込ませて確実に結合)
+    comps = [unary_union([main, near, bridge])] + [c for c in comps[1:] if c is not near]
+floor = unary_union(comps).simplify(0.8)
+fl_list = list(floor.geoms) if isinstance(floor, MultiPolygon) else [floor]
+print(f'床: 連結成分 {len(fl_list)} 面積 {round(floor.area)}m²')
+
+
+def ring(r):
+    return [[round(x, 1), round(y, 1)] for x, y in r.coords[:-1]]
+
+
+floor_out = [{'pts': ring(c.exterior), 'holes': [ring(h) for h in c.interiors]} for c in fl_list]
+
+# --- 3) ブロック出力(床から遠い迷子は捨てる。「その他」=非店舗区画も残す) ---
+blocks_out = []
+for b, p in blocks:
+    if p.distance(floor) <= 2:
+        blocks_out.append(b)
+print(f'床の上のブロック {len(blocks_out)}')
+
+# --- 4) 現在の店との名前照合 ---
 def norm(x):
     return re.sub(r'[ 　・]', '', x).lower()
+
+
 by2016 = {}
 for s in d['shops']:
     by2016[norm(s['name'])] = s
@@ -36,14 +95,14 @@ for c in cur:
     if not hit:  # 安全な部分一致(4文字以上・片方向包含)
         cands = [s for kk, s in by2016.items() if len(kk) >= 4 and (kk in k or k in kk)]
         hit = cands[0] if len(cands) == 1 else None
-    if hit:
-        # 床から10m超離れる位置は採用しない(地図データの粗さ・誤照合のガード)
-        if Point(hit['m']).distance(whity) <= 10:
-            real[c] = hit['m']
+    if hit and Point(hit['m']).distance(floor) <= 10:
+        real[c] = hit['m']
 print(f'現在のホワイティ店 {len(cur)}件中 実位置が付いた店 {len(real)}件')
+
 with open(os.path.join(ROOT, 'detail_whity.js'), 'w') as f:
     f.write('// 自動生成: tools/gen_detail_whity.py(2016年公式フロアガイドPDF由来)。手編集しない\n')
-    f.write('// ブロックはテナント区画の外形(2016年時点)。REAL_POS は名前が一致した現在の店の実位置\n')
-    f.write('export const WHITY_BLOCKS = ' + json.dumps(blocks, ensure_ascii=False, separators=(',', ':')) + ';\n')
+    f.write('// FLOOR=床外形(通路含む・PDFトレース) BLOCKS=テナント区画 REAL_POS=名前一致した現在店の実位置\n')
+    f.write('export const WHITY_FLOOR = ' + json.dumps(floor_out, separators=(',', ':')) + ';\n')
+    f.write('export const WHITY_BLOCKS = ' + json.dumps(blocks_out, ensure_ascii=False, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_REAL_POS = ' + json.dumps(real, ensure_ascii=False, separators=(',', ':')) + ';\n')
 print('wrote detail_whity.js')

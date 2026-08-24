@@ -109,6 +109,23 @@ MALL_FILLS = {
     (0.86, 0.87, 0.87): 'その他',
 }
 from shapely.geometry import Polygon as _Poly
+
+
+def path_pts(d):
+    """描画パスの頂点列。ベジェは制御点も拾って近似"""
+    pts = []
+    for item in d['items']:
+        if item[0] == 'l':
+            pts.append((item[1].x, item[1].y)); pts.append((item[2].x, item[2].y))
+        elif item[0] == 'c':
+            for p in item[1:5]:
+                pts.append((p.x, p.y))
+        elif item[0] == 're':
+            rr = item[1]
+            return [(rr.x0, rr.y0), (rr.x1, rr.y0), (rr.x1, rr.y1), (rr.x0, rr.y1)]
+    return pts
+
+
 blocks = []
 for d in page.get_drawings():
     r = d['rect']
@@ -117,16 +134,7 @@ for d in page.get_drawings():
     key = tuple(round(c, 2) for c in d['fill'])
     if key not in MALL_FILLS:
         continue
-    pts = []
-    for item in d['items']:
-        if item[0] == 'l':
-            pts.append((item[1].x, item[1].y)); pts.append((item[2].x, item[2].y))
-        elif item[0] == 'c':
-            pts.append((item[1].x, item[1].y)); pts.append((item[4].x, item[4].y))
-        elif item[0] == 're':
-            rr = item[1]
-            pts = [(rr.x0, rr.y0), (rr.x1, rr.y0), (rr.x1, rr.y1), (rr.x0, rr.y1)]
-            break
+    pts = path_pts(d)
     if len(pts) < 3:
         continue
     try:
@@ -142,7 +150,28 @@ for d in page.get_drawings():
         continue
 print(f'テナントブロック {len(blocks)}個')
 
+# --- 通路(白塗りポリゴン)。床のトレース用 ---
+walks = []
+for d in page.get_drawings():
+    r = d['rect']
+    if r.y1 > MAP_Y_MAX or not d.get('fill'):
+        continue
+    if tuple(round(c, 2) for c in d['fill']) != (1.0, 1.0, 1.0):
+        continue
+    pts = path_pts(d)
+    if len(pts) < 3:
+        continue
+    try:
+        poly = _Poly(pts).buffer(0)
+        if poly.is_empty or poly.area < 40:  # 小さな白チップ(アイコン台座・ラベル)を除外
+            continue
+        mpts = [to_m(x, y) for x, y in poly.simplify(0.8).exterior.coords[:-1]]
+        walks.append([[round(a, 1), round(b, 1)] for a, b in mpts])
+    except Exception:
+        continue
+print(f'通路(白塗り) {len(walks)}面')
+
 json.dump({'source': 'whity_2016_labeled.pdf (2016-02-23現在)',
            'affine': A.tolist(), 'residual_mean_m': round(float(err.mean()), 1),
-           'shops': shops, 'blocks': blocks}, open(OUT, 'w'), ensure_ascii=False, indent=1)
+           'shops': shops, 'blocks': blocks, 'walks': walks}, open(OUT, 'w'), ensure_ascii=False, indent=1)
 print('wrote', OUT)
