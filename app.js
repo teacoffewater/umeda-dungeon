@@ -34736,11 +34736,11 @@
       renderer.domElement.addEventListener("pointerdown", (e) => {
         const touch = e.pointerType === "touch";
         controls.zoomSpeed = touch ? 1 : 3;
-        controls.zoomToCursor = !touch;
+        controls.zoomToCursor = !touch && !(typeof detailMode !== "undefined" && detailMode);
       }, { capture: true });
       renderer.domElement.addEventListener("wheel", () => {
         controls.zoomSpeed = 3;
-        controls.zoomToCursor = true;
+        controls.zoomToCursor = !(typeof detailMode !== "undefined" && detailMode);
       }, { capture: true, passive: true });
       controls.maxPolarAngle = Math.PI * 0.49;
       window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE: three_module_exports, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find((n) => n.type === "shop" && n.zone === "whity")?.name }) };
@@ -35373,8 +35373,6 @@
         detailSaved.maxPolar = controls.maxPolarAngle;
         detailSaved.minDistance = controls.minDistance;
         controls.enableRotate = false;
-        controls.minPolarAngle = 0;
-        controls.maxPolarAngle = 0.01;
         controls.minDistance = 40;
         camAnim = {
           fromPos: camera.position.clone(),
@@ -35382,7 +35380,13 @@
           fromTgt: controls.target.clone(),
           toTgt: new Vector3(c.x, FLOOR_Y.B1, c.z),
           start: performance.now(),
-          dur: 900
+          dur: 900,
+          onDone: () => {
+            if (detailMode) {
+              controls.minPolarAngle = 0;
+              controls.maxPolarAngle = 0.01;
+            }
+          }
         };
       }
       function exitDetail() {
@@ -36552,6 +36556,7 @@
         return FLOOR_Y.B1;
       }
       function pivotToPinchCenter() {
+        if (typeof detailMode !== "undefined" && detailMode) return;
         const pts = [...ptrPos.values()];
         if (pts.length < 2) return;
         const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
@@ -36620,7 +36625,11 @@
           const e = 1 - Math.pow(1 - p, 3);
           camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
           controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
-          if (p >= 1) camAnim = null;
+          if (p >= 1) {
+            const done = camAnim.onDone;
+            camAnim = null;
+            done?.();
+          }
         }
         if (routeCurve && markers.length) {
           markers.forEach((m, i) => {

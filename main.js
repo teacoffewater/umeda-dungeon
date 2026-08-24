@@ -872,9 +872,9 @@ controls.maxDistance = 1600;
 renderer.domElement.addEventListener('pointerdown', e => {
   const touch = e.pointerType === 'touch';
   controls.zoomSpeed = touch ? 1 : 3;
-  controls.zoomToCursor = !touch;
+  controls.zoomToCursor = !touch && !(typeof detailMode !== 'undefined' && detailMode);
 }, { capture: true });
-renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; controls.zoomToCursor = true; }, { capture: true, passive: true });
+renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; controls.zoomToCursor = !(typeof detailMode !== 'undefined' && detailMode); }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
 window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === 'whity')?.name }) }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
@@ -1405,7 +1405,7 @@ updateDetailLOD();
 // 詳細モード: 施設の床をタップ → その施設の詳細地図(区画+実位置の店名)。✕で広域へ戻る
 // いまはホワイティのみ(詳細データがある施設だけ入れる)
 // ---------------------------------------------------------------------------
-let detailMode = null;
+var detailMode = null; // (前方のイベントハンドラから参照するため var)
 const detailShopIds = []; // 実位置を持つホワイティ店(詳細モードで名前を出す)
 const detailShopLabels = [];
 for (const n of NODES) {
@@ -1464,10 +1464,11 @@ function enterDetail(zoneId) {
   detailSaved.maxPolar = controls.maxPolarAngle;
   detailSaved.minDistance = controls.minDistance;
   controls.enableRotate = false;
-  controls.minPolarAngle = 0; controls.maxPolarAngle = 0.01;
   controls.minDistance = 40;
+  // 真上固定のクランプはアニメ完了後にかける(アニメ中にかけると角度がパタッと跳ねる)
   camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(c.x, FLOOR_Y.B1 + r * 1.7, c.z + 0.1),
-              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, FLOOR_Y.B1, c.z), start: performance.now(), dur: 900 };
+              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, FLOOR_Y.B1, c.z), start: performance.now(), dur: 900,
+              onDone: () => { if (detailMode) { controls.minPolarAngle = 0; controls.maxPolarAngle = 0.01; } } };
 }
 function exitDetail() {
   if (!detailMode) return;
@@ -2730,6 +2731,7 @@ function floorPivotY() {
   return FLOOR_Y.B1;
 }
 function pivotToPinchCenter() {
+  if (typeof detailMode !== 'undefined' && detailMode) return; // 真俯瞰固定中は基準点を動かさない(角度が跳ねる)
   const pts = [...ptrPos.values()];
   if (pts.length < 2) return;
   const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
@@ -2804,7 +2806,7 @@ function animate() {
     const e = 1 - Math.pow(1 - p, 3);
     camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
     controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
-    if (p >= 1) camAnim = null;
+    if (p >= 1) { const done = camAnim.onDone; camAnim = null; done?.(); }
   }
   if (routeCurve && markers.length) {
     markers.forEach((m, i) => {
