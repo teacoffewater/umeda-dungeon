@@ -283,6 +283,16 @@ HAND_PLATES = [
 # --- 円形の広場(円は使用OK) ---
 DISCS = [('B1', 'diamor', 870.6, 1112.4, 16), ('B1', 'whity', 1293, 936.2, 15)]
 
+# --- ホワイティ詳細(2016公式PDF): テナントブロックを床に含める(モールの床は通路+区画の全体) ---
+try:
+    _wd = json.load(open(os.path.join(DATA, 'whity_2016.json')))
+    _wblocks = [Polygon(b['m']) for b in _wd['blocks'] if b['mall'] != 'その他' and Polygon(b['m']).is_valid]
+    # ホワイティの通路帯(自エッジ)に接しているブロックだけ床に足す(サン広場側などの飛び地を防ぐ)
+    _wblocks = [p for p in _wblocks if whity_band_raw is not None and p.distance(whity_band_raw) <= 8]
+    WHITY_BLOCK_UNION = unary_union(_wblocks).buffer(1.5, join_style=2) if _wblocks else None
+except FileNotFoundError:
+    WHITY_BLOCK_UNION = None
+
 # --- ゾーンごとに結合 ---
 groups = {}
 def add(floor, zone, geom):
@@ -295,6 +305,8 @@ for a, b, w, zone, fl, fb in edges:
     add(fl, zone, LineString([(ax, ay), (bx, by)]).buffer(w / 2, cap_style=3, join_style=2))
 for ls, zone, fl in osm_ways:
     add(fl, zone, ls.buffer(OSM_W.get(zone, 10) / 2, cap_style=2, join_style=2))
+if WHITY_BLOCK_UNION is not None:
+    add('B1', 'whity', WHITY_BLOCK_UNION)
 for fl, zone, poly in BUILDING_PLATES:
     add(fl, zone, poly)
 for fl, zone, pts in HAND_PLATES:
