@@ -33687,7 +33687,7 @@
         // オリーブ
         ekimae: { name: "\u5927\u962A\u99C5\u524D\u30D3\u30EB", color: 14375526, label: [904.2, 1221.8] },
         // 鮮明な赤(そねちかとの分離)
-        sonechika: { name: "\u66FD\u6839\u5D0E\u5730\u4E0B\u6B69\u9053(\u305D\u306D\u3061\u304B)", color: 4830916, label: [1023.8, 1319.1], corridor: true },
+        sonechika: { name: "\u66FD\u6839\u5D0E\u5730\u4E0B\u6B69\u9053(\u305D\u306D\u3061\u304B)", color: 8360880, label: [1023.8, 1319.1], corridor: true },
         // 東梅田改札へ向かうただの通路として扱う
         hep: { name: "HEP FIVE / NAVIO", color: 14701903, label: [1120, 745] },
         // 赤い観覧車の朱赤

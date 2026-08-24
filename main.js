@@ -48,7 +48,7 @@ const ZONES = {
   hanshin_dept:{ name: '阪神百貨店',            color: 0x3f5f9e, label: [954.4, 1061.3] },  // 阪神ネイビー(床の重心)
   avanza:      { name: '堂島アバンザ',          color: 0x9a8f52, label: [782.9, 1514.8] },  // オリーブ
   ekimae:      { name: '大阪駅前ビル',          color: 0xdb5a66, label: [904.2, 1221.8] },  // 鮮明な赤(そねちかとの分離)
-  sonechika:   { name: '曽根崎地下歩道(そねちか)', color: 0x49b6c4, label: [1023.8, 1319.1], corridor: true },  // 東梅田改札へ向かうただの通路として扱う
+  sonechika:   { name: '曽根崎地下歩道(そねちか)', color: 0x7f93b0, label: [1023.8, 1319.1], corridor: true },  // 東梅田改札へ向かうただの通路として扱う
   hep:         { name: 'HEP FIVE / NAVIO',      color: 0xe0554f, label: [1120, 745] },   // 赤い観覧車の朱赤
   osbld:       { name: 'OSビル',                color: 0x5f8fa8, label: [1168, 872] },   // スチールブルー
   ema:         { name: 'イーマ',                color: 0x9b59d0, label: [984.4, 1098.6] },  // 紫(隣のディアモールteal・うめちかピンクと対比)
