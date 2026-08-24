@@ -813,16 +813,8 @@ const MERGED_DOTS = []; // merged指定エリアの代表ドット(店の形は�
   }
 })();
 
-// ホワイティの実位置(2016公式PDFと名前一致)を合成位置より優先
-{
-  let moved = 0;
-  for (const n of NODES) {
-    if (n.type === 'shop' && n.zone === 'whity' && WHITY_REAL_POS[n.name]) {
-      [n.mx, n.my] = WHITY_REAL_POS[n.name]; moved++;
-    }
-  }
-  if (moved) console.info(`whity実位置: ${moved}店`);
-}
+// 広域地図の店ノードは合成位置のまま(店の位置は広域では持たない方針)。
+// WHITY_REAL_POS はガイド座標系(詳細地図専用)なので広域のノードには適用しない
 for (const n of NODES) [n.x, n.z] = M2W([n.mx, n.my]);
 const nodeById = Object.fromEntries(NODES.map(n => [n.id, n]));
 const posOf = n => new THREE.Vector3(n.x, FLOOR_Y[n.floor], n.z);
@@ -1380,24 +1372,9 @@ const landmarkById = {};
   }
 }
 
-// ホワイティ詳細: テナントブロックの輪郭(2016公式PDF)。寄ったときだけ表示
-const whityBlockLines = [];
-{
-  const mat = new THREE.LineBasicMaterial({ color: 0xd9c04b, transparent: true, opacity: 0.35 });
-  for (const b of WHITY_BLOCKS) {
-    const pts = b.m.map(([mx, my]) => { const [x, z] = M2W([mx, my]); return new THREE.Vector3(x, FLOOR_Y.B1 + 3.2, z); });
-    const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), mat);
-    line.visible = false;
-    floorGroups.B1.add(line);
-    whityBlockLines.push(line);
-  }
-}
-function updateDetailLOD() {
-  const near = detailMode === 'whity' || camera.position.distanceTo(controls.target) < 320;
-  for (const l of whityBlockLines) l.visible = near;
-}
-controls.addEventListener('change', updateDetailLOD);
-updateDetailLOD();
+// 詳細地図はガイド座標系(フロアガイドそのまま)で、広域とは別の専用エリアに置く。
+// 広域(実座標)と重ならない遠方にオフセットし、詳細モード中はそこだけを見せる
+const G2W = ([gx, gy]) => [gx * 0.5 + 1600, gy * 0.5];
 
 // ---------------------------------------------------------------------------
 // 詳細モード: 施設の床をタップ → その施設の詳細地図(区画+実位置の店名)。✕で広域へ戻る
@@ -1413,25 +1390,19 @@ function buildDetailLabels() {
   if (detailShopLabels.length) return;
   const stacked = new Map(); // 同じ区画に複数店 → ラベルを縦にずらす
   for (const id of detailShopIds) {
-    const dot = shopMeshById[id];
     const block = blockMeshByShopId[id];
-    if (!dot && !block) continue;
+    if (!block) continue; // ガイド上の区画に対応づいた店だけ(詳細地図はガイドそのもの)
     const div = document.createElement('div');
     div.className = 'node-label shop detail-shop';
     div.textContent = shortShopName(nodeById[id].name);
     const lab = new CSS2DObject(div);
-    if (block) {
-      const n = stacked.get(block) || 0;
-      stacked.set(block, n + 1);
-      const [cx, cz] = block.userData.center;
-      lab.position.set(cx, 2.2 + n * 3, cz); // 区画の重心(ジオメトリがワールド座標なのでローカル=ワールド)
-      block.add(lab);
-    } else {
-      lab.position.set(0, 4, 0);
-      dot.add(lab);
-    }
+    const n = stacked.get(block) || 0;
+    stacked.set(block, n + 1);
+    const [cx, cz] = block.userData.center;
+    lab.position.set(cx, 2.2 + n * 3, cz); // 区画の重心(ジオメトリがワールド座標なのでローカル=ワールド)
+    block.add(lab);
     lab.visible = false;
-    detailShopLabels.push({ id, mesh: dot, block, lab });
+    detailShopLabels.push({ id, block, lab });
   }
 }
 const detailHidden = []; // 詳細モードで隠したオブジェクト(戻すときに復元)
@@ -1441,59 +1412,23 @@ function enterDetail(zoneId) {
   if (detailMode === zoneId || zoneId !== 'whity') return;
   detailMode = zoneId;
   buildDetailLabels();
-  for (const m of detailFloorMeshes) m.visible = true; // トレース床(OSM由来の床は下で隠す)
-  for (const m of whityBlockMeshes) m.visible = true; // 区画の実形状
-  // 区画が分かる店はドットを出さない(区画そのものが店の形)。区画が無い店だけドットで補う
-  for (const d of detailShopLabels) { if (d.mesh) d.mesh.visible = !d.block; d.lab.visible = true; }
-  updateDetailLOD();
+  for (const d of detailShopLabels) d.lab.visible = true;
   document.getElementById('detail-bar').hidden = false;
   document.getElementById('detail-bar-name').textContent = ZONES[zoneId].name + ' 詳細地図';
-  // 施設の範囲(トレース床の全体)
-  const box = new THREE.Box3();
-  for (const m of detailFloorMeshes) box.expandByObject(m);
+  // 詳細地図=ガイド座標系の別画面。広域(実座標)のものは丸ごと隠して専用エリアへ飛ぶ
+  hideForDetail(floorGroups.S1); hideForDetail(floorGroups.B1); hideForDetail(floorGroups.B2);
+  hideForDetail(groundGroup); hideForDetail(vertGroup);
+  // CSS2Dラベルはグループ非表示に連動しないため個別に隠す
+  for (const labs of Object.values(floorLabelObjs)) for (const lab of labs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
+  for (const { lab } of zoneLabelObjs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
+  for (const lab of groundLabelObjs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
+  detailGroup.visible = true;
+  // ガイド全体が入る範囲
+  const box = new THREE.Box3().expandByObject(detailGroup);
   const c = box.getCenter(new THREE.Vector3());
   const r = Math.max(80, box.getBoundingSphere(new THREE.Sphere()).radius);
-  // 外接ボックスだとV字のくぼみ(施設外)のものが残るため、トレース床の形状との距離で残す/隠すを判定する
-  const inPoly = (x, z, ring) => {
-    let c = false;
-    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-      const [xi, zi] = ring[i], [xj, zj] = ring[j];
-      if ((zi > z) !== (zj > z) && x < (xj - xi) * (z - zi) / (zj - zi) + xi) c = !c;
-    }
-    return c;
-  };
-  const distToRing = (x, z, ring) => {
-    let best = Infinity;
-    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-      const [xi, zi] = ring[i], [xj, zj] = ring[j];
-      const dx = xj - xi, dz = zj - zi;
-      const t = Math.max(0, Math.min(1, ((x - xi) * dx + (z - zi) * dz) / ((dx * dx + dz * dz) || 1)));
-      best = Math.min(best, Math.hypot(x - (xi + t * dx), z - (zi + t * dz)));
-    }
-    return best;
-  };
-  const floorRings = WHITY_FLOOR.map(f => f.pts.map(([mx, my]) => M2W([mx, my])));
-  const nearFloor = (x, z) => floorRings.some(r => inPoly(x, z, r) || distToRing(x, z, r) < 6);
-  // 施設以外を隠す(他フロア・地上・他ゾーンの床と店・床から離れた調査記録やランドマーク)
-  hideForDetail(floorGroups.S1); hideForDetail(floorGroups.B2); hideForDetail(groundGroup);
-  for (const o of floorGroups.B1.children) {
-    if (o.isMesh || o.isLine || o.isLineLoop) {
-      const z = o.userData.zone;
-      const nid = o.userData.nodeId;
-      if (z && z !== zoneId) { hideForDetail(o); continue; }
-      // 施設自身のOSM由来の床・通路帯もトレース床に置き換える(区画・トレース床・店は残す)
-      if (z === zoneId && !o.userData.detailFloor && !o.userData.center && !nid) { hideForDetail(o); continue; }
-      if (nid && nodeById[nid] && nodeById[nid].zone && nodeById[nid].zone !== zoneId) { hideForDetail(o); continue; }
-      if ((o.userData.surveyId || o.userData.landmarkId) && !nearFloor(o.position.x, o.position.z)) { hideForDetail(o); continue; }
-      if (!z && !nid && !whityBlockLines.includes(o) && !o.userData.surveyId && !o.userData.landmarkId) hideForDetail(o);
-    }
-  }
-  for (const o of vertGroup.children) {
-    const p = o.position;
-    if (!nearFloor(p.x, p.z)) hideForDetail(o);
-    else if (Math.abs(p.y - FLOOR_Y.B1) > 40) hideForDetail(o); // 非表示フロア側の乗り口(宙に浮いて見える)
-  }
-  for (const { id, lab } of zoneLabelObjs) if (id !== zoneId) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
+  detailSaved.camPos = camera.position.clone();
+  detailSaved.camTgt = controls.target.clone();
   // Google Maps 風の操作: 1本指=パン、2本指=ズーム+ひねり回転(+上下で傾き)、左ドラッグ=パン、右ドラッグ=回転。
   // 初期視点は真俯瞰(固定はしない)。傾きは60°まで
   detailSaved.enableRotate = controls.enableRotate;
@@ -1518,9 +1453,8 @@ function enterDetail(zoneId) {
 function exitDetail() {
   if (!detailMode) return;
   detailMode = null;
-  for (const m of detailFloorMeshes) m.visible = false;
-  for (const m of whityBlockMeshes) m.visible = false;
-  for (const d of detailShopLabels) { if (d.mesh) d.mesh.visible = detailShown; d.lab.visible = false; }
+  detailGroup.visible = false;
+  for (const d of detailShopLabels) d.lab.visible = false;
   for (const o of detailHidden) o.visible = true;
   detailHidden.length = 0;
   // フロアチップでOFFにしていた階は隠したまま(チップの状態に従う)
@@ -1537,7 +1471,11 @@ function exitDetail() {
   controls.mouseButtons.LEFT = detailSaved.mouseLEFT;
   controls.mouseButtons.RIGHT = detailSaved.mouseRIGHT;
   controls.screenSpacePanning = detailSaved.screenSpacePanning;
-  updateDetailLOD();
+  // 広域のカメラ位置に戻る
+  if (detailSaved.camPos) {
+    camAnim = { fromPos: camera.position.clone(), toPos: detailSaved.camPos,
+                fromTgt: controls.target.clone(), toTgt: detailSaved.camTgt, start: performance.now(), dur: 700 };
+  }
   document.getElementById('detail-bar').hidden = true;
 }
 document.getElementById('detail-bar-close')?.addEventListener('click', exitDetail);
@@ -1935,18 +1873,22 @@ for (const md of MERGED_DOTS) {
   shopMeshes.push(mesh); // 「詳細」トグルでは店ドット扱いで一緒に隠す
 }
 
-// ホワイティ詳細: PDFトレースの床(通路含む)。詳細モードではOSM由来の床・通路帯を隠してこれを表示する
-const detailFloorMeshes = [];
+// 詳細地図(ガイド座標系)の専用グループ。広域とは独立し、詳細モード中だけ表示する
+const detailGroup = new THREE.Group();
+detailGroup.visible = false;
+scene.add(detailGroup);
+
+// 床(通路含む): フロアガイドそのままの外形
 for (const f of WHITY_FLOOR) {
   const shape = new THREE.Shape();
-  f.pts.forEach(([mx, my], i) => {
-    const [x, z] = M2W([mx, my]);
+  f.pts.forEach(([gx, gy], i) => {
+    const [x, z] = G2W([gx, gy]);
     if (i === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z);
   });
   for (const h of f.holes || []) {
     const path = new THREE.Path();
-    h.forEach(([mx, my], i) => {
-      const [x, z] = M2W([mx, my]);
+    h.forEach(([gx, gy], i) => {
+      const [x, z] = G2W([gx, gy]);
       if (i === 0) path.moveTo(x, -z); else path.lineTo(x, -z);
     });
     shape.holes.push(path);
@@ -1954,48 +1896,43 @@ for (const f of WHITY_FLOOR) {
   const geo = new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
   const mesh = new THREE.Mesh(geo, zoneMats.whity || corridorMat);
   mesh.rotation.x = -Math.PI / 2;
-  mesh.position.y = FLOOR_Y.B1 - 1.5; // 上面はOSM床と同じ高さ(+1.5)
-  mesh.visible = false;
-  mesh.userData.zone = 'whity'; mesh.userData.detailFloor = true;
-  floorGroups.B1.add(mesh);
-  detailFloorMeshes.push(mesh);
+  mesh.position.y = FLOOR_Y.B1 - 1.5;
+  detailGroup.add(mesh);
 }
 
-// ホワイティ詳細: 区画の実形状(2016公式PDF)を低い押し出しで描く。詳細モードでのみ表示
-// 実位置が分かっている店は、丸ドットではなく「その店が入っている区画」を光らせる
-const whityBlockMeshes = [];
+// テナント区画: 店が特定できた区画はクリーム色に光らせ、それ以外は暗い灰青
 const blockMeshByShopId = {};
 {
   const zc = ZONES.whity.color;
-  // 床(施設色)と区別がつくよう、店入り区画は明るいクリーム色に寄せる
   const occMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(zc).lerp(new THREE.Color(0xffffff), 0.5),
     emissive: new THREE.Color(zc).multiplyScalar(0.35), roughness: 0.5, side: THREE.DoubleSide,
   });
   const vacMat = new THREE.MeshStandardMaterial({ color: 0x3a4258, roughness: 0.85, side: THREE.DoubleSide });
-  const inPoly = (mx, my, pts) => {
+  const inPoly = (gx, gy, pts) => {
     let c = false;
     for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
       const [xi, yi] = pts[i], [xj, yj] = pts[j];
-      if ((yi > my) !== (yj > my) && mx < (xj - xi) * (my - yi) / (yj - yi) + xi) c = !c;
+      if ((yi > gy) !== (yj > gy) && gx < (xj - xi) * (gy - yi) / (yj - yi) + xi) c = !c;
     }
     return c;
   };
-  // 各区画に実位置の店を割り当てる(区画内 → だめなら重心4m以内の最寄り)
+  // 各区画にガイド上の店を割り当てる(区画内 → だめなら重心4m以内の最寄り)
   const shopsReal = NODES.filter(n => n.type === 'shop' && n.zone === 'whity' && WHITY_REAL_POS[n.name]);
   const blockShops = WHITY_BLOCKS.map(() => []);
   const centroid = b => {
     let cx = 0, cy = 0;
-    for (const [x, y] of b.m) { cx += x; cy += y; }
-    return [cx / b.m.length, cy / b.m.length];
+    for (const [x, y] of b.g) { cx += x; cy += y; }
+    return [cx / b.g.length, cy / b.g.length];
   };
   for (const n of shopsReal) {
-    let bi = WHITY_BLOCKS.findIndex(b => inPoly(n.mx, n.my, b.m));
+    const [sgx, sgy] = WHITY_REAL_POS[n.name]; // ガイド上の店位置(番号の位置なので誤差なし)
+    let bi = WHITY_BLOCKS.findIndex(b => inPoly(sgx, sgy, b.g));
     if (bi < 0) {
       let best = 4;
       WHITY_BLOCKS.forEach((b, i) => {
         const [cx, cy] = centroid(b);
-        const d = Math.hypot(cx - n.mx, cy - n.my);
+        const d = Math.hypot(cx - sgx, cy - sgy);
         if (d < best) { best = d; bi = i; }
       });
     }
@@ -2003,23 +1940,19 @@ const blockMeshByShopId = {};
   }
   WHITY_BLOCKS.forEach((b, i) => {
     const shape = new THREE.Shape();
-    b.m.forEach(([mx, my], k) => {
-      const [x, z] = M2W([mx, my]);
+    b.g.forEach(([gx, gy], k) => {
+      const [x, z] = G2W([gx, gy]);
       if (k === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z);
     });
     const geo = new THREE.ExtrudeGeometry(shape, { depth: 1.5, bevelEnabled: false });
     geo.rotateX(-Math.PI / 2); // 押し出しを上向きに(座標はワールド値のまま)
     const occ = blockShops[i].length > 0;
     const mesh = new THREE.Mesh(geo, occ ? occMat : vacMat);
-    mesh.position.y = FLOOR_Y.B1 + 1.5; // 床スラブの上面に乗せる(床の厚みに埋もれないように)
-    mesh.visible = false;
-    mesh.userData.zone = 'whity'; // 詳細モードの表示対象判定・床タップ判定用
-    const [cmx, cmy] = centroid(b);
-    const [ccx, ccz] = M2W([cmx, cmy]);
-    mesh.userData.center = [ccx, ccz]; // ラベルの置き場所(区画の重心)
+    mesh.position.y = FLOOR_Y.B1 + 1.5; // 床スラブの上に乗せる
+    const [cgx, cgy] = centroid(b);
+    mesh.userData.center = G2W([cgx, cgy]); // ラベルの置き場所(区画の重心)
     if (occ) { mesh.userData.nodeId = blockShops[i][0].id; nodeMeshes.push(mesh); }
-    floorGroups.B1.add(mesh);
-    whityBlockMeshes.push(mesh);
+    detailGroup.add(mesh);
     for (const n of blockShops[i]) blockMeshByShopId[n.id] = mesh;
   });
 }

@@ -3,8 +3,6 @@ import { readFileSync, writeFileSync, copyFileSync } from 'fs';
 // shops.jsはESM構文だが拡張子.jsのままCJS扱いされるため、.mjsに複製してから読み込む
 copyFileSync(new URL('../shops.js', import.meta.url), new URL('./_shops_tmp.mjs', import.meta.url));
 const { SHOP_AREAS, SHOPS_SCRAPED, SHOPS_MANUAL } = await import(new URL('./_shops_tmp.mjs', import.meta.url).href);
-copyFileSync(new URL('../detail_whity.js', import.meta.url), new URL('./_detail_whity_tmp.mjs', import.meta.url));
-const { WHITY_REAL_POS } = await import(new URL('./_detail_whity_tmp.mjs', import.meta.url).href);
 
 const src = readFileSync(new URL('../main.js', import.meta.url), 'utf8');
 const NODES = [];
@@ -98,8 +96,7 @@ for (const [areaId, shops] of Object.entries(byArea)) {
       mx: px - dy * off * side, my: py + dx * off * side, zone: a.zone, area: areaId, type: 'shop' });
   });
 }
-// main.js と同じ: ホワイティで名前一致した店は実位置(2016公式PDF)を使う
-for (const n of NODES) if (n.type === 'shop' && n.zone === 'whity' && WHITY_REAL_POS[n.name]) { n.mx = WHITY_REAL_POS[n.name][0]; n.my = WHITY_REAL_POS[n.name][1]; }
+// (ホワイティの実位置上書きは廃止: WHITY_REAL_POSはガイド座標系で詳細地図専用)
 writeFileSync(new URL('./nodes_dump.json', import.meta.url),
   JSON.stringify({ nodes: NODES, edges: EDGES }));
 const shopsN = NODES.filter(n => n.type === 'shop').length;

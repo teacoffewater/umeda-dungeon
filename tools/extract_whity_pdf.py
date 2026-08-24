@@ -58,6 +58,19 @@ def to_m(x, y):
     return [round(float(v[0]), 1), round(float(v[1]), 1)]
 
 
+# --- ガイド座標系: PDF座標を等方スケール(縮尺のみ)でメートル化。歪み補正なし=ガイドの形そのまま ---
+# 縮尺はアフィンの特異値の平均(m/pt)。詳細地図はこの座標系だけを使う(実座標との位置合わせはしない)
+_sv = np.linalg.svd(np.array(A)[:2, :2], compute_uv=False)
+G_SCALE = float(_sv.mean())
+_gpts = [w for w in words if w[1] < MAP_Y_MAX]
+G_CX = sum((w[0] + w[2]) / 2 for w in _gpts) / len(_gpts)
+G_CY = sum((w[1] + w[3]) / 2 for w in _gpts) / len(_gpts)
+
+
+def to_g(x, y):
+    return [round((x - G_CX) * G_SCALE, 1), round((y - G_CY) * G_SCALE, 1)]
+
+
 # --- 地図上の店番号(1〜3桁の数字) ---
 map_nums = {}
 for w in words:
@@ -93,7 +106,7 @@ for n, pts in sorted(map_nums.items()):
     # 同じ番号が複数箇所にある場合は最初のもの(まれ)
     x, y = pts[0]
     shops.append({'no': n, 'name': legend[n]['name'], 'category': legend[n]['category'],
-                  'pdf': [round(x, 1), round(y, 1)], 'm': to_m(x, y)})
+                  'pdf': [round(x, 1), round(y, 1)], 'm': to_m(x, y), 'g': to_g(x, y)})
 print(f'凡例 {len(legend)}件 / 地図上の番号 {len(map_nums)}件 / 位置つき店 {len(shops)}件')
 
 # --- テナントブロック(モール別のパステル色ポリゴン) ---
@@ -145,7 +158,8 @@ for d in page.get_drawings():
         mpts = [to_m(x, y) for x, y in poly.exterior.coords[:-1]]
         if _Poly(mpts).area < 8:
             continue
-        blocks.append({'mall': MALL_FILLS[key], 'm': [[round(a, 1), round(b, 1)] for a, b in mpts]})
+        blocks.append({'mall': MALL_FILLS[key], 'm': [[round(a, 1), round(b, 1)] for a, b in mpts],
+                       'g': [to_g(x, y) for x, y in poly.exterior.coords[:-1]]})
     except Exception:
         continue
 print(f'テナントブロック {len(blocks)}個')
@@ -165,13 +179,13 @@ for d in page.get_drawings():
         poly = _Poly(pts).buffer(0)
         if poly.is_empty or poly.area < 40:  # 小さな白チップ(アイコン台座・ラベル)を除外
             continue
-        mpts = [to_m(x, y) for x, y in poly.simplify(0.8).exterior.coords[:-1]]
-        walks.append([[round(a, 1), round(b, 1)] for a, b in mpts])
+        walks.append([to_g(x, y) for x, y in poly.simplify(0.8).exterior.coords[:-1]])
     except Exception:
         continue
 print(f'通路(白塗り) {len(walks)}面')
 
 json.dump({'source': 'whity_2016_labeled.pdf (2016-02-23現在)',
            'affine': A.tolist(), 'residual_mean_m': round(float(err.mean()), 1),
+           'guide_scale_m_per_pt': round(G_SCALE, 4),  # g座標=ガイド座標系(等方スケールのみ・歪みなし)
            'shops': shops, 'blocks': blocks, 'walks': walks}, open(OUT, 'w'), ensure_ascii=False, indent=1)
 print('wrote', OUT)

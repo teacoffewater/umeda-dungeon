@@ -2,11 +2,12 @@
 """ホワイティ詳細データ(detail_whity.js)を生成する。
 
 入力: tools/data/whity_2016.json (extract_whity_pdf.py の出力)
-出力: detail_whity.js
+出力: detail_whity.js  ※すべて「ガイド座標系」(フロアガイドそのままの形・向き。等方スケールでm換算。
+                        実座標との位置合わせはしない=詳細地図は広域地図とは別物)
   - WHITY_FLOOR: 床の外形(通路含む)。区画+白塗り片の結合を閉包(膨張→収縮)して
-    「区画列の隙間=通路」を埋めたもの。OSM由来の形は使わない
+    「区画列の隙間=通路」を埋めたもの
   - WHITY_BLOCKS: テナントブロックの外形(飾り帯ノイズを除去したもの)
-  - WHITY_REAL_POS: 現在の店(shops.js)のうち2016年版と名前が一致した店の実位置 {店名: [mx,my]}
+  - WHITY_REAL_POS: 現在の店(shops.js)のうち2016年版と名前が一致した店のガイド上の位置 {店名: [gx,gy]}
 """
 import json, os, re
 from shapely.geometry import Polygon, Point, MultiPolygon, LineString
@@ -31,7 +32,7 @@ def to_poly(pts):
 blocks = []
 dropped = 0
 for b in d['blocks']:
-    p = to_poly(b['m'])
+    p = to_poly(b['g'])
     if p is None:
         continue
     r = p.minimum_rotated_rectangle
@@ -75,7 +76,7 @@ floor_out = [{'pts': ring(c.exterior), 'holes': [ring(h) for h in c.interiors]} 
 blocks_out = []
 for b, p in blocks:
     if p.distance(floor) <= 2:
-        blocks_out.append(b)
+        blocks_out.append({'mall': b['mall'], 'g': [[round(x, 1), round(y, 1)] for x, y in p.exterior.coords[:-1]]})
 print(f'床の上のブロック {len(blocks_out)}')
 
 # --- 4) 現在の店との名前照合 ---
@@ -95,13 +96,14 @@ for c in cur:
     if not hit:  # 安全な部分一致(4文字以上・片方向包含)
         cands = [s for kk, s in by2016.items() if len(kk) >= 4 and (kk in k or k in kk)]
         hit = cands[0] if len(cands) == 1 else None
-    if hit and Point(hit['m']).distance(floor) <= 10:
-        real[c] = hit['m']
+    if hit and Point(hit['g']).distance(floor) <= 10:
+        real[c] = hit['g']
 print(f'現在のホワイティ店 {len(cur)}件中 実位置が付いた店 {len(real)}件')
 
 with open(os.path.join(ROOT, 'detail_whity.js'), 'w') as f:
     f.write('// 自動生成: tools/gen_detail_whity.py(2016年公式フロアガイドPDF由来)。手編集しない\n')
-    f.write('// FLOOR=床外形(通路含む・PDFトレース) BLOCKS=テナント区画 REAL_POS=名前一致した現在店の実位置\n')
+    f.write('// 座標はすべて「ガイド座標系」(フロアガイドの形そのまま・等方スケールm換算。広域の実座標とは別物)\n')
+    f.write('// FLOOR=床外形(通路含む) BLOCKS=テナント区画 REAL_POS=名前一致した現在店のガイド上の位置\n')
     f.write('export const WHITY_FLOOR = ' + json.dumps(floor_out, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_BLOCKS = ' + json.dumps(blocks_out, ensure_ascii=False, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_REAL_POS = ' + json.dumps(real, ensure_ascii=False, separators=(',', ':')) + ';\n')
