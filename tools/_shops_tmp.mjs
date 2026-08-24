@@ -15,17 +15,18 @@ export const SHOP_AREAS = {
   sanban_n_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b2'], rect: [950, 520, 70, 42], merged: true }, // 北館B2F=中枢層
   sanban_s_b1: { floor: 'S1', zone: 'sanban', near: ['sanban_s_b1'], rect: [973, 682.8, 75.3, 49.9], merged: true }, // 南館B1F=浅層
   sanban_s_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b2'], rect: [973, 682.8, 75.3, 49.9], merged: true }, // 南館B2F=中枢層
-  // ホワイティうめだ（公式マップSVG座標から並び順・通路側を機械判定・OSM実座標で方位検証済み）
-  whity_petit:  { floor: 'B1', zone: 'whity', edges: [['j_pchn', 'opa']] },                       // 南北通路（北→南）
-  whity_north1: { floor: 'B1', zone: 'whity', edges: [['j_east1', 'whity_37'], ['whity_37', 'whity_35'], ['whity_35', 'whity_34'], ['whity_34', 'whity_31'], ['whity_31', 'whity_32'], ['whity_32', 'j_whity_x']] }, // 南北通路
-  whity_north2: { floor: 'B1', zone: 'whity', edges: [['j_nm1s', 'j_nm2']] },                     // 阪急東通りへの支通路
-  whity_center: { floor: 'B1', zone: 'whity', edges: [['j_metro', 'whity_w'], ['whity_w', 'whity_13'], ['whity_13', 'whity_14'], ['whity_14', 'whity_30'], ['whity_30', 'whity_32'], ['whity_32', 'j_whity_x']] },
-  whity_south:  { floor: 'B1', zone: 'whity', edges: [['whity_w', 'whity_13'], ['whity_13', 'whity_14'], ['whity_14', 'whity_30'], ['whity_30', 'j_higashi_n']] },              // 東梅田方面
-  whity_east:   { floor: 'B1', zone: 'whity', edges: [['j_whity_x', 'whity_32'], ['whity_32', 'whity_30'], ['whity_30', 'whity_40'], ['whity_40', 'izumi']] },
-  whity_nomoka: { floor: 'B1', zone: 'whity', edges: [['izumi', 'whity_40'], ['whity_40', 'izumi_ne']] },
-  whity_pocket: { floor: 'B1', zone: 'whity', near: ['j_whity_x'], offset: 5, path: [[1093.8, 946.9], [1107.2, 946.2]] },
-  whity_mikke:  { floor: 'B1', zone: 'whity', near: ['whity_w'], edges: [['whity_07', 'whity_02'], ['whity_02', 'whity_03'], ['whity_03', 'whity_14'], ['whity_14', 'whity_30']] },
-  whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_w', 'j_whity_x'], edges: [['whity_22', 'whity_23'], ['whity_23', 'whity_31'], ['whity_31', 'whity_32'], ['whity_32', 'j_whity_x']] },
+  // ホワイティうめだ: 広域地図は公式フロアマップのモール区分(10エリア)単位でしか場所を持たない。
+  // 店の個別位置は詳細地図(ガイド座標系)の管轄。rect中心=そのモールの通路の中点、merged=1点集約
+  whity_petit:  { floor: 'B1', zone: 'whity', near: ['j_pchn'],    rect: [1033.2, 590.6, 24, 24], merged: true }, // プチシャン
+  whity_north1: { floor: 'B1', zone: 'whity', near: ['whity_35'],  rect: [1072.0, 842.2, 24, 24], merged: true }, // ノースモール1
+  whity_north2: { floor: 'B1', zone: 'whity', near: ['j_nm2'],     rect: [1111.7, 853.5, 24, 24], merged: true }, // ノースモール2
+  whity_center: { floor: 'B1', zone: 'whity', near: ['whity_14'],  rect: [1017.4, 947.8, 24, 24], merged: true }, // センターモール
+  whity_south:  { floor: 'B1', zone: 'whity', near: ['whity_30'],  rect: [1043.0, 952.4, 24, 24], merged: true }, // サウスモール
+  whity_east:   { floor: 'B1', zone: 'whity', near: ['j_whity_x'], rect: [1146.1, 944.1, 24, 24], merged: true }, // イーストモール
+  whity_nomoka: { floor: 'B1', zone: 'whity', near: ['whity_40'],  rect: [1289.0, 903.4, 24, 24], merged: true }, // NOMOKA
+  whity_pocket: { floor: 'B1', zone: 'whity', near: ['j_whity_x'], rect: [1100.5, 946.5, 24, 24], merged: true }, // ポケットパーク
+  whity_mikke:  { floor: 'B1', zone: 'whity', near: ['whity_14'],  rect: [991.4, 962.3, 24, 24], merged: true },  // mikke
+  whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_32'],  rect: [1066.7, 909.3, 24, 24], merged: true }, // FARURU
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
   diamor_fashion: { floor: 'B1', zone: 'diamor', edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_diamor_e'], ['j_diamor_e', 'j_fashion_e']] },        // 西→東
   diamor_market: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'j_market_ne']] }, // 広場→北東
