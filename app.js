@@ -35279,7 +35279,7 @@
         for (const b of WHITY_BLOCKS) {
           const pts = b.m.map(([mx, my]) => {
             const [x, z] = M2W([mx, my]);
-            return new Vector3(x, FLOOR_Y.B1 + 0.8, z);
+            return new Vector3(x, FLOOR_Y.B1 + 3.2, z);
           });
           const line = new LineLoop(new BufferGeometry().setFromPoints(pts), mat);
           line.visible = false;
@@ -35301,17 +35301,27 @@
       }
       function buildDetailLabels() {
         if (detailShopLabels.length) return;
+        const stacked = /* @__PURE__ */ new Map();
         for (const id of detailShopIds) {
-          const mesh = shopMeshById[id];
-          if (!mesh) continue;
+          const dot = shopMeshById[id];
+          const block = blockMeshByShopId[id];
+          if (!dot && !block) continue;
           const div = document.createElement("div");
           div.className = "node-label shop detail-shop";
           div.textContent = shortShopName(nodeById[id].name);
           const lab = new CSS2DObject(div);
-          lab.position.set(0, 4, 0);
+          if (block) {
+            const n = stacked.get(block) || 0;
+            stacked.set(block, n + 1);
+            const [cx, cz] = block.userData.center;
+            lab.position.set(cx, 2.2 + n * 3, cz);
+            block.add(lab);
+          } else {
+            lab.position.set(0, 4, 0);
+            dot.add(lab);
+          }
           lab.visible = false;
-          mesh.add(lab);
-          detailShopLabels.push({ id, mesh, lab });
+          detailShopLabels.push({ id, mesh: dot, block, lab });
         }
       }
       var detailHidden = [];
@@ -35326,8 +35336,9 @@
         if (detailMode === zoneId || zoneId !== "whity") return;
         detailMode = zoneId;
         buildDetailLabels();
+        for (const m of whityBlockMeshes) m.visible = true;
         for (const d of detailShopLabels) {
-          d.mesh.visible = true;
+          if (d.mesh) d.mesh.visible = !d.block;
           d.lab.visible = true;
         }
         updateDetailLOD();
@@ -35395,8 +35406,9 @@
       function exitDetail() {
         if (!detailMode) return;
         detailMode = null;
+        for (const m of whityBlockMeshes) m.visible = false;
         for (const d of detailShopLabels) {
-          d.mesh.visible = detailShown;
+          if (d.mesh) d.mesh.visible = detailShown;
           d.lab.visible = false;
         }
         for (const o of detailHidden) o.visible = true;
@@ -35781,6 +35793,76 @@
         nodeMeshes.push(mesh);
         shopMeshes.push(mesh);
       }
+      var whityBlockMeshes = [];
+      var blockMeshByShopId = {};
+      {
+        const zc = ZONES.whity.color;
+        const occMat = new MeshStandardMaterial({
+          color: new Color(zc).lerp(new Color(16777215), 0.5),
+          emissive: new Color(zc).multiplyScalar(0.35),
+          roughness: 0.5,
+          side: DoubleSide
+        });
+        const vacMat = new MeshStandardMaterial({ color: 3818072, roughness: 0.85, side: DoubleSide });
+        const inPoly = (mx, my, pts) => {
+          let c = false;
+          for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+            const [xi, yi] = pts[i], [xj, yj] = pts[j];
+            if (yi > my !== yj > my && mx < (xj - xi) * (my - yi) / (yj - yi) + xi) c = !c;
+          }
+          return c;
+        };
+        const shopsReal = NODES.filter((n) => n.type === "shop" && n.zone === "whity" && WHITY_REAL_POS[n.name]);
+        const blockShops = WHITY_BLOCKS.map(() => []);
+        const centroid = (b) => {
+          let cx = 0, cy = 0;
+          for (const [x, y] of b.m) {
+            cx += x;
+            cy += y;
+          }
+          return [cx / b.m.length, cy / b.m.length];
+        };
+        for (const n of shopsReal) {
+          let bi = WHITY_BLOCKS.findIndex((b) => inPoly(n.mx, n.my, b.m));
+          if (bi < 0) {
+            let best = 4;
+            WHITY_BLOCKS.forEach((b, i) => {
+              const [cx, cy] = centroid(b);
+              const d = Math.hypot(cx - n.mx, cy - n.my);
+              if (d < best) {
+                best = d;
+                bi = i;
+              }
+            });
+          }
+          if (bi >= 0) blockShops[bi].push(n);
+        }
+        WHITY_BLOCKS.forEach((b, i) => {
+          const shape = new Shape();
+          b.m.forEach(([mx, my], k) => {
+            const [x, z] = M2W([mx, my]);
+            if (k === 0) shape.moveTo(x, -z);
+            else shape.lineTo(x, -z);
+          });
+          const geo = new ExtrudeGeometry(shape, { depth: 1.5, bevelEnabled: false });
+          geo.rotateX(-Math.PI / 2);
+          const occ = blockShops[i].length > 0;
+          const mesh = new Mesh(geo, occ ? occMat : vacMat);
+          mesh.position.y = FLOOR_Y.B1 + 1.5;
+          mesh.visible = false;
+          mesh.userData.zone = "whity";
+          const [cmx, cmy] = centroid(b);
+          const [ccx, ccz] = M2W([cmx, cmy]);
+          mesh.userData.center = [ccx, ccz];
+          if (occ) {
+            mesh.userData.nodeId = blockShops[i][0].id;
+            nodeMeshes.push(mesh);
+          }
+          floorGroups.B1.add(mesh);
+          whityBlockMeshes.push(mesh);
+          for (const n of blockShops[i]) blockMeshByShopId[n.id] = mesh;
+        });
+      }
       var adj = {};
       for (const n of NODES) adj[n.id] = [];
       for (const [ia, ib] of EDGES) {
@@ -35907,13 +35989,14 @@
       var routeShopDecor = [];
       function decorateRouteShops(shopIds) {
         for (const id of shopIds) {
-          const mesh = shopMeshById[id];
+          const block = detailMode ? blockMeshByShopId[id] : null;
+          const mesh = block || shopMeshById[id];
           if (!mesh) continue;
           mesh.visible = true;
           const orig = mesh.material;
           const zone = ZONES[nodeById[id].zone];
           mesh.material = routeShopMatFor(nodeById[id].zone);
-          mesh.scale.set(1.7, 2.2, 1.7);
+          if (!block) mesh.scale.set(1.7, 2.2, 1.7);
           const div = document.createElement("div");
           div.className = "node-label route-shop";
           div.textContent = shortShopName(nodeById[id].name);
@@ -35925,16 +36008,17 @@
             div.style.setProperty("--zone-border", `rgba(${c >> 16 & 255}, ${c >> 8 & 255}, ${c & 255}, 0.3)`);
           }
           const label = new CSS2DObject(div);
-          label.position.set(0, 6, 0);
+          if (block) label.position.set(block.userData.center[0], 6, block.userData.center[1]);
+          else label.position.set(0, 6, 0);
           mesh.add(label);
-          routeShopDecor.push({ mesh, mat: orig, label });
+          routeShopDecor.push({ mesh, mat: orig, label, isBlock: !!block });
         }
       }
       function clearRouteShops() {
         for (const d of routeShopDecor) {
           d.mesh.material = d.mat;
-          d.mesh.visible = detailShown;
-          d.mesh.scale.set(1, 1, 1);
+          d.mesh.visible = d.isBlock ? !!detailMode : detailShown;
+          if (!d.isBlock) d.mesh.scale.set(1, 1, 1);
           d.mesh.remove(d.label);
           d.label.element.remove();
         }

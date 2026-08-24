@@ -1385,7 +1385,7 @@ const whityBlockLines = [];
 {
   const mat = new THREE.LineBasicMaterial({ color: 0xd9c04b, transparent: true, opacity: 0.35 });
   for (const b of WHITY_BLOCKS) {
-    const pts = b.m.map(([mx, my]) => { const [x, z] = M2W([mx, my]); return new THREE.Vector3(x, FLOOR_Y.B1 + 0.8, z); });
+    const pts = b.m.map(([mx, my]) => { const [x, z] = M2W([mx, my]); return new THREE.Vector3(x, FLOOR_Y.B1 + 3.2, z); });
     const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), mat);
     line.visible = false;
     floorGroups.B1.add(line);
@@ -1411,17 +1411,27 @@ for (const n of NODES) {
 }
 function buildDetailLabels() {
   if (detailShopLabels.length) return;
+  const stacked = new Map(); // 同じ区画に複数店 → ラベルを縦にずらす
   for (const id of detailShopIds) {
-    const mesh = shopMeshById[id];
-    if (!mesh) continue;
+    const dot = shopMeshById[id];
+    const block = blockMeshByShopId[id];
+    if (!dot && !block) continue;
     const div = document.createElement('div');
     div.className = 'node-label shop detail-shop';
     div.textContent = shortShopName(nodeById[id].name);
     const lab = new CSS2DObject(div);
-    lab.position.set(0, 4, 0);
+    if (block) {
+      const n = stacked.get(block) || 0;
+      stacked.set(block, n + 1);
+      const [cx, cz] = block.userData.center;
+      lab.position.set(cx, 2.2 + n * 3, cz); // 区画の重心(ジオメトリがワールド座標なのでローカル=ワールド)
+      block.add(lab);
+    } else {
+      lab.position.set(0, 4, 0);
+      dot.add(lab);
+    }
     lab.visible = false;
-    mesh.add(lab);
-    detailShopLabels.push({ id, mesh, lab });
+    detailShopLabels.push({ id, mesh: dot, block, lab });
   }
 }
 const detailHidden = []; // 詳細モードで隠したオブジェクト(戻すときに復元)
@@ -1431,7 +1441,9 @@ function enterDetail(zoneId) {
   if (detailMode === zoneId || zoneId !== 'whity') return;
   detailMode = zoneId;
   buildDetailLabels();
-  for (const d of detailShopLabels) { d.mesh.visible = true; d.lab.visible = true; }
+  for (const m of whityBlockMeshes) m.visible = true; // 区画の実形状
+  // 区画が分かる店はドットを出さない(区画そのものが店の形)。区画が無い店だけドットで補う
+  for (const d of detailShopLabels) { if (d.mesh) d.mesh.visible = !d.block; d.lab.visible = true; }
   updateDetailLOD();
   document.getElementById('detail-bar').hidden = false;
   document.getElementById('detail-bar-name').textContent = ZONES[zoneId].name + ' 詳細地図';
@@ -1481,7 +1493,8 @@ function enterDetail(zoneId) {
 function exitDetail() {
   if (!detailMode) return;
   detailMode = null;
-  for (const d of detailShopLabels) { d.mesh.visible = detailShown; d.lab.visible = false; }
+  for (const m of whityBlockMeshes) m.visible = false;
+  for (const d of detailShopLabels) { if (d.mesh) d.mesh.visible = detailShown; d.lab.visible = false; }
   for (const o of detailHidden) o.visible = true;
   detailHidden.length = 0;
   // フロアチップでOFFにしていた階は隠したまま(チップの状態に従う)
@@ -1896,6 +1909,69 @@ for (const md of MERGED_DOTS) {
   shopMeshes.push(mesh); // 「詳細」トグルでは店ドット扱いで一緒に隠す
 }
 
+// ホワイティ詳細: 区画の実形状(2016公式PDF)を低い押し出しで描く。詳細モードでのみ表示
+// 実位置が分かっている店は、丸ドットではなく「その店が入っている区画」を光らせる
+const whityBlockMeshes = [];
+const blockMeshByShopId = {};
+{
+  const zc = ZONES.whity.color;
+  // 床(施設色)と区別がつくよう、店入り区画は明るいクリーム色に寄せる
+  const occMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color(zc).lerp(new THREE.Color(0xffffff), 0.5),
+    emissive: new THREE.Color(zc).multiplyScalar(0.35), roughness: 0.5, side: THREE.DoubleSide,
+  });
+  const vacMat = new THREE.MeshStandardMaterial({ color: 0x3a4258, roughness: 0.85, side: THREE.DoubleSide });
+  const inPoly = (mx, my, pts) => {
+    let c = false;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const [xi, yi] = pts[i], [xj, yj] = pts[j];
+      if ((yi > my) !== (yj > my) && mx < (xj - xi) * (my - yi) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+  // 各区画に実位置の店を割り当てる(区画内 → だめなら重心4m以内の最寄り)
+  const shopsReal = NODES.filter(n => n.type === 'shop' && n.zone === 'whity' && WHITY_REAL_POS[n.name]);
+  const blockShops = WHITY_BLOCKS.map(() => []);
+  const centroid = b => {
+    let cx = 0, cy = 0;
+    for (const [x, y] of b.m) { cx += x; cy += y; }
+    return [cx / b.m.length, cy / b.m.length];
+  };
+  for (const n of shopsReal) {
+    let bi = WHITY_BLOCKS.findIndex(b => inPoly(n.mx, n.my, b.m));
+    if (bi < 0) {
+      let best = 4;
+      WHITY_BLOCKS.forEach((b, i) => {
+        const [cx, cy] = centroid(b);
+        const d = Math.hypot(cx - n.mx, cy - n.my);
+        if (d < best) { best = d; bi = i; }
+      });
+    }
+    if (bi >= 0) blockShops[bi].push(n);
+  }
+  WHITY_BLOCKS.forEach((b, i) => {
+    const shape = new THREE.Shape();
+    b.m.forEach(([mx, my], k) => {
+      const [x, z] = M2W([mx, my]);
+      if (k === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z);
+    });
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 1.5, bevelEnabled: false });
+    geo.rotateX(-Math.PI / 2); // 押し出しを上向きに(座標はワールド値のまま)
+    const occ = blockShops[i].length > 0;
+    const mesh = new THREE.Mesh(geo, occ ? occMat : vacMat);
+    mesh.position.y = FLOOR_Y.B1 + 1.5; // 床スラブの上面に乗せる(床の厚みに埋もれないように)
+    mesh.visible = false;
+    mesh.userData.zone = 'whity'; // 詳細モードの表示対象判定・床タップ判定用
+    const [cmx, cmy] = centroid(b);
+    const [ccx, ccz] = M2W([cmx, cmy]);
+    mesh.userData.center = [ccx, ccz]; // ラベルの置き場所(区画の重心)
+    if (occ) { mesh.userData.nodeId = blockShops[i][0].id; nodeMeshes.push(mesh); }
+    floorGroups.B1.add(mesh);
+    whityBlockMeshes.push(mesh);
+    for (const n of blockShops[i]) blockMeshByShopId[n.id] = mesh;
+  });
+}
+
 // ---------------------------------------------------------------------------
 // 経路探索（ダイクストラ）
 // ---------------------------------------------------------------------------
@@ -2031,13 +2107,15 @@ function routeShopMatFor(zoneId) {
 let routeShopDecor = []; // { mesh, mat, label }
 function decorateRouteShops(shopIds) {
   for (const id of shopIds) {
-    const mesh = shopMeshById[id];
+    // 詳細モード中は丸ドットではなく店の区画そのものを光らせる
+    const block = detailMode ? blockMeshByShopId[id] : null;
+    const mesh = block || shopMeshById[id];
     if (!mesh) continue;
     mesh.visible = true; // 広域で店ドット非表示でも、ルートの目印店だけは見せる
     const orig = mesh.material;
     const zone = ZONES[nodeById[id].zone];
     mesh.material = routeShopMatFor(nodeById[id].zone);
-    mesh.scale.set(1.7, 2.2, 1.7);
+    if (!block) mesh.scale.set(1.7, 2.2, 1.7); // 区画はワールド座標焼き込みのため拡縮しない
     const div = document.createElement('div');
     div.className = 'node-label route-shop';
     div.textContent = shortShopName(nodeById[id].name);
@@ -2050,16 +2128,17 @@ function decorateRouteShops(shopIds) {
       div.style.setProperty('--zone-border', `rgba(${(c >> 16) & 255}, ${(c >> 8) & 255}, ${c & 255}, 0.3)`);
     }
     const label = new CSS2DObject(div);
-    label.position.set(0, 6, 0);
+    if (block) label.position.set(block.userData.center[0], 6, block.userData.center[1]);
+    else label.position.set(0, 6, 0);
     mesh.add(label);
-    routeShopDecor.push({ mesh, mat: orig, label });
+    routeShopDecor.push({ mesh, mat: orig, label, isBlock: !!block });
   }
 }
 function clearRouteShops() {
   for (const d of routeShopDecor) {
     d.mesh.material = d.mat;
-    d.mesh.visible = detailShown;
-    d.mesh.scale.set(1, 1, 1);
+    d.mesh.visible = d.isBlock ? !!detailMode : detailShown;
+    if (!d.isBlock) d.mesh.scale.set(1, 1, 1);
     d.mesh.remove(d.label);
     d.label.element.remove();
   }
