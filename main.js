@@ -6,7 +6,7 @@ import { initSurvey } from './survey.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { OSM_BUILDINGS, OSM_ROADS } from './ground_data.js'; // tools/gen_ground.py が生成
 import { LANDMARKS, PHOTOS } from './landmarks.js';
-import { WHITY_FLOOR, WHITY_WALK, WHITY_BLOCKS, WHITY_REAL_POS } from './detail_whity.js'; // tools/gen_detail_whity.py が生成
+import { WHITY_FLOOR, WHITY_WALK, WHITY_BLOCKS, WHITY_REAL_POS, WHITY_AREA_ANCHORS } from './detail_whity.js'; // tools/gen_detail_whity.py が生成
 
 // ---------------------------------------------------------------------------
 // 梅田ダンジョン データ
@@ -745,7 +745,7 @@ const MERGED_DOTS = []; // merged指定エリアの代表ドット(店の形は�
           NODES.push({ id: `shop_${areaId}_${seq2++}`, name: sh.name, floor: a.floor,
             mx: a.merged ? bx : bx + (k % 3 - 1) * 6.5,
             my: a.merged ? by : by + (Math.floor(k / 3) - (rows - 1) / 2) * 6.5,
-            zone: a.zone, near: [cellNode], aliases: aliasesFor(sh.name),
+            zone: a.zone, area: areaId, near: [cellNode], aliases: aliasesFor(sh.name),
             small: true, noDot: a.merged, type: 'shop' }); // ホール内は小径ドット。mergedは個別ドットを描かない
         });
       }
@@ -808,7 +808,7 @@ const MERGED_DOTS = []; // merged指定エリアの代表ドット(店の形は�
       const side = sideSign(s.side, -dy, dx) ?? (i % 2 === 0 ? 1 : -1);
       NODES.push({ id: `shop_${areaId}_${i}`, name: s.name, floor: a.floor,
         mx: px - dy * off * side, my: py + dx * off * side,
-        zone: a.zone, near, aliases: aliasesFor(s.name), category: s.category, type: 'shop' });
+        zone: a.zone, area: areaId, near, aliases: aliasesFor(s.name), category: s.category, type: 'shop' });
     });
   }
 })();
@@ -2044,9 +2044,14 @@ let detailRouteGroup = null;
 function clearDetailRoute() {
   if (detailRouteGroup) { detailGroup.remove(detailRouteGroup); detailRouteGroup = null; }
 }
+// 店のガイド上の位置: 名前一致した39店は正確な位置、それ以外は所属モール区分の代表点(エリアまで案内)
+function guidePosOf(n) {
+  if (!n || n.type !== 'shop' || n.zone !== 'whity') return null;
+  return WHITY_REAL_POS[n.name] || WHITY_AREA_ANCHORS[n.area] || null;
+}
 function drawDetailRoute(startId, goalId) {
   clearDetailRoute();
-  const a = WHITY_REAL_POS[nodeById[startId]?.name], b = WHITY_REAL_POS[nodeById[goalId]?.name];
+  const a = guidePosOf(nodeById[startId]), b = guidePosOf(nodeById[goalId]);
   if (!a || !b) return false;
   const gpath = detailNav(a, b);
   if (!gpath) return false;
@@ -2657,18 +2662,24 @@ function updateShopLabels() {
   const sel = new Set([pickerSelection.start, pickerSelection.goal]);
   for (const [id, lab] of Object.entries(shopLabels)) lab.visible = sel.has(id);
 }
+// ピッカーの表示名: 店は「店名（施設名 フロア）」で施設が分かるように。施設名を含む店名には重ねない
+function pickerDisp(n) {
+  const z = n.zone && ZONES[n.zone];
+  const zname = z && !z.corridor && n.type === 'shop' && !n.name.includes(z.name) ? z.name + ' ' : '';
+  return `${n.name}（${zname}${fl(n.floor)}）`;
+}
 function makePicker(rootId) {
   const root = document.getElementById(rootId);
   const valueEl = root.querySelector('.picker-value'); // <input>
   const listEl = root.querySelector('.picker-list');
   let current = null;
   const opts = [];
+  const disp = pickerDisp;
 
   function set(id) {
     current = id;
     pickerSelection[rootId] = id;
-    const n = nodeById[id];
-    valueEl.value = `${n.name}（${fl(n.floor)}）`;
+    valueEl.value = disp(nodeById[id]);
     for (const o of opts) o.el.classList.toggle('selected', o.id === id);
     updateShopLabels();
   }
@@ -2677,7 +2688,7 @@ function makePicker(rootId) {
     const el = document.createElement('div');
     el.className = 'opt' + (n.type === 'shop' ? ' shop-opt' : '');
     el.dataset.id = n.id;
-    el.textContent = `${n.name}（${fl(n.floor)}）`;
+    el.textContent = disp(n);
     // 文字色は所属施設のカラーに連動(マップの色分けと同じ対応関係で覚えられる)
     if (n.zone && ZONES[n.zone]) {
       el.style.setProperty('--zone-c', '#' + ZONES[n.zone].color.toString(16).padStart(6, '0'));
@@ -2692,7 +2703,7 @@ function makePicker(rootId) {
       document.body.classList.remove('picker-editing');
     });
     listEl.appendChild(el);
-    opts.push({ id: n.id, el, text: (n.name + ' ' + (n.aliases || []).join(' ')).toLowerCase() });
+    opts.push({ id: n.id, el, text: (n.name + ' ' + (n.aliases || []).join(' ') + ' ' + (n.zone && ZONES[n.zone] ? ZONES[n.zone].name : '')).toLowerCase() }); // 施設名でも絞り込める
   }
 
   function filter() {
@@ -2743,7 +2754,7 @@ document.addEventListener('click', () => {
     if (!id) continue;
     const input = document.querySelector(`#${rootId} .picker-value`);
     const n = nodeById[id];
-    if (input && n) input.value = `${n.name}（${fl(n.floor)}）`;
+    if (input && n) input.value = pickerDisp(n);
   }
 });
 

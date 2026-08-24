@@ -81,6 +81,7 @@ for b, p in blocks:
         blocks_out.append({'mall': b['mall'], 'g': [[round(x, 1), round(y, 1)] for x, y in p.exterior.coords[:-1]]})
 print(f'床の上のブロック {len(blocks_out)}')
 
+
 # --- 3.5) 歩行可能グリッド(床−区画)。ガイド内ルート探索用 ---
 # 通路=床から区画を引いた部分。区画の角同士が接して通路が「くびれ切断」される箇所は
 # (実際は繋がっているので)最近接点同士を幅2.5mの帯で橋渡しして繋ぐ
@@ -180,7 +181,11 @@ by2016 = {}
 for s in d['shops']:
     by2016[norm(s['name'])] = s
 sh = open(os.path.join(ROOT, 'shops.js')).read()
-cur = [m.group(1) for m in re.finditer(r"s\('([^']+)', 'whity_\w+'", sh)]
+cur = []
+area_of = {}
+for m in re.finditer(r"s\('([^']+)', '(whity_\w+)'", sh):
+    cur.append(m.group(1))
+    area_of[m.group(1)] = m.group(2)
 real = {}
 for c in cur:
     k = norm(c)
@@ -192,12 +197,40 @@ for c in cur:
         real[c] = hit['g']
 print(f'現在のホワイティ店 {len(cur)}件中 実位置が付いた店 {len(real)}件')
 
+# --- 5) エリア(現在の公式モール区分)ごとの代表点。名前一致しない店の「エリアまで案内」用 ---
+# 第一候補: そのエリアで名前一致した店のガイド位置の重心(現在の区分名と2016年のモール名はズレて
+# いるため、2016モール名からは引かない)。一致店ゼロの4エリアは2016区画の幾何から補完
+area_pts = {}
+for name, g in real.items():
+    a = area_of.get(name)
+    if a:
+        area_pts.setdefault(a, []).append(g)
+area_anchors = {a: [round(sum(p[0] for p in ps) / len(ps), 1), round(sum(p[1] for p in ps) / len(ps), 1)]
+                for a, ps in area_pts.items()}
+by_mall = {}
+for b in blocks_out:
+    by_mall.setdefault(b['mall'], []).append(Polygon(b['g']).centroid)
+if 'whity_petit' not in area_anchors:  # プチ北広場側=2016プチシャン区画の北西端
+    c = min(by_mall.get('プチシャン', []), key=lambda c: c.x + c.y, default=None)
+    if c: area_anchors['whity_petit'] = [round(c.x, 1), round(c.y, 1)]
+if 'whity_north2' not in area_anchors:  # 2016ノースモール2(名称同じ枝通路)
+    cs = by_mall.get('ノースモール2', [])
+    if cs: area_anchors['whity_north2'] = [round(sum(c.x for c in cs) / len(cs), 1), round(sum(c.y for c in cs) / len(cs), 1)]
+if 'whity_nomoka' not in area_anchors:  # NOMOKA=泉の広場周辺(2016イーストモールの東端)
+    c = max(by_mall.get('イーストモール', []), key=lambda c: c.x, default=None)
+    if c: area_anchors['whity_nomoka'] = [round(c.x, 1), round(c.y, 1)]
+if 'whity_pocket' not in area_anchors:  # ポケットパーク(名称同じ)
+    cs = by_mall.get('ポケットパーク', [])
+    if cs: area_anchors['whity_pocket'] = [round(sum(c.x for c in cs) / len(cs), 1), round(sum(c.y for c in cs) / len(cs), 1)]
+print('エリアアンカー:', area_anchors)
+
 with open(os.path.join(ROOT, 'detail_whity.js'), 'w') as f:
     f.write('// 自動生成: tools/gen_detail_whity.py(2016年公式フロアガイドPDF由来)。手編集しない\n')
     f.write('// 座標はすべて「ガイド座標系」(フロアガイドの形そのまま・等方スケールm換算。広域の実座標とは別物)\n')
     f.write('// FLOOR=床外形(通路含む) BLOCKS=テナント区画 REAL_POS=名前一致した現在店のガイド上の位置\n')
     f.write('export const WHITY_FLOOR = ' + json.dumps(floor_out, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_WALK = ' + json.dumps(walk_out, separators=(',', ':')) + ';\n')
+    f.write('export const WHITY_AREA_ANCHORS = ' + json.dumps(area_anchors, ensure_ascii=False, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_BLOCKS = ' + json.dumps(blocks_out, ensure_ascii=False, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_REAL_POS = ' + json.dumps(real, ensure_ascii=False, separators=(',', ':')) + ';\n')
 print('wrote detail_whity.js')
