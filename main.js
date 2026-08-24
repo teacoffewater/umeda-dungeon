@@ -6,7 +6,7 @@ import { initSurvey } from './survey.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { OSM_BUILDINGS, OSM_ROADS } from './ground_data.js'; // tools/gen_ground.py が生成
 import { LANDMARKS, PHOTOS } from './landmarks.js';
-import { WHITY_FLOOR, WHITY_BLOCKS, WHITY_REAL_POS } from './detail_whity.js'; // tools/gen_detail_whity.py が生成
+import { WHITY_FLOOR, WHITY_WALK, WHITY_BLOCKS, WHITY_REAL_POS } from './detail_whity.js'; // tools/gen_detail_whity.py が生成
 
 // ---------------------------------------------------------------------------
 // 梅田ダンジョン データ
@@ -866,7 +866,7 @@ renderer.domElement.addEventListener('pointerdown', e => {
 }, { capture: true });
 renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
-window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === 'whity')?.name }) }; // 開発用: 検証時にカメラ操作・状態確認に使う
+window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === 'whity')?.name }), dbgNav: (a, b) => detailNav(a, b), dbgReal: name => WHITY_REAL_POS[name], dbgWalk: () => WHITY_WALK }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.9));
 const dir = new THREE.DirectionalLight(0xffffff, 1.4);
@@ -1422,6 +1422,7 @@ function enterDetail(zoneId) {
   for (const labs of Object.values(floorLabelObjs)) for (const lab of labs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
   for (const { lab } of zoneLabelObjs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
   for (const lab of groundLabelObjs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
+  routeGroup.visible = false; // 広域のルート線は詳細では出さない(詳細はガイド内経路で案内)
   detailGroup.visible = true;
   // ガイド全体が入る範囲
   const box = new THREE.Box3().expandByObject(detailGroup);
@@ -1454,6 +1455,7 @@ function exitDetail() {
   if (!detailMode) return;
   detailMode = null;
   detailGroup.visible = false;
+  routeGroup.visible = true;
   for (const d of detailShopLabels) d.lab.visible = false;
   for (const o of detailHidden) o.visible = true;
   detailHidden.length = 0;
@@ -1957,6 +1959,114 @@ const blockMeshByShopId = {};
   });
 }
 
+// 詳細地図内の経路探索: 歩行可能グリッド(床−区画、gen_detail_whity.py生成)上のA*。
+// ガイドの通路だけを通るので、ガイド内の案内は原理的に間違えない
+const detailNav = (() => {
+  const { x0, y0, cell, w, h, bits } = WHITY_WALK;
+  const bin = atob(bits);
+  const walkAt = k => (bin.charCodeAt(k >> 3) >> (k & 7)) & 1;
+  const at = (i, j) => i >= 0 && j >= 0 && i < w && j < h && !!walkAt(j * w + i);
+  const toCell = g => [Math.floor((g[0] - x0) / cell), Math.floor((g[1] - y0) / cell)];
+  const toG = c => [x0 + (c[0] + 0.5) * cell, y0 + (c[1] + 0.5) * cell];
+  function nearest(i, j) { // 店の点は区画の中にあるため、最寄りの通路セルへ寄せる
+    if (at(i, j)) return [i, j];
+    for (let r = 1; r < 40; r++) {
+      let best = null, bd = Infinity;
+      for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) {
+        if (Math.max(Math.abs(di), Math.abs(dj)) !== r || !at(i + di, j + dj)) continue;
+        const d = di * di + dj * dj;
+        if (d < bd) { bd = d; best = [i + di, j + dj]; }
+      }
+      if (best) return best;
+    }
+    return null;
+  }
+  const los = (a, b) => { // セル間の見通し(通路から出ずに直線で結べるか)
+    const steps = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.4) || 1;
+    for (let s = 1; s < steps; s++) {
+      const t = s / steps;
+      if (!at(Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t))) return false;
+    }
+    return true;
+  };
+  return function findPath(gA, gB) { // ガイド座標→ガイド座標の折れ線(なければnull)
+    const s = nearest(...toCell(gA)), g = nearest(...toCell(gB));
+    if (!s || !g) return null;
+    const key = c => c[1] * w + c[0];
+    const open = [[Math.hypot(s[0] - g[0], s[1] - g[1]), s[0], s[1]]];
+    const gcost = new Map([[key(s), 0]]);
+    const came = new Map();
+    const closed = new Set();
+    let found = false;
+    while (open.length) {
+      let bi = 0;
+      for (let k = 1; k < open.length; k++) if (open[k][0] < open[bi][0]) bi = k;
+      const [, ci, cj] = open.splice(bi, 1)[0];
+      const ck = cj * w + ci;
+      if (closed.has(ck)) continue;
+      closed.add(ck);
+      if (ci === g[0] && cj === g[1]) { found = true; break; }
+      const base = gcost.get(ck);
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
+        if (!di && !dj) continue;
+        const ni = ci + di, nj = cj + dj;
+        if (!at(ni, nj)) continue;
+        if (di && dj && (!at(ci, nj) || !at(ni, cj))) continue; // 角を斜めにすり抜けない
+        const nk = nj * w + ni;
+        const nc = base + Math.hypot(di, dj);
+        if (nc < (gcost.get(nk) ?? Infinity)) {
+          gcost.set(nk, nc);
+          came.set(nk, ck);
+          open.push([nc + Math.hypot(ni - g[0], nj - g[1]), ni, nj]);
+        }
+      }
+    }
+    if (!found) return null;
+    const cells = [];
+    let cur = g[1] * w + g[0];
+    while (cur !== undefined) { cells.push([cur % w, Math.floor(cur / w)]); cur = came.get(cur); }
+    cells.reverse();
+    // 見通し直線化(グリッドのギザギザを取る)
+    const out = [cells[0]];
+    let a = 0;
+    while (a < cells.length - 1) {
+      let b = cells.length - 1;
+      while (b > a + 1 && !los(cells[a], cells[b])) b--;
+      out.push(cells[b]);
+      a = b;
+    }
+    return out.map(toG);
+  };
+})();
+
+// 詳細地図上のルート描画(白いチューブ+出発・ゴール)
+let detailRouteGroup = null;
+function clearDetailRoute() {
+  if (detailRouteGroup) { detailGroup.remove(detailRouteGroup); detailRouteGroup = null; }
+}
+function drawDetailRoute(startId, goalId) {
+  clearDetailRoute();
+  const a = WHITY_REAL_POS[nodeById[startId]?.name], b = WHITY_REAL_POS[nodeById[goalId]?.name];
+  if (!a || !b) return false;
+  const gpath = detailNav(a, b);
+  if (!gpath) return false;
+  const pts = [a, ...gpath, b].map(g => {
+    const [x, z] = G2W(g);
+    return new THREE.Vector3(x, FLOOR_Y.B1 + 6, z);
+  });
+  detailRouteGroup = new THREE.Group();
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.1);
+  detailRouteGroup.add(new THREE.Mesh(
+    new THREE.TubeGeometry(curve, 140, 1.2, 8, false),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xdddddd, emissiveIntensity: 1.3 })
+  ));
+  const base = v => new THREE.Vector3(v.x, FLOOR_Y.B1, v.z);
+  detailRouteGroup.add(makeStartPerson(base(pts[0])));
+  detailRouteGroup.add(makeGoalFlag(base(pts[pts.length - 1])));
+  detailGroup.add(detailRouteGroup);
+  return true;
+}
+
 // ---------------------------------------------------------------------------
 // 経路探索（ダイクストラ）
 // ---------------------------------------------------------------------------
@@ -2255,6 +2365,7 @@ function clearRoute() {
   routeStepUs = [];
   walkU = 0;
   walkAnim = null;
+  clearDetailRoute();
   if (bldgAutoHidden) { bldgAutoHidden = false; setBldgShown(true); } // 案内で自動OFFにしたビルを戻す
 }
 
@@ -2475,6 +2586,9 @@ function showRoute(startId, goalId) {
     const seqTxt = [endpoint(startN), ...seq.map(z => ZONES[z].name), endpoint(goalN)].join(' → ');
     html += `<div class="route-seq">🗺 ${seqTxt} のルートで向かいます</div>`;
   }
+  // 両端がホワイティのガイド上の店なら、ガイド内経路(通路グリッド)を用意しておく
+  const hasDetailRoute = drawDetailRoute(startId, goalId);
+  routeGroup.visible = !detailMode; // 詳細モード中は広域のルート線を出さない
   html += `<button id="start-guide">案内を開始</button>`;
   const startZoneTxt = startN.zone && ZONES[startN.zone] ? `（いまいる場所: ${ZONES[startN.zone].name} ${fl(startN.floor)}）` : '';
   html += `<div id="route-steps" hidden>`;
@@ -2483,10 +2597,11 @@ function showRoute(startId, goalId) {
   html += `<div class="step" style="border-left-color:#ff5d8f">🏁 到着：${nodeById[goalId].name}${photoTag(goalId)}</div>`;
   html += `</div>`;
   info.innerHTML = html;
-  // 「案内を開始」: 詳細ステップを開き、出発地点へ寄る(将来はここで詳細地図に切替)
+  // 「案内を開始」: ガイド内経路があれば詳細地図に切り替えて経路を見せる。なければ出発地点へ寄る
   info.querySelector('#start-guide').addEventListener('click', () => {
     info.querySelector('#route-steps').hidden = false;
     info.querySelector('#start-guide').style.display = 'none';
+    if (hasDetailRoute) { enterDetail('whity'); return; }
     const p = posOf(startN);
     camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(p.x + 30, p.y + 80, p.z + 80),
                 fromTgt: controls.target.clone(), toTgt: p.clone(), start: performance.now(), dur: 900 };
@@ -2521,9 +2636,16 @@ function showRoute(startId, goalId) {
   document.body.classList.add('route-active');
   applyViewOffset();
 
-  // 経路が通る施設だけを強調し、出発地が手前になる視点へ移動
-  focusZonesForRoute(path);
-  flyCameraToRoute(startId, goalId, path);
+  // 経路が通る施設だけを強調し、出発地が手前になる視点へ移動。
+  // 詳細モード中でガイド内経路があるときはカメラを動かさない(詳細地図で完結)。
+  // ガイド外へ出るルートなら広域に戻して見せる
+  if (detailMode && hasDetailRoute) {
+    // 何もしない(詳細地図の経路が見えている)
+  } else {
+    if (detailMode) exitDetail();
+    focusZonesForRoute(path);
+    flyCameraToRoute(startId, goalId, path);
+  }
 }
 
 // ---------------------------------------------------------------------------

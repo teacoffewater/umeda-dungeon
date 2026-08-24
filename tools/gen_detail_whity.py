@@ -9,9 +9,11 @@
   - WHITY_BLOCKS: テナントブロックの外形(飾り帯ノイズを除去したもの)
   - WHITY_REAL_POS: 現在の店(shops.js)のうち2016年版と名前が一致した店のガイド上の位置 {店名: [gx,gy]}
 """
+import base64
 import json, os, re
 from shapely.geometry import Polygon, Point, MultiPolygon, LineString
 from shapely.ops import unary_union, nearest_points
+from shapely.prepared import prep
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 d = json.load(open(os.path.join(ROOT, 'tools/data/whity_2016.json')))
@@ -79,6 +81,96 @@ for b, p in blocks:
         blocks_out.append({'mall': b['mall'], 'g': [[round(x, 1), round(y, 1)] for x, y in p.exterior.coords[:-1]]})
 print(f'床の上のブロック {len(blocks_out)}')
 
+# --- 3.5) 歩行可能グリッド(床−区画)。ガイド内ルート探索用 ---
+# 通路=床から区画を引いた部分。区画の角同士が接して通路が「くびれ切断」される箇所は
+# (実際は繋がっているので)最近接点同士を幅2.5mの帯で橋渡しして繋ぐ
+CELL = 1.5
+walkable = floor.buffer(0).difference(unary_union([p for _, p in blocks]))
+wcomps = [c for c in (list(walkable.geoms) if walkable.geom_type == 'MultiPolygon' else [walkable]) if c.area >= 50]
+while len(wcomps) > 1:
+    wcomps.sort(key=lambda c: c.area, reverse=True)
+    main = wcomps[0]
+    dist, near = min((main.distance(c), c) for c in wcomps[1:])
+    p1, p2 = nearest_points(main, near)
+    print(f'  通路成分を接続: 距離 {dist:.1f}m @({p1.x:.0f},{p1.y:.0f})')
+    wcomps = [unary_union([main, near, LineString([p1, p2]).buffer(1.6)])] + [c for c in wcomps[1:] if c is not near]  # 幅3.2m(1.5mグリッドが確実に通る太さ)
+walkable = wcomps[0]
+minx, miny, maxx, maxy = floor.bounds
+W = int((maxx - minx) / CELL) + 2
+H = int((maxy - miny) / CELL) + 2
+pw = prep(walkable)
+grid = [[False] * W for _ in range(H)]
+for j in range(H):
+    for i in range(W):
+        grid[j][i] = pw.contains(Point(minx + (i + 0.5) * CELL, miny + (j + 0.5) * CELL))
+# 最大連結成分(8近傍)
+comp = [[-1] * W for _ in range(H)]
+sizes = []
+for j in range(H):
+    for i in range(W):
+        if not grid[j][i] or comp[j][i] >= 0:
+            continue
+        cid = len(sizes)
+        stack = [(i, j)]
+        comp[j][i] = cid
+        n = 0
+        while stack:
+            x, y = stack.pop()
+            n += 1
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < W and 0 <= ny < H and grid[ny][nx] and comp[ny][nx] < 0:
+                        comp[ny][nx] = cid
+                        stack.append((nx, ny))
+        sizes.append(n)
+# ポリゴン上は連結でも1.5m格子では細い箇所で切れる。切れた成分は最近接セル対を直線で塗って接続
+# (歩行ポリゴンは1成分なので、この接続は通路沿いの短い繋ぎにしかならない)
+cells_by = {}
+for j in range(H):
+    for i in range(W):
+        if grid[j][i]:
+            cells_by.setdefault(comp[j][i], []).append((i, j))
+comp_ids = sorted(cells_by, key=lambda c: -len(cells_by[c]))
+merged = list(cells_by[comp_ids[0]])
+for cid in comp_ids[1:]:
+    if len(cells_by[cid]) < 3:  # 数セルの欠片は捨てる
+        continue
+    other = cells_by[cid]
+    bd, pair = 1e18, None
+    for (ax, ay) in merged[::max(1, len(merged) // 1500)]:  # 粗サンプルで近い候補
+        for (bx, by) in other:
+            dd = (ax - bx) ** 2 + (ay - by) ** 2
+            if dd < bd:
+                bd, pair = dd, ((ax, ay), (bx, by))
+    (ax, ay), (bx, by) = pair
+    steps = max(abs(ax - bx), abs(ay - by))
+    added = []
+    px, py = ax, ay
+    for s in range(1, steps + 1):
+        t = s / steps
+        xi, yi = round(ax + (bx - ax) * t), round(ay + (by - ay) * t)
+        # 4近傍で連結にする(斜めステップは中間セルを挟む。1セル幅の斜め鎖は角すり抜け禁止で通れない)
+        for (qx, qy) in ([(xi, py)] if (xi != px and yi != py) else []) + [(xi, yi)]:
+            if 0 <= qx < W and 0 <= qy < H and not grid[qy][qx]:
+                grid[qy][qx] = True
+                added.append((qx, qy))
+        px, py = xi, yi
+    merged.extend(other)
+    merged.extend(added)
+    if added:
+        print(f'  格子の切れ目を接続: {len(added)}セル @({ax},{ay})→({bx},{by})')
+bits = bytearray((W * H + 7) // 8)
+kept = 0
+for (i, j) in merged:
+    k = j * W + i
+    if not (bits[k // 8] >> (k % 8)) & 1:
+        bits[k // 8] |= 1 << (k % 8)
+        kept += 1
+walk_out = {'x0': round(minx, 1), 'y0': round(miny, 1), 'cell': CELL, 'w': W, 'h': H,
+            'bits': base64.b64encode(bytes(bits)).decode()}
+print(f'歩行グリッド {W}x{H} 歩行可 {kept}セル ({round(kept*CELL*CELL)}m²) 元成分 {len(sizes)}(全接続済み)')
+
 # --- 4) 現在の店との名前照合 ---
 def norm(x):
     return re.sub(r'[ 　・]', '', x).lower()
@@ -105,6 +197,7 @@ with open(os.path.join(ROOT, 'detail_whity.js'), 'w') as f:
     f.write('// 座標はすべて「ガイド座標系」(フロアガイドの形そのまま・等方スケールm換算。広域の実座標とは別物)\n')
     f.write('// FLOOR=床外形(通路含む) BLOCKS=テナント区画 REAL_POS=名前一致した現在店のガイド上の位置\n')
     f.write('export const WHITY_FLOOR = ' + json.dumps(floor_out, separators=(',', ':')) + ';\n')
+    f.write('export const WHITY_WALK = ' + json.dumps(walk_out, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_BLOCKS = ' + json.dumps(blocks_out, ensure_ascii=False, separators=(',', ':')) + ';\n')
     f.write('export const WHITY_REAL_POS = ' + json.dumps(real, ensure_ascii=False, separators=(',', ':')) + ';\n')
 print('wrote detail_whity.js')
