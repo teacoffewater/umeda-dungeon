@@ -35317,6 +35317,14 @@
           detailShopLabels.push({ id, mesh, lab });
         }
       }
+      var detailHidden = [];
+      var detailSaved = {};
+      function hideForDetail(obj) {
+        if (obj.visible) {
+          obj.visible = false;
+          detailHidden.push(obj);
+        }
+      }
       function enterDetail(zoneId) {
         if (detailMode === zoneId || zoneId !== "whity") return;
         detailMode = zoneId;
@@ -35325,21 +35333,54 @@
           d.mesh.visible = true;
           d.lab.visible = true;
         }
-        activeZones.clear();
-        activeZones.add(zoneId);
-        applyZoneFilter();
         updateDetailLOD();
         document.getElementById("detail-bar").hidden = false;
         document.getElementById("detail-bar-name").textContent = ZONES[zoneId].name + " \u8A73\u7D30\u5730\u56F3";
         const box = new Box3();
         for (const l of whityBlockLines) box.expandByObject(l);
         const c = box.getCenter(new Vector3());
-        const r = box.getBoundingSphere(new Sphere()).radius;
+        const r = Math.max(80, box.getBoundingSphere(new Sphere()).radius);
+        hideForDetail(floorGroups.S1);
+        hideForDetail(floorGroups.B2);
+        hideForDetail(groundGroup);
+        for (const o of floorGroups.B1.children) {
+          if (o.isMesh || o.isLine || o.isLineLoop) {
+            const z = o.userData.zone;
+            const nid = o.userData.nodeId;
+            if (z && z !== zoneId) {
+              hideForDetail(o);
+              continue;
+            }
+            if (nid && nodeById[nid] && nodeById[nid].zone && nodeById[nid].zone !== zoneId) {
+              hideForDetail(o);
+              continue;
+            }
+            if (!z && !nid && !whityBlockLines.includes(o) && !o.userData.surveyId && !o.userData.landmarkId) hideForDetail(o);
+          }
+        }
+        const pad = 25;
+        for (const o of vertGroup.children) {
+          const p = o.position;
+          if (p.x < box.min.x - pad || p.x > box.max.x + pad || p.z < box.min.z - pad || p.z > box.max.z + pad) hideForDetail(o);
+        }
+        for (const { id, lab } of zoneLabelObjs) if (id !== zoneId) {
+          if (lab.visible) {
+            lab.visible = false;
+            detailHidden.push(lab);
+          }
+        }
+        detailSaved.enableRotate = controls.enableRotate;
+        detailSaved.maxPolar = controls.maxPolarAngle;
+        detailSaved.minDistance = controls.minDistance;
+        controls.enableRotate = false;
+        controls.minPolarAngle = 0;
+        controls.maxPolarAngle = 0.01;
+        controls.minDistance = 40;
         camAnim = {
           fromPos: camera.position.clone(),
-          toPos: new Vector3(c.x, c.y + r * 1.1, c.z + r * 0.9),
+          toPos: new Vector3(c.x, FLOOR_Y.B1 + r * 1.7, c.z + 0.1),
           fromTgt: controls.target.clone(),
-          toTgt: c.clone(),
+          toTgt: new Vector3(c.x, FLOOR_Y.B1, c.z),
           start: performance.now(),
           dur: 900
         };
@@ -35351,8 +35392,17 @@
           d.mesh.visible = detailShown;
           d.lab.visible = false;
         }
-        activeZones.clear();
-        applyZoneFilter();
+        for (const o of detailHidden) o.visible = true;
+        detailHidden.length = 0;
+        for (const f of ["S1", "B1", "B2"]) {
+          const chip = document.getElementById("chip-" + f);
+          if (chip && chip.classList.contains("off")) floorGroups[f].visible = false;
+        }
+        if (document.getElementById("chip-buildings").classList.contains("off")) groundGroup.visible = false;
+        controls.enableRotate = detailSaved.enableRotate;
+        controls.minPolarAngle = 0;
+        controls.maxPolarAngle = detailSaved.maxPolar;
+        controls.minDistance = detailSaved.minDistance;
         updateDetailLOD();
         document.getElementById("detail-bar").hidden = true;
       }
