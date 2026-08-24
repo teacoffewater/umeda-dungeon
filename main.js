@@ -1897,6 +1897,7 @@ function decorateRouteShops(shopIds) {
   for (const id of shopIds) {
     const mesh = shopMeshById[id];
     if (!mesh) continue;
+    mesh.visible = true; // 広域で店ドット非表示でも、ルートの目印店だけは見せる
     const orig = mesh.material;
     const zone = ZONES[nodeById[id].zone];
     mesh.material = routeShopMatFor(nodeById[id].zone);
@@ -1921,6 +1922,7 @@ function decorateRouteShops(shopIds) {
 function clearRouteShops() {
   for (const d of routeShopDecor) {
     d.mesh.material = d.mat;
+    d.mesh.visible = detailShown;
     d.mesh.scale.set(1, 1, 1);
     d.mesh.remove(d.label);
     d.label.element.remove();
@@ -2255,11 +2257,40 @@ function showRoute(startId, goalId) {
     <div class="od-row goal">🏁 目的地: ${goalN.name}（${fl(goalN.floor)}）</div>
   </div>`;
   html += `<div class="summary">🚶 約${Math.round(total)}m ・ 徒歩約${minutes}分</div>`;
+  // 広域案内: 通る施設の並びを文で提示(通路扱いゾーンは省く)。詳細ステップは「案内を開始」で表示
+  {
+    const seq = [];
+    for (let i = 1; i < path.length; i++) {
+      const z = edgeZoneByPair[pairKey(path[i - 1], path[i])];
+      if (!z || !ZONES[z] || ZONES[z].corridor) continue;
+      if (!seq.length || seq[seq.length - 1] !== z) seq.push(z);
+    }
+    if (seq[0] === startN.zone) seq.shift();
+    if (seq.length && seq[seq.length - 1] === goalN.zone) seq.pop();
+    const endpoint = n => {
+      const nm = shortShopName(n.name);
+      const fac = n.zone && ZONES[n.zone] && !ZONES[n.zone].corridor ? ZONES[n.zone].name : null;
+      return fac && !nm.includes(fac) ? `${fac}の${nm}` : nm; // 施設名と同名のスポットは重ねない
+    };
+    const seqTxt = [endpoint(startN), ...seq.map(z => ZONES[z].name), endpoint(goalN)].join(' → ');
+    html += `<div class="route-seq">🗺 ${seqTxt} のルートで向かいます</div>`;
+  }
+  html += `<button id="start-guide">案内を開始</button>`;
   const startZoneTxt = startN.zone && ZONES[startN.zone] ? `（いまいる場所: ${ZONES[startN.zone].name} ${fl(startN.floor)}）` : '';
+  html += `<div id="route-steps" hidden>`;
   html += `<div class="step">🧍 「${startN.name}」を出発${startZoneTxt}${firstLandmark ? ` — 「${firstLandmark}」が見える方向へ` : ''}</div>`;
   html += steps.join('');
   html += `<div class="step" style="border-left-color:#ff5d8f">🏁 到着：${nodeById[goalId].name}${photoTag(goalId)}</div>`;
+  html += `</div>`;
   info.innerHTML = html;
+  // 「案内を開始」: 詳細ステップを開き、出発地点へ寄る(将来はここで詳細地図に切替)
+  info.querySelector('#start-guide').addEventListener('click', () => {
+    info.querySelector('#route-steps').hidden = false;
+    info.querySelector('#start-guide').style.display = 'none';
+    const p = posOf(startN);
+    camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(p.x + 30, p.y + 80, p.z + 80),
+                fromTgt: controls.target.clone(), toTgt: p.clone(), start: performance.now(), dur: 900 };
+  });
 
   // 各案内行に経路上の位置(カーブ上のu)を割り当てる → タップで赤い人がそこまで歩く
   {
@@ -2509,11 +2540,13 @@ document.getElementById('zone-clear').addEventListener('click', () => {
 // 地図上の文字（施設名ラベル）の一括表示切替
 const labelsContainer = document.getElementById('labels');
 // 「詳細」= 文字(施設名などのラベル)+店舗ドットの一括切替
+// 広域地図は店を描かない(二層構造: 店の実位置は詳細地図が持つ)。「詳細」チップは店舗ドットの表示切替
 const detailChip = document.getElementById('chip-detail');
-let detailShown = true;
+let detailShown = false;
+for (const m of shopMeshes) m.visible = false;
+detailChip.classList.add('off');
 detailChip.addEventListener('click', () => {
   detailShown = !detailShown;
-  labelsContainer.style.display = detailShown ? '' : 'none';
   for (const m of shopMeshes) m.visible = detailShown;
   detailChip.classList.toggle('off', !detailShown);
 });

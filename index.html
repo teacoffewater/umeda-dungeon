@@ -118,6 +118,8 @@
   }
   #route-info .od-row.goal { color: #ffc7de; }
   #route-info .summary { color: #7dffce; font-weight: bold; margin-bottom: 6px; font-size: 13px; }
+  .route-seq { color: #ffd97a; font-size: 12px; line-height: 1.7; margin: 6px 0; }
+  #route-info #start-guide { margin-top: 6px; }
   #route-info .step { color: #c3d0e0; border-left: 2px solid #2fbf8f; padding-left: 8px; margin: 4px 0; cursor: pointer; border-radius: 0 6px 6px 0; }
   #route-info .step:hover { background: rgba(120,150,190,0.12); }
   #route-info .step.active { background: rgba(255,69,69,0.16); border-left-color: #ff4545 !important; }
@@ -309,7 +311,7 @@
     <div class="chip" id="chip-S1" data-floor="S1" title="浅層（阪急三番街B1Fなど）の表示切替">浅層</div>
     <div class="chip" id="chip-B1" data-floor="B1" title="中枢層（地下1階）の表示切替">中枢層</div>
     <div class="chip" id="chip-B2" data-floor="B2" title="深層（地下2階）の表示切替">深層</div>
-    <div class="chip" id="chip-detail" title="施設名などの文字と店舗ドットの表示切替">詳細</div>
+    <div class="chip" id="chip-detail" title="店舗ドットの表示切替(広域では通常非表示)">詳細</div>
     <div class="chip" id="chip-buildings" title="地上のビル・道路の表示切替">ビル</div>
   </div>
 
@@ -362,6 +364,6 @@
   </div>
 </div>
 
-<script defer src="./app.js?v=32"></script>
+<script defer src="./app.js?v=33"></script>
 </body>
 </html>

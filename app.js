@@ -35744,6 +35744,7 @@
         for (const id of shopIds) {
           const mesh = shopMeshById[id];
           if (!mesh) continue;
+          mesh.visible = true;
           const orig = mesh.material;
           const zone = ZONES[nodeById[id].zone];
           mesh.material = routeShopMatFor(nodeById[id].zone);
@@ -35767,6 +35768,7 @@
       function clearRouteShops() {
         for (const d of routeShopDecor) {
           d.mesh.material = d.mat;
+          d.mesh.visible = detailShown;
           d.mesh.scale.set(1, 1, 1);
           d.mesh.remove(d.label);
           d.label.element.remove();
@@ -36075,11 +36077,44 @@
     <div class="od-row goal">\u{1F3C1} \u76EE\u7684\u5730: ${goalN.name}\uFF08${fl(goalN.floor)}\uFF09</div>
   </div>`;
         html += `<div class="summary">\u{1F6B6} \u7D04${Math.round(total)}m \u30FB \u5F92\u6B69\u7D04${minutes}\u5206</div>`;
+        {
+          const seq = [];
+          for (let i = 1; i < path.length; i++) {
+            const z = edgeZoneByPair[pairKey(path[i - 1], path[i])];
+            if (!z || !ZONES[z] || ZONES[z].corridor) continue;
+            if (!seq.length || seq[seq.length - 1] !== z) seq.push(z);
+          }
+          if (seq[0] === startN.zone) seq.shift();
+          if (seq.length && seq[seq.length - 1] === goalN.zone) seq.pop();
+          const endpoint = (n) => {
+            const nm = shortShopName(n.name);
+            const fac = n.zone && ZONES[n.zone] && !ZONES[n.zone].corridor ? ZONES[n.zone].name : null;
+            return fac && !nm.includes(fac) ? `${fac}\u306E${nm}` : nm;
+          };
+          const seqTxt = [endpoint(startN), ...seq.map((z) => ZONES[z].name), endpoint(goalN)].join(" \u2192 ");
+          html += `<div class="route-seq">\u{1F5FA} ${seqTxt} \u306E\u30EB\u30FC\u30C8\u3067\u5411\u304B\u3044\u307E\u3059</div>`;
+        }
+        html += `<button id="start-guide">\u6848\u5185\u3092\u958B\u59CB</button>`;
         const startZoneTxt = startN.zone && ZONES[startN.zone] ? `\uFF08\u3044\u307E\u3044\u308B\u5834\u6240: ${ZONES[startN.zone].name} ${fl(startN.floor)}\uFF09` : "";
+        html += `<div id="route-steps" hidden>`;
         html += `<div class="step">\u{1F9CD} \u300C${startN.name}\u300D\u3092\u51FA\u767A${startZoneTxt}${firstLandmark ? ` \u2014 \u300C${firstLandmark}\u300D\u304C\u898B\u3048\u308B\u65B9\u5411\u3078` : ""}</div>`;
         html += steps.join("");
         html += `<div class="step" style="border-left-color:#ff5d8f">\u{1F3C1} \u5230\u7740\uFF1A${nodeById[goalId].name}${photoTag(goalId)}</div>`;
+        html += `</div>`;
         info.innerHTML = html;
+        info.querySelector("#start-guide").addEventListener("click", () => {
+          info.querySelector("#route-steps").hidden = false;
+          info.querySelector("#start-guide").style.display = "none";
+          const p = posOf(startN);
+          camAnim = {
+            fromPos: camera.position.clone(),
+            toPos: new Vector3(p.x + 30, p.y + 80, p.z + 80),
+            fromTgt: controls.target.clone(),
+            toTgt: p.clone(),
+            start: performance.now(),
+            dur: 900
+          };
+        });
         {
           const anchors = [startN, ...stepNodes, nodeById[goalId]];
           const samples = routeCurve.getPoints(400);
@@ -36299,10 +36334,11 @@
       });
       var labelsContainer = document.getElementById("labels");
       var detailChip = document.getElementById("chip-detail");
-      var detailShown = true;
+      var detailShown = false;
+      for (const m of shopMeshes) m.visible = false;
+      detailChip.classList.add("off");
       detailChip.addEventListener("click", () => {
         detailShown = !detailShown;
-        labelsContainer.style.display = detailShown ? "" : "none";
         for (const m of shopMeshes) m.visible = detailShown;
         detailChip.classList.toggle("off", !detailShown);
       });
