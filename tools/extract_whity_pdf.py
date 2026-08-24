@@ -164,6 +164,44 @@ for d in page.get_drawings():
         continue
 print(f'テナントブロック {len(blocks)}個')
 
+# --- モール外形線(灰色ストローク・全周1本)。床はこれをそのまま使う ---
+def sub_polylines(d):
+    """描画パス→サブパス毎のポリライン。ベジェは4分割近似"""
+    subs, cur, prev = [], [], None
+    for it in d['items']:
+        if it[0] == 'l':
+            seg = [(it[1].x, it[1].y), (it[2].x, it[2].y)]
+        elif it[0] == 'c':
+            P = [(p.x, p.y) for p in it[1:5]]
+            seg = []
+            for t in (0, 0.25, 0.5, 0.75, 1):
+                seg.append(((1-t)**3*P[0][0] + 3*(1-t)**2*t*P[1][0] + 3*(1-t)*t*t*P[2][0] + t**3*P[3][0],
+                            (1-t)**3*P[0][1] + 3*(1-t)**2*t*P[1][1] + 3*(1-t)*t*t*P[2][1] + t**3*P[3][1]))
+        else:
+            continue
+        if prev is not None and math.hypot(seg[0][0]-prev[0], seg[0][1]-prev[1]) > 0.6:
+            subs.append(cur); cur = []
+        cur = cur + (seg if not cur else seg[1:])
+        prev = seg[-1]
+    if cur:
+        subs.append(cur)
+    return subs
+
+
+outline_g = None
+for dr in page.get_drawings():
+    if dr['rect'].y1 > MAP_Y_MAX:
+        continue
+    col = dr.get('color')
+    if col and tuple(round(c, 2) for c in col) == (0.62, 0.63, 0.63) and dr.get('type') == 's' and len(dr['items']) > 100:
+        subs = sub_polylines(dr)
+        pts = max(subs, key=len)  # 全周1本(南側の改札境界162ptだけ開いており、始点終点を直線で閉じる)
+        outline_g = [to_g(x, y) for x, y in pts]
+        print(f'外形線 {len(pts)}点(閉じて使用)')
+        break
+if outline_g is None:
+    raise SystemExit('外形線が見つからない(PDFが変わった?)')
+
 # --- 通路(白塗りポリゴン)。床のトレース用 ---
 walks = []
 for d in page.get_drawings():
@@ -187,5 +225,6 @@ print(f'通路(白塗り) {len(walks)}面')
 json.dump({'source': 'whity_2016_labeled.pdf (2016-02-23現在)',
            'affine': A.tolist(), 'residual_mean_m': round(float(err.mean()), 1),
            'guide_scale_m_per_pt': round(G_SCALE, 4),  # g座標=ガイド座標系(等方スケールのみ・歪みなし)
+           'outline_g': outline_g,
            'shops': shops, 'blocks': blocks, 'walks': walks}, open(OUT, 'w'), ensure_ascii=False, indent=1)
 print('wrote', OUT)

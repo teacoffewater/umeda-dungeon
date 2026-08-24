@@ -48,24 +48,29 @@ for b in d['blocks']:
     blocks.append((b, p))
 print(f"ブロック {len(d['blocks'])} → 飾り帯除去後 {len(blocks)} (除去 {dropped})")
 
-# --- 2) 床 = 閉包(ブロック ∪ 白塗り片) ---
-walks = [w for w in (to_poly(w) for w in d.get('walks', [])) if w]
-base = unary_union([p for _, p in blocks] + walks)
-closed = base.buffer(CLOSE_R, join_style=2).buffer(-CLOSE_R, join_style=2)
-comps = list(closed.geoms) if isinstance(closed, MultiPolygon) else [closed]
-comps = [c for c in comps if c.area >= MIN_COMP]
-# 店のない通路区間は地図上で塗られておらず成分が分断されることがある → 最近接点同士を通路幅の帯でつなぐ
-while len(comps) > 1:
-    comps.sort(key=lambda c: c.area, reverse=True)
-    main = comps[0]
-    dist, near = min((main.distance(c), c) for c in comps[1:])
-    p1, p2 = nearest_points(main, near)
-    print(f'分断成分を接続: 距離 {dist:.0f}m')
-    bridge = LineString([p1, p2]).buffer(4.0)  # 幅8mの通路帯(丸端で両成分に食い込ませて確実に結合)
-    comps = [unary_union([main, near, bridge])] + [c for c in comps[1:] if c is not near]
-floor = unary_union(comps).simplify(0.8)
-fl_list = list(floor.geoms) if isinstance(floor, MultiPolygon) else [floor]
-print(f'床: 連結成分 {len(fl_list)} 面積 {round(floor.area)}m²')
+# --- 2) 床 = 印刷された外形線そのもの(ガイドのシルエット) ---
+# 外形線は南側(mikke複合エリアの接続部)だけ開いていて、単純に閉じるとmikke一帯が外に落ちる。
+# 外に落ちた区画群は閉包(±5m)で面にし、本体と結合する
+floor = Polygon(d['outline_g']).buffer(0)
+if isinstance(floor, MultiPolygon):
+    floor = max(floor.geoms, key=lambda c: c.area)
+faraway = [p for _, p in blocks if p.distance(floor) > 2]
+if faraway:
+    pad = unary_union(faraway).buffer(5, join_style=2).buffer(-5, join_style=2)
+    floor = unary_union([floor, pad]).buffer(0)
+    print(f'外形線の外の区画 {len(faraway)}個を閉包で追加')
+if isinstance(floor, MultiPolygon):  # まだ離れていたら最近接点を通路帯でつなぐ
+    comps = sorted(floor.geoms, key=lambda c: -c.area)
+    while len(comps) > 1:
+        main, rest = comps[0], comps[1:]
+        dist, near = min((main.distance(c), c) for c in rest)
+        p1, p2 = nearest_points(main, near)
+        print(f'  分断成分を接続: 距離 {dist:.0f}m')
+        comps = [unary_union([main, near, LineString([p1, p2]).buffer(4.0)])] + [c for c in rest if c is not near]
+    floor = comps[0]
+floor = floor.simplify(0.3)
+fl_list = [floor]
+print(f'床(外形線トレース): 面積 {round(floor.area)}m² 頂点 {len(floor.exterior.coords)}')
 
 
 def ring(r):
