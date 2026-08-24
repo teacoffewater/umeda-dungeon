@@ -870,11 +870,9 @@ controls.maxDistance = 1600;
 // タッチ: ピンチは「指を広げた比率=拡大率」(等倍)。zoomSpeed=3 だと比率が3乗されて感度が高すぎる
 // タッチのピンチは自前で指の下にピボットを置くので zoomToCursor は切る(二重に効いてズレが溜まる)
 renderer.domElement.addEventListener('pointerdown', e => {
-  const touch = e.pointerType === 'touch';
-  controls.zoomSpeed = touch ? 1 : 3;
-  controls.zoomToCursor = !touch && !(typeof detailMode !== 'undefined' && detailMode);
+  controls.zoomSpeed = e.pointerType === 'touch' ? 1 : 3; // ピンチは等倍、ホイールは速め
 }, { capture: true });
-renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; controls.zoomToCursor = !(typeof detailMode !== 'undefined' && detailMode); }, { capture: true, passive: true });
+renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
 window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === 'whity')?.name }) }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
@@ -1459,16 +1457,26 @@ function enterDetail(zoneId) {
     if (p.x < box.min.x - pad || p.x > box.max.x + pad || p.z < box.min.z - pad || p.z > box.max.z + pad) hideForDetail(o);
   }
   for (const { id, lab } of zoneLabelObjs) if (id !== zoneId) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
-  // 真俯瞰に固定(回転不可・パンとズームのみ)
+  // Google Maps 風の操作: 1本指=パン、2本指=ズーム+ひねり回転(+上下で傾き)、左ドラッグ=パン、右ドラッグ=回転。
+  // 初期視点は真俯瞰(固定はしない)。傾きは60°まで
   detailSaved.enableRotate = controls.enableRotate;
   detailSaved.maxPolar = controls.maxPolarAngle;
   detailSaved.minDistance = controls.minDistance;
-  controls.enableRotate = false;
+  detailSaved.touchesONE = controls.touches.ONE;
+  detailSaved.touchesTWO = controls.touches.TWO;
+  detailSaved.mouseLEFT = controls.mouseButtons.LEFT;
+  detailSaved.mouseRIGHT = controls.mouseButtons.RIGHT;
+  detailSaved.screenSpacePanning = controls.screenSpacePanning;
+  controls.enableRotate = true;
+  controls.touches.ONE = THREE.TOUCH.PAN;
+  controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+  controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
+  controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+  controls.screenSpacePanning = false; // パンは床面に沿って動かす(地図らしい移動)
+  controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI / 3; // 傾きは60°まで(現在の角度より広いので跳ねない)
   controls.minDistance = 40;
-  // 真上固定のクランプはアニメ完了後にかける(アニメ中にかけると角度がパタッと跳ねる)
   camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(c.x, FLOOR_Y.B1 + r * 1.7, c.z + 0.1),
-              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, FLOOR_Y.B1, c.z), start: performance.now(), dur: 900,
-              onDone: () => { if (detailMode) { controls.minPolarAngle = 0; controls.maxPolarAngle = 0.01; } } };
+              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, FLOOR_Y.B1, c.z), start: performance.now(), dur: 900 };
 }
 function exitDetail() {
   if (!detailMode) return;
@@ -1485,6 +1493,11 @@ function exitDetail() {
   controls.enableRotate = detailSaved.enableRotate;
   controls.minPolarAngle = 0; controls.maxPolarAngle = detailSaved.maxPolar;
   controls.minDistance = detailSaved.minDistance;
+  controls.touches.ONE = detailSaved.touchesONE;
+  controls.touches.TWO = detailSaved.touchesTWO;
+  controls.mouseButtons.LEFT = detailSaved.mouseLEFT;
+  controls.mouseButtons.RIGHT = detailSaved.mouseRIGHT;
+  controls.screenSpacePanning = detailSaved.screenSpacePanning;
   updateDetailLOD();
   document.getElementById('detail-bar').hidden = true;
 }
@@ -2724,31 +2737,13 @@ let multiTouch = false;
 const releasePtr = e => { activePtrs.delete(e.pointerId); ptrPos.delete(e.pointerId); if (activePtrs.size === 0) multiTouch = false; };
 const ptrPos = new Map(); // pointerId -> [x, y](ピンチ中心の計算用)
 renderer.domElement.addEventListener('pointermove', e => { if (ptrPos.has(e.pointerId)) ptrPos.set(e.pointerId, [e.clientX, e.clientY]); });
-// 2本指で触れた瞬間、指の中央の真下(表示中のフロアの床)を回転・ズームの基準点にする。
-// 基準点の高さは必ず床に戻す(zoomToCursor で少しずつ浮き上がって、狙った所に寄れなくなるのを防ぐ)
-function floorPivotY() {
-  for (const f of ['B1', 'S1', 'B2']) if (floorGroups[f].visible) return FLOOR_Y[f];
-  return FLOOR_Y.B1;
-}
-function pivotToPinchCenter() {
-  if (typeof detailMode !== 'undefined' && detailMode) return; // 真俯瞰固定中は基準点を動かさない(角度が跳ねる)
-  const pts = [...ptrPos.values()];
-  if (pts.length < 2) return;
-  const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
-  const rc = new THREE.Raycaster();
-  rc.setFromCamera(new THREE.Vector2((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1), camera);
-  const y = floorPivotY();
-  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -y);
-  const hit = new THREE.Vector3();
-  if (rc.ray.intersectPlane(plane, hit) && hit.distanceTo(camera.position) < 3000) controls.target.copy(hit);
-  else controls.target.y = y;
-}
+// ピンチ中心へのズームは OrbitControls の zoomToCursor(r160はタッチ対応)に任せる。
+// 自前で基準点を動かす方式は、基準点移動→角度再計算で視点がパタッと変わる原因だったので廃止
 renderer.domElement.addEventListener('pointerdown', e => {
   downAt = [e.clientX, e.clientY];
   activePtrs.add(e.pointerId);
   ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
   if (activePtrs.size > 1) multiTouch = true;
-  if (e.pointerType === 'touch' && activePtrs.size === 2) pivotToPinchCenter();
   camAnim = null; // 手動操作が始まったら自動カメラ移動は中断
   // 地図に触れたら入力モードを終了（キーボードも閉じる）
   if (document.body.classList.contains('picker-editing')) {

@@ -34734,13 +34734,10 @@
       controls.minDistance = 15;
       controls.maxDistance = 1600;
       renderer.domElement.addEventListener("pointerdown", (e) => {
-        const touch = e.pointerType === "touch";
-        controls.zoomSpeed = touch ? 1 : 3;
-        controls.zoomToCursor = !touch && !(typeof detailMode !== "undefined" && detailMode);
+        controls.zoomSpeed = e.pointerType === "touch" ? 1 : 3;
       }, { capture: true });
       renderer.domElement.addEventListener("wheel", () => {
         controls.zoomSpeed = 3;
-        controls.zoomToCursor = !(typeof detailMode !== "undefined" && detailMode);
       }, { capture: true, passive: true });
       controls.maxPolarAngle = Math.PI * 0.49;
       window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE: three_module_exports, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find((n) => n.type === "shop" && n.zone === "whity")?.name }) };
@@ -35372,7 +35369,19 @@
         detailSaved.enableRotate = controls.enableRotate;
         detailSaved.maxPolar = controls.maxPolarAngle;
         detailSaved.minDistance = controls.minDistance;
-        controls.enableRotate = false;
+        detailSaved.touchesONE = controls.touches.ONE;
+        detailSaved.touchesTWO = controls.touches.TWO;
+        detailSaved.mouseLEFT = controls.mouseButtons.LEFT;
+        detailSaved.mouseRIGHT = controls.mouseButtons.RIGHT;
+        detailSaved.screenSpacePanning = controls.screenSpacePanning;
+        controls.enableRotate = true;
+        controls.touches.ONE = TOUCH.PAN;
+        controls.touches.TWO = TOUCH.DOLLY_ROTATE;
+        controls.mouseButtons.LEFT = MOUSE.PAN;
+        controls.mouseButtons.RIGHT = MOUSE.ROTATE;
+        controls.screenSpacePanning = false;
+        controls.minPolarAngle = 0;
+        controls.maxPolarAngle = Math.PI / 3;
         controls.minDistance = 40;
         camAnim = {
           fromPos: camera.position.clone(),
@@ -35380,13 +35389,7 @@
           fromTgt: controls.target.clone(),
           toTgt: new Vector3(c.x, FLOOR_Y.B1, c.z),
           start: performance.now(),
-          dur: 900,
-          onDone: () => {
-            if (detailMode) {
-              controls.minPolarAngle = 0;
-              controls.maxPolarAngle = 0.01;
-            }
-          }
+          dur: 900
         };
       }
       function exitDetail() {
@@ -35407,6 +35410,11 @@
         controls.minPolarAngle = 0;
         controls.maxPolarAngle = detailSaved.maxPolar;
         controls.minDistance = detailSaved.minDistance;
+        controls.touches.ONE = detailSaved.touchesONE;
+        controls.touches.TWO = detailSaved.touchesTWO;
+        controls.mouseButtons.LEFT = detailSaved.mouseLEFT;
+        controls.mouseButtons.RIGHT = detailSaved.mouseRIGHT;
+        controls.screenSpacePanning = detailSaved.screenSpacePanning;
         updateDetailLOD();
         document.getElementById("detail-bar").hidden = true;
       }
@@ -36551,29 +36559,11 @@
       renderer.domElement.addEventListener("pointermove", (e) => {
         if (ptrPos.has(e.pointerId)) ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
       });
-      function floorPivotY() {
-        for (const f of ["B1", "S1", "B2"]) if (floorGroups[f].visible) return FLOOR_Y[f];
-        return FLOOR_Y.B1;
-      }
-      function pivotToPinchCenter() {
-        if (typeof detailMode !== "undefined" && detailMode) return;
-        const pts = [...ptrPos.values()];
-        if (pts.length < 2) return;
-        const cx = (pts[0][0] + pts[1][0]) / 2, cy = (pts[0][1] + pts[1][1]) / 2;
-        const rc = new Raycaster();
-        rc.setFromCamera(new Vector2(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1), camera);
-        const y = floorPivotY();
-        const plane = new Plane(new Vector3(0, 1, 0), -y);
-        const hit = new Vector3();
-        if (rc.ray.intersectPlane(plane, hit) && hit.distanceTo(camera.position) < 3e3) controls.target.copy(hit);
-        else controls.target.y = y;
-      }
       renderer.domElement.addEventListener("pointerdown", (e) => {
         downAt = [e.clientX, e.clientY];
         activePtrs.add(e.pointerId);
         ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
         if (activePtrs.size > 1) multiTouch = true;
-        if (e.pointerType === "touch" && activePtrs.size === 2) pivotToPinchCenter();
         camAnim = null;
         if (document.body.classList.contains("picker-editing")) {
           document.activeElement?.blur?.();
