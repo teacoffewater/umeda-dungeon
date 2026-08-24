@@ -188,6 +188,19 @@
   #photo-view img { width: 100%; border-radius: 8px; display: block; }
   #photo-view figcaption { font-size: 12px; color: #a9bacf; margin-top: 4px; }
 
+
+  /* 詳細モードのバー */
+  #detail-bar {
+    position: absolute; left: 50%; transform: translateX(-50%); top: 60px; z-index: 12;
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(40, 34, 10, 0.92); border: 1px solid rgba(217, 192, 75, 0.6);
+    border-radius: 999px; padding: 6px 8px 6px 16px; color: #ffe9b0; font-size: 13px; font-weight: bold;
+  }
+  #detail-bar[hidden] { display: none; }
+  #detail-bar button { padding: 5px 10px; border-radius: 999px; border: none; background: #d9c04b; color: #2a2205; font-size: 12px; font-weight: bold; cursor: pointer; }
+  .node-label.detail-shop { font-size: 10px; }
+  @media (max-width: 640px) { #detail-bar { top: 52px; } }
+
   .btns { display: contents; } /* デスクトップは従来どおり縦積み */
 
   /* ---- 現地調査モード(?survey=1): 画面下に記録バー。通常UIは隠す ---- */
@@ -307,6 +320,11 @@
     <div id="route-info"></div>
   </div>
 
+  <div id="detail-bar" hidden>
+    <span id="detail-bar-name"></span>
+    <button id="detail-bar-close">✕ 広域に戻る</button>
+  </div>
+
   <div id="floor-toggle">
     <div class="chip" id="chip-S1" data-floor="S1" title="浅層（阪急三番街B1Fなど）の表示切替">浅層</div>
     <div class="chip" id="chip-B1" data-floor="B1" title="中枢層（地下1階）の表示切替">中枢層</div>
@@ -364,6 +382,6 @@
   </div>
 </div>
 
-<script defer src="./app.js?v=34"></script>
+<script defer src="./app.js?v=36"></script>
 </body>
 </html>

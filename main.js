@@ -876,7 +876,7 @@ renderer.domElement.addEventListener('pointerdown', e => {
 }, { capture: true });
 renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; controls.zoomToCursor = true; }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
-window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene }; // 開発用: 検証時にカメラ操作・状態確認に使う
+window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === 'whity')?.name }) }; // 開発用: 検証時にカメラ操作・状態確認に使う
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.9));
 const dir = new THREE.DirectionalLight(0xffffff, 1.4);
@@ -1395,11 +1395,63 @@ const whityBlockLines = [];
   }
 }
 function updateDetailLOD() {
-  const near = camera.position.distanceTo(controls.target) < 320;
+  const near = detailMode === 'whity' || camera.position.distanceTo(controls.target) < 320;
   for (const l of whityBlockLines) l.visible = near;
 }
 controls.addEventListener('change', updateDetailLOD);
 updateDetailLOD();
+
+// ---------------------------------------------------------------------------
+// 詳細モード: 施設の床をタップ → その施設の詳細地図(区画+実位置の店名)。✕で広域へ戻る
+// いまはホワイティのみ(詳細データがある施設だけ入れる)
+// ---------------------------------------------------------------------------
+let detailMode = null;
+const detailShopIds = []; // 実位置を持つホワイティ店(詳細モードで名前を出す)
+const detailShopLabels = [];
+for (const n of NODES) {
+  if (n.type === 'shop' && n.zone === 'whity' && WHITY_REAL_POS[n.name]) detailShopIds.push(n.id);
+}
+function buildDetailLabels() {
+  if (detailShopLabels.length) return;
+  for (const id of detailShopIds) {
+    const mesh = shopMeshById[id];
+    if (!mesh) continue;
+    const div = document.createElement('div');
+    div.className = 'node-label shop detail-shop';
+    div.textContent = shortShopName(nodeById[id].name);
+    const lab = new CSS2DObject(div);
+    lab.position.set(0, 4, 0);
+    lab.visible = false;
+    mesh.add(lab);
+    detailShopLabels.push({ id, mesh, lab });
+  }
+}
+function enterDetail(zoneId) {
+  if (detailMode === zoneId || zoneId !== 'whity') return;
+  detailMode = zoneId;
+  buildDetailLabels();
+  for (const d of detailShopLabels) { d.mesh.visible = true; d.lab.visible = true; }
+  activeZones.clear(); activeZones.add(zoneId); applyZoneFilter();
+  updateDetailLOD();
+  document.getElementById('detail-bar').hidden = false;
+  document.getElementById('detail-bar-name').textContent = ZONES[zoneId].name + ' 詳細地図';
+  // 施設全体が収まる視点へ
+  const box = new THREE.Box3();
+  for (const l of whityBlockLines) box.expandByObject(l);
+  const c = box.getCenter(new THREE.Vector3());
+  const r = box.getBoundingSphere(new THREE.Sphere()).radius;
+  camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(c.x, c.y + r * 1.1, c.z + r * 0.9),
+              fromTgt: controls.target.clone(), toTgt: c.clone(), start: performance.now(), dur: 900 };
+}
+function exitDetail() {
+  if (!detailMode) return;
+  detailMode = null;
+  for (const d of detailShopLabels) { d.mesh.visible = detailShown; d.lab.visible = false; }
+  activeZones.clear(); applyZoneFilter();
+  updateDetailLOD();
+  document.getElementById('detail-bar').hidden = true;
+}
+document.getElementById('detail-bar-close')?.addEventListener('click', exitDetail);
 
 // 写真ビューア(案内文のサムネイル・ランドマーク/店のタップで開く)
 const photoView = document.getElementById('photo-view');
@@ -2682,8 +2734,15 @@ renderer.domElement.addEventListener('pointerup', e => {
     return;
   }
   raycaster.setFromCamera(pointer, camera);
-  const hit = raycaster.intersectObjects(nodeMeshes.filter(m => m.parent.visible))[0];
-  if (!hit) return;
+  // 非表示の店ドットはタップ対象にしない(広域では床タップ=詳細モードを優先)。駅・スポットの透明シリンダーは常に可
+  const hit = raycaster.intersectObjects(nodeMeshes.filter(m =>
+    m.parent.visible && (m.visible || nodeById[m.userData.nodeId]?.type !== 'shop')))[0];
+  if (!hit) {
+    // 店・スポットに当たらなければ床を調べ、詳細データのある施設なら詳細モードへ
+    const fl = raycaster.intersectObjects(floorGroups.B1.children.filter(o => o.isMesh && o.visible), false)[0];
+    if (fl && fl.object.userData.zone === 'whity') enterDetail('whity');
+    return;
+  }
   const id = hit.object.userData.nodeId;
   if (clickPhase === 0) {
     startSel.value = id;

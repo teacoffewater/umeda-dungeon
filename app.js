@@ -34743,7 +34743,7 @@
         controls.zoomToCursor = true;
       }, { capture: true, passive: true });
       controls.maxPolarAngle = Math.PI * 0.49;
-      window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE: three_module_exports, scene };
+      window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE: three_module_exports, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find((n) => n.type === "shop" && n.zone === "whity")?.name }) };
       scene.add(new AmbientLight(8952251, 0.9));
       var dir = new DirectionalLight(16777215, 1.4);
       dir.position.set(200, 400, 150);
@@ -35291,11 +35291,72 @@
         }
       }
       function updateDetailLOD() {
-        const near = camera.position.distanceTo(controls.target) < 320;
+        const near = detailMode === "whity" || camera.position.distanceTo(controls.target) < 320;
         for (const l of whityBlockLines) l.visible = near;
       }
       controls.addEventListener("change", updateDetailLOD);
       updateDetailLOD();
+      var detailMode = null;
+      var detailShopIds = [];
+      var detailShopLabels = [];
+      for (const n of NODES) {
+        if (n.type === "shop" && n.zone === "whity" && WHITY_REAL_POS[n.name]) detailShopIds.push(n.id);
+      }
+      function buildDetailLabels() {
+        if (detailShopLabels.length) return;
+        for (const id of detailShopIds) {
+          const mesh = shopMeshById[id];
+          if (!mesh) continue;
+          const div = document.createElement("div");
+          div.className = "node-label shop detail-shop";
+          div.textContent = shortShopName(nodeById[id].name);
+          const lab = new CSS2DObject(div);
+          lab.position.set(0, 4, 0);
+          lab.visible = false;
+          mesh.add(lab);
+          detailShopLabels.push({ id, mesh, lab });
+        }
+      }
+      function enterDetail(zoneId) {
+        if (detailMode === zoneId || zoneId !== "whity") return;
+        detailMode = zoneId;
+        buildDetailLabels();
+        for (const d of detailShopLabels) {
+          d.mesh.visible = true;
+          d.lab.visible = true;
+        }
+        activeZones.clear();
+        activeZones.add(zoneId);
+        applyZoneFilter();
+        updateDetailLOD();
+        document.getElementById("detail-bar").hidden = false;
+        document.getElementById("detail-bar-name").textContent = ZONES[zoneId].name + " \u8A73\u7D30\u5730\u56F3";
+        const box = new Box3();
+        for (const l of whityBlockLines) box.expandByObject(l);
+        const c = box.getCenter(new Vector3());
+        const r = box.getBoundingSphere(new Sphere()).radius;
+        camAnim = {
+          fromPos: camera.position.clone(),
+          toPos: new Vector3(c.x, c.y + r * 1.1, c.z + r * 0.9),
+          fromTgt: controls.target.clone(),
+          toTgt: c.clone(),
+          start: performance.now(),
+          dur: 900
+        };
+      }
+      function exitDetail() {
+        if (!detailMode) return;
+        detailMode = null;
+        for (const d of detailShopLabels) {
+          d.mesh.visible = detailShown;
+          d.lab.visible = false;
+        }
+        activeZones.clear();
+        applyZoneFilter();
+        updateDetailLOD();
+        document.getElementById("detail-bar").hidden = true;
+      }
+      document.getElementById("detail-bar-close")?.addEventListener("click", exitDetail);
       var photoView = document.getElementById("photo-view");
       function showPhotos(title, photos, note) {
         if (!photoView) return;
@@ -36483,8 +36544,12 @@
           return;
         }
         raycaster.setFromCamera(pointer, camera);
-        const hit = raycaster.intersectObjects(nodeMeshes.filter((m) => m.parent.visible))[0];
-        if (!hit) return;
+        const hit = raycaster.intersectObjects(nodeMeshes.filter((m) => m.parent.visible && (m.visible || nodeById[m.userData.nodeId]?.type !== "shop")))[0];
+        if (!hit) {
+          const fl2 = raycaster.intersectObjects(floorGroups.B1.children.filter((o) => o.isMesh && o.visible), false)[0];
+          if (fl2 && fl2.object.userData.zone === "whity") enterDetail("whity");
+          return;
+        }
         const id = hit.object.userData.nodeId;
         if (clickPhase === 0) {
           startSel.value = id;
