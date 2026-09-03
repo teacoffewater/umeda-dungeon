@@ -31,6 +31,7 @@ export const SHOP_AREAS = {
   whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_32'],  rect: [1066.7, 909.3, 24, 24], merged: true }, // FARURU
   // 堂島アバンザ B1F(レストラン街)。個別の位置は詳細地図(館内案内板 2026-09-03)の管轄。広域は館で1点集約=詳細地図の入口
   avanza_b1: { floor: 'B1', zone: 'avanza', near: ['j_avz'], rect: [785.7, 1499.6, 30, 30], merged: true },
+  dojima_flat: { floor: 'B1', zone: 'dojima_flat', near: ['dojima_flat'], rect: [661, 1507, 30, 40], merged: true }, // 近鉄堂島ビルB1F。詳細地図の入口
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
   diamor_fashion: { floor: 'B1', zone: 'diamor', edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_diamor_e'], ['j_diamor_e', 'j_fashion_e']] },        // 西→東
   diamor_market: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'j_market_ne']] }, // 広場→北東
@@ -556,6 +557,19 @@ export const SHOPS_SCRAPED = [
   s('コキュリコット ディアモール店', 'diamor_variety', 16, '北東'),
   s('ディアモールチャンスセンター（宝くじ）', 'diamor_variety', 17, '北東'),
   s('ドコモショップ', 'diamor_variety', 18, '西'),
+  // ==== 堂島ふらっと（近鉄堂島ビルB1F、ドーチカC83直結。現地の案内板 2026-09-03。番号=案内板の区画番号。実位置は detail_dojima_flat.js） ====
+  g('ケア21グループ 研修センター 研修室A・B・C', 'dojima_flat', '西'), // 1(2区画)
+  g('NAVI CLINIC', 'dojima_flat', '西'),                              // 2
+  g('S.CLEAR', 'dojima_flat', '南'),                                  // 4 エステ
+  g('大阪小田クリニック', 'dojima_flat', '中央'),                      // 5
+  g('パシフィック ダイナー サービス', 'dojima_flat', '中央'),           // 6
+  g('OSAKA ODA CLINIC', 'dojima_flat', '中央'),                       // 7
+  g('近鉄住宅管理 研修センター', 'dojima_flat', '北'),                  // 8・14
+  g('ケア21グループ 研修センター 研修室D・E', 'dojima_flat', '中央'),    // 9
+  g('三菱電機プラントエンジニアリング', 'dojima_flat', '北東'),          // 10・11・13
+  g('堂島かわだクリニック', 'dojima_flat', '東'),                       // 12
+  g('ヘアサロン ONO 理容室', 'dojima_flat', '東'),                      // 15(レディースシェービングも)
+  g('耳かき本舗 ほっこり部屋', 'dojima_flat', '北東'),                   // 16
   // ==== ドーチカ（公式マップの区画番号順・全53店 2026-07。コメントの番号=公式マップの通し番号。実位置は detail_dotica.js） ====
   g('三菱UFJ銀行ATM', 'dotica_n', '西'), // 1
   g('新梅田コクミン薬局', 'dotica_n', '東'), // 2

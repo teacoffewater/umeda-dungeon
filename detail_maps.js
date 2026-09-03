@@ -8,6 +8,7 @@ import * as SNB2 from './detail_sanban_n_b2.js';
 import * as SSB1 from './detail_sanban_s_b1.js';
 import * as SSB2 from './detail_sanban_s_b2.js';
 import { DOTICA_FLOOR, DOTICA_WALK, DOTICA_BLOCKS, DOTICA_REAL_POS, DOTICA_AREA_ANCHORS } from './detail_dotica.js';
+import { DOJIMA_FLAT_FLOOR, DOJIMA_FLAT_WALK, DOJIMA_FLAT_BLOCKS, DOJIMA_FLAT_REAL_POS, DOJIMA_FLAT_AREA_ANCHORS } from './detail_dojima_flat.js';
 
 // 施設が館×階に分かれる場合(三番街)は、zone を共有しつつ areas(shops.js のエリアID)で詳細地図を分ける。
 // floor は描画する高さ(三番街B1F=浅層S1、B2F=中枢層B1)。name は詳細バーの表示名
@@ -26,4 +27,6 @@ export const DETAIL_MAPS = {
   // ドーチカ: 公式マップ(北を上に回転)。広域では北・中・南の3エリアの集約ドットが入口
   dotica: { FLOOR: DOTICA_FLOOR, WALK: DOTICA_WALK, BLOCKS: DOTICA_BLOCKS, REAL_POS: DOTICA_REAL_POS, AREA_ANCHORS: DOTICA_AREA_ANCHORS,
             zone: 'dotica', areas: ['dotica_n', 'dotica_c', 'dotica_s'], floor: 'B1', name: 'ドージマ地下センター', origin: [1600, 800] }, // ガイド座標 x -12〜40 / y 0〜290 → world z 800〜945
+  // 堂島ふらっと(近鉄堂島ビルB1F): 現地の案内板から。ドーチカ C83 直結
+  dojima_flat: { FLOOR: DOJIMA_FLAT_FLOOR, WALK: DOJIMA_FLAT_WALK, BLOCKS: DOJIMA_FLAT_BLOCKS, REAL_POS: DOJIMA_FLAT_REAL_POS, AREA_ANCHORS: DOJIMA_FLAT_AREA_ANCHORS, origin: [1600, 1000] }, // ガイド座標 0〜50 / 0〜58 → world z 1000〜1029
 };
