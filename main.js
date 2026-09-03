@@ -1403,17 +1403,20 @@ function detailKeyOfArea(area, zone) {
 }
 const detailKeyOfShop = n => (n && n.type === 'shop') ? detailKeyOfArea(n.area, n.zone) : null;
 // 床タップ → 詳細地図。同じゾーン・同じ階に複数の詳細地図があれば(北館/南館)、タップ位置に近い方
-function detailKeyForFloorHit(hit) {
-  const { zone, floor } = hit.object.userData;
+function detailKeyAt(zone, floor, point) {
   let best = null, bd = Infinity;
   for (const [k, M] of Object.entries(DETAIL_MAPS)) {
     if ((M.zone || k) !== zone || (M.floor || 'B1') !== (floor || 'B1')) continue;
     const [ex, ez] = DETAIL[k].entry;
-    const d = Math.hypot(hit.point.x - ex, hit.point.z - ez);
+    const d = Math.hypot(point.x - ex, point.z - ez);
     if (d < bd) { bd = d; best = k; }
   }
   return best;
 }
+const detailKeyForFloorHit = hit => detailKeyAt(hit.object.userData.zone, hit.object.userData.floor, hit.point);
+// 館ノード(P: 名前付きの地下街・館の地点)の当たり判定は半径18mの透明シリンダーで、集約ドットの真上に重なることがある(三番街南館)。
+// 詳細地図を持つ館では館ノードのタップも床タップと同じく詳細地図への入口にする(端点にしたければ検索で選べる)
+const detailKeyForSpotHit = hit => { const n = nodeById[hit.object.userData.nodeId]; return n && n.type === 'spot' ? detailKeyAt(n.zone, n.floor, hit.point) : null; };
 function buildDetailLabels(zone) {
   const D = DETAIL[zone];
   if (D.labels.length) return;
@@ -1839,6 +1842,7 @@ for (const pl of PLAZAS) {
 
 // スポット（クリック対象）・ジャンクション・店舗
 const nodeMeshes = [];
+window.__dbg.nodeMeshes = nodeMeshes; window.__dbg.floorGroups = floorGroups; // 開発用: タップ判定の再現に使う
 const labelDivs = {};
 const spotZoneEntries = []; // 施設フィルタで減光する対象（駅は常に表示）
 const shopLabels = {};      // 店舗ラベルは選択・ルート表示時のみ見せる
@@ -3049,6 +3053,8 @@ renderer.domElement.addEventListener('pointerup', e => {
   // 非表示の店ドットはタップ対象にしない(広域では床タップ=詳細モードを優先)。駅・スポットの透明シリンダーは常に可
   const hit = raycaster.intersectObjects(nodeMeshes.filter(m =>
     m.parent.visible && (m.visible || nodeById[m.userData.nodeId]?.type !== 'shop')))[0];
+  const spotDetail = hit && detailKeyForSpotHit(hit);
+  if (spotDetail) { enterDetail(spotDetail); return; } // 詳細地図を持つ館の館ノード → 詳細地図へ
   if (!hit) {
     // 店・スポットに当たらなければ床を調べ、詳細データのある施設なら詳細モードへ
     // 表示中の全階の床を調べる(三番街B1Fは浅層にある)。詳細地図を持つ館×階ならそこへ

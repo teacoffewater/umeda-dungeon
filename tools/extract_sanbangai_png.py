@@ -22,6 +22,7 @@ from shapely.ops import unary_union
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONVERT = False
+ASSIGN = False
 # フロア図ごとの通路の描き方(白 / 明るい床 / 点柄)。extract 時に切り替える
 CORRIDOR_MODE = {'sanban_n_b1': 'light', 'sanban_n_b2': 'plate', 'sanban_s_b1': 'white', 'sanban_s_b2': 'white'}
 FLOORS = {  # key: (画像, shops.js のエリアID, 館の実寸[幅m, 奥行m])
@@ -110,6 +111,27 @@ def main(key):
             json.dump(numinfo, open(numf, 'w'), ensure_ascii=False, indent=1); print(f'  {os.path.basename(numf)} を重心形式に変換')
     else:
         numbers, ignore = {}, set()
+        # --assign: numpos(番号→図上の位置 px、目視で読む)を最寄りの区画重心に当てて blocks を作る
+        if ASSIGN and numinfo.get('numpos'):
+            made, bad = [], []
+            for no, c in numinfo['numpos'].items():
+                i = nearest_idx(c, tol=24)
+                if i is None: bad.append(no); continue
+                made.append({'c': [round(cents[i][0], 1), round(cents[i][1], 1)], 'no': int(str(no).split('/')[0])})
+            numinfo['blocks'] = made
+            # 番号の付かない小さな区画(色文字・アイコン)は自動で除外に回す。大きいものは空き区画として残す
+            got = {nearest_idx(b['c']) for b in made}
+            # 除外: 番号の付かない小さい区画(色文字・アイコン)、番号付き区画と同じ場所にある重複ポリゴン(番号バッジ等)
+            def near_numbered(i):
+                return any(((cents[i][0]-cents[j][0])**2 + (cents[i][1]-cents[j][1])**2) ** 0.5 < 8 for j in got if j is not None)
+            auto_ig = [[round(cents[i][0], 1), round(cents[i][1], 1)] for i, g in enumerate(blocks) if i not in got and (g.area < 130 or near_numbered(i))]
+            # 位置の食い違い(番号の位置と区画重心が離れている)は警告
+            for b, (no, c) in zip(made, [(n, c) for n, c in numinfo['numpos'].items() if nearest_idx(c, tol=24) is not None]):
+                dd = ((b['c'][0]-c[0])**2 + (b['c'][1]-c[1])**2) ** 0.5
+                if dd > 14: print(f'  ? 番号 {no}: 位置 {c} と区画重心 {b["c"]} が {dd:.0f}px 離れている')
+            numinfo['ignore'] = [c for c in numinfo.get('ignore_manual', [])] + auto_ig  # ignore_manual は手で指定した除外(凡例など)
+            json.dump(numinfo, open(numf, 'w'), ensure_ascii=False, indent=1)
+            print(f'  --assign: {len(made)} 区画に番号を付与' + (f' / 区画が見つからない番号: {bad}' if bad else ''))
         for b in numinfo.get('blocks', []):
             i = nearest_idx(b['c'])
             if i is None: print(f'  !! 番号 {b["no"]} の重心 {b["c"]} に区画が無い'); continue
@@ -213,6 +235,8 @@ def main(key):
         'blocks': blocks_out, 'shops': shops, 'area_anchors': {}, 'areas': [area],
     }
     json.dump(out, open(os.path.join(ROOT, 'tools/data/detail', f'{key}.json'), 'w'), ensure_ascii=False, indent=1)
+    unnum = [(i, round(g.centroid.x), round(g.centroid.y), round(g.area)) for i, g in enumerate(blocks) if i not in ignore and str(i) not in numbers]
+    if unnum: print(f'  番号なしの区画 {len(unnum)}: ' + ' '.join(f'#{i}@({x},{y})a{a}' for i, x, y, a in unnum[:40]))
     print(f'  床 {round(floor.area * sx * sy)}m² 頂点 {len(out["outline_g"])} / 区画 {len(blocks_out)} / 番号付き {sum(1 for b in blocks_out if "no" in b)} / 店 {len(shops)}')
 
     # 確認画像: 区画に index、通路を青、床を緑
@@ -231,5 +255,6 @@ def main(key):
 
 if __name__ == '__main__':
     CONVERT = '--convert' in sys.argv
+    ASSIGN = '--assign' in sys.argv
     keys = [k for k in sys.argv[1:] if not k.startswith('--')] or list(FLOORS)
     for k in keys: main(k)
