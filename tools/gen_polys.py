@@ -120,7 +120,7 @@ for e in osm['elements']:
         while j + 1 < n_seg and seg_zone[j + 1] == seg_zone[i]:
             j += 1
         zone, fl = seg_zone[i]
-        if False:  # OSM 中心線の帯は使わない(通路の面はガイドマップ GUIDE_CORR、ドーチカは案内板の床 DOTICA_FLOOR)
+        if zone not in ('bldg', 'dotica'):  # ドーチカは案内板の床(DOTICA_FLOOR)を使う。OSM 中心線の帯は使わない
             t0 = ls.length * i / n_seg
             t1 = ls.length * (j + 1) / n_seg
             sub = [ls.interpolate(t0)] + [p for k, p in enumerate(
@@ -206,20 +206,6 @@ dotica_band = _edge_band(lambda a, b, w, z, fl: z == 'dotica')         # C-84の
 # 通路の東の桃色部分(アバンザ B1F の高さのデッキ)は歩けない面なので床にしない。アバンザへは3本の通路の帯(自エッジ)でつなぐ
 _db = json.load(open(os.path.join(DATA, 'dotica_board.json')))
 DOTICA_FLOOR = Polygon(_db['floor']).buffer(0)
-
-# --- ドーチカ以外の通路: 「ひとにやさしい地下街ガイドマップ」(2026.4)の通路の面(tools/extract_guide_pdf.py → guide_map.json) ---
-# 白(地下街)+桃(ホワイティ)の面を metric に写したもの。ゾーン・階は自グラフの最寄りエッジから引き継ぐ(下の assign_guide)。
-# ドーチカの範囲は案内板から起こした床(DOTICA_FLOOR)を使うので除く
-_gm = json.load(open(os.path.join(DATA, 'guide_map.json')))
-def _gpoly(r):
-    try:
-        return Polygon(r['ext'], r.get('holes', [])).buffer(0)
-    except Exception:
-        return Polygon()
-GUIDE_CORR = unary_union([_gpoly(r) for r in _gm['corridors'] + _gm['whity']]).buffer(0)
-GUIDE_CORR = GUIDE_CORR.difference(unary_union([DOTICA_FLOOR.buffer(6), box(660, 1360, 770, 1640)]))
-GUIDE_CORR = unary_union([g for g in (GUIDE_CORR.geoms if GUIDE_CORR.geom_type == 'MultiPolygon' else [GUIDE_CORR]) if g.area >= 25])
-print(f'ガイドマップの通路: {GUIDE_CORR.area:.0f} m²')
 
 FACILITY_BLD = {
     'sanban': bpoly(*byname['大阪梅田']),
@@ -342,13 +328,6 @@ try:
 except FileNotFoundError:
     WHITY_BLOCK_UNION = None
 
-# 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
-# (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
-ORDER = ['sanban', 'links', 'grandfront', 'umekita', 'lucua', 'hilton', 'herbis', 'kitte', 'ema', 'hep', 'osbld', 'daimaru',
-         'hankyu_dept', 'hanshin_dept', 'avanza', 'dojima_flat', 'kanden', 'kiyo', 'diamor', 'whity', 'umechika', 'osaka_sta',
-         'dotica', 'ekimae', 'sonechika', 'nishi_umeda', 'bldg', '_neutral']
-
-
 # --- ゾーンごとに結合 ---
 groups = {}
 def add(floor, zone, geom):
@@ -364,39 +343,18 @@ for ls, zone, fl in osm_ways:
 if WHITY_BLOCK_UNION is not None:
     add('B1', 'whity', WHITY_BLOCK_UNION)
 add('B1', 'dotica', DOTICA_FLOOR)  # ドーチカ本線と枝(地下近辺案内板)
-# ガイドマップの通路をゾーン×階に割り当てる: 自エッジ(同一階)の帯を半径 10→20→35→60m と広げながら、
-# まだ割り当てていない部分をそのエッジのゾーン×階に渡す(最寄りエッジ方式の近似)。60m 以内に自エッジが無い面は捨てる
-_grp_lines = {}
-for a_, b_, w_, z_, fl_, fb_ in edges:
-    if fl_ != fb_ or z_ == 'dotica':
-        continue
-    _grp_lines.setdefault((fl_, z_), []).append(LineString([(nodes[a_][0], nodes[a_][1]), (nodes[b_][0], nodes[b_][1])]))
-_left = GUIDE_CORR
-_assigned = {}
-for rad in (10, 20, 35, 60):
-    for zone in ORDER:
-        for fl_ in ('S1', 'B1', 'B2'):
-            ls_ = _grp_lines.get((fl_, zone))
-            if not ls_ or _left.is_empty:
-                continue
-            part = _left.intersection(unary_union(ls_).buffer(rad, join_style=2))
-            if part.is_empty:
-                continue
-            _assigned[(fl_, zone)] = unary_union([_assigned.get((fl_, zone), Polygon()), part])
-            _left = _left.difference(part)
-for (fl_, zone), g in _assigned.items():
-    # 小さな孤立片(文字の白抜き・階違いの断片)は捨てる: 300m² 未満で、そのゾーン×階の自エッジの帯に触れないもの
-    near = unary_union(_grp_lines[(fl_, zone)]).buffer(8)
-    keep = [c for c in (g.geoms if g.geom_type == 'MultiPolygon' else [g]) if c.area >= 300 or c.intersects(near)]
-    if keep:
-        add(fl_, zone, unary_union(keep).buffer(0.3, join_style=2))
-print(f'ガイドマップの通路を割り当て: {len(_assigned)} 組, 未割当 {_left.area:.0f} m²')
 for fl, zone, poly in BUILDING_PLATES:
     add(fl, zone, poly)
 for fl, zone, pts in HAND_PLATES:
     add(fl, zone, Polygon(pts).buffer(0))
 for fl, zone, cx, cy, r in DISCS:
     add(fl, zone, Point(cx, cy).buffer(r, quad_segs=24))
+
+# 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
+# (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
+ORDER = ['sanban', 'links', 'grandfront', 'umekita', 'lucua', 'hilton', 'herbis', 'kitte', 'ema', 'hep', 'osbld', 'daimaru',
+         'hankyu_dept', 'hanshin_dept', 'avanza', 'dojima_flat', 'kanden', 'kiyo', 'diamor', 'whity', 'umechika', 'osaka_sta',
+         'dotica', 'ekimae', 'sonechika', 'nishi_umeda', 'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)
 covers_by_group = {}
@@ -433,7 +391,7 @@ for floor in ('S1', 'B1', 'B2'):
         if floor in FLOOR_CUTS:
             u = u.difference(FLOOR_CUTS[floor])  # 現地調査の壁・行き止まり(tools/data/floor_cuts.json)
         u = u.simplify(1.0, preserve_topology=True).buffer(0)
-        polys = sorted(list(u.geoms) if u.geom_type == 'MultiPolygon' else [u], key=lambda p: -p.area)  # covers は最大の面に付ける
+        polys = list(u.geoms) if u.geom_type == 'MultiPolygon' else [u]
         first = True
         min_area = 250 if zone in FACILITY_BLD else 40
         for p in polys:
@@ -461,19 +419,6 @@ for floor in ('S1', 'B1', 'B2'):
                 e['covers'] = covers_by_group.get(key, [])
                 first = False
             out_entries.append(e)
-
-# ガイドマップ由来の小さな島(同じ階のどの面にも触れない 150m² 未満の片。階違いの通路の断片)は捨てる(全ゾーンを出した後に判定)
-_by_floor = {}
-for e in out_entries:
-    _by_floor.setdefault(e['floor'], []).append((e, Polygon(e['pts'], e.get('holes', []))))
-_keep = []
-for e in out_entries:
-    pg = Polygon(e['pts'], e.get('holes', []))
-    if pg.area < 150 and not any(e2 is not e and pg.distance(q) < 2 for e2, q in _by_floor[e['floor']]) and not e.get('covers'):
-        print(f"  小さな島を捨てる: {e['floor']} {e['zone']} {pg.area:.0f}m² @({pg.centroid.x:.0f},{pg.centroid.y:.0f})")
-        continue
-    _keep.append(e)
-out_entries = _keep
 
 # --- JS出力 & main.jsへの差し替え ---
 def js_pts(pts):
