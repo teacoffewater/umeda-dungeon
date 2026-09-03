@@ -32,6 +32,8 @@ const Sh = (id, name, floor, mx, my, zone, near, aliases) =>
   ({ id, name, floor, mx, my, zone, near, aliases, type: 'shop' });
 
 // 施設レイヤー（エリアごとの色分け・強調表示用）。駅は常に表示するのでゾーンなし
+// depthM: 主な床の地上からの深さ(m、現地の実測・看板)。表示・案内には未使用で、高低差モデル(SLOPES / VERTICALS.rise)の受け皿。
+//   FLOOR_Y は見やすさのために誇張した高さなので、実測の深さはここに残す
 const ZONES = {
   sanban:      { name: '阪急三番街',            color: 0xe0913f, label: [945.6, 623.1] },
   whity:       { name: 'ホワイティうめだ',      color: 0xd9c04b, label: [1171.5, 918.2] },
@@ -56,7 +58,7 @@ const ZONES = {
   hep:         { name: 'HEP FIVE / NAVIO',      color: 0xe0554f, label: [1120, 745] },   // 赤い観覧車の朱赤
   osbld:       { name: 'OSビル',                color: 0x5f8fa8, label: [1168, 872] },   // スチールブルー
   ema:         { name: 'イーマ',                color: 0x9b59d0, label: [984.4, 1098.6] },  // 紫(隣のディアモールteal・うめちかピンクと対比)
-  dotica:      { name: 'ドージマ地下センター',  color: 0x5fae6e, label: [700.4, 1435.7] },
+  dotica:      { name: 'ドージマ地下センター',  color: 0x5fae6e, label: [700.4, 1435.7], depthM: 6 }, // メインの床は地上から6m下(現地 2026-09-03)
   links:       { name: 'ヨドバシ / リンクス梅田', color: 0xcf6bbf, label: [772.5, 656] },  // ローズ
   grandfront:  { name: 'グランフロント大阪',    color: 0x9db83e, label: [643, 696.2] },  // 若草
   umekita:     { name: 'うめきた広場',          color: 0x85d7b6, label: [614.8, 784.6] },  // ミント(サンクン広場)

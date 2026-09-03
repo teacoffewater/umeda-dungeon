@@ -34217,7 +34217,8 @@
         // スチールブルー
         ema: { name: "\u30A4\u30FC\u30DE", color: 10181072, label: [984.4, 1098.6] },
         // 紫(隣のディアモールteal・うめちかピンクと対比)
-        dotica: { name: "\u30C9\u30FC\u30B8\u30DE\u5730\u4E0B\u30BB\u30F3\u30BF\u30FC", color: 6270574, label: [700.4, 1435.7] },
+        dotica: { name: "\u30C9\u30FC\u30B8\u30DE\u5730\u4E0B\u30BB\u30F3\u30BF\u30FC", color: 6270574, label: [700.4, 1435.7], depthM: 6 },
+        // メインの床は地上から6m下(現地 2026-09-03)
         links: { name: "\u30E8\u30C9\u30D0\u30B7 / \u30EA\u30F3\u30AF\u30B9\u6885\u7530", color: 13593535, label: [772.5, 656] },
         // ローズ
         grandfront: { name: "\u30B0\u30E9\u30F3\u30D5\u30ED\u30F3\u30C8\u5927\u962A", color: 10336318, label: [643, 696.2] },
