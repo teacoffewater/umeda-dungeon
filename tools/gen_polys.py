@@ -52,8 +52,10 @@ if _m:
 def _sloped(a, b):
     da, db = NODE_DEPTH.get(a), NODE_DEPTH.get(b)
     return da is not None and db is not None and abs(da - db) > 0.3
+DEPTH_VIEW = bool(re.search(r"const DEPTH_VIEW = true", src))  # main.js の高低差表示フラグ。OFF なら床帯を作る(平らに描く)
 _n0 = len(edges)
-edges = [e for e in edges if not _sloped(e[0], e[1])]
+if DEPTH_VIEW:
+    edges = [e for e in edges if not _sloped(e[0], e[1])]
 if _n0 != len(edges):
     print(f'高低差のあるエッジ {_n0 - len(edges)} 本は床帯にしない(斜めの箱で描く)', file=sys.stderr)
 
