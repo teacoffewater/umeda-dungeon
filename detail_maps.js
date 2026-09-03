@@ -10,6 +10,7 @@ import * as SSB2 from './detail_sanban_s_b2.js';
 import { DOTICA_FLOOR, DOTICA_WALK, DOTICA_BLOCKS, DOTICA_REAL_POS, DOTICA_AREA_ANCHORS } from './detail_dotica.js';
 import { DOJIMA_FLAT_FLOOR, DOJIMA_FLAT_WALK, DOJIMA_FLAT_BLOCKS, DOJIMA_FLAT_REAL_POS, DOJIMA_FLAT_AREA_ANCHORS } from './detail_dojima_flat.js';
 import { KANDEN_B2_FLOOR, KANDEN_B2_WALK, KANDEN_B2_BLOCKS, KANDEN_B2_REAL_POS, KANDEN_B2_AREA_ANCHORS } from './detail_kanden_b2.js';
+import { LINKS_B1_FLOOR, LINKS_B1_WALK, LINKS_B1_BLOCKS, LINKS_B1_REAL_POS, LINKS_B1_AREA_ANCHORS } from './detail_links_b1.js';
 import { KANDEN_B1_FLOOR, KANDEN_B1_WALK, KANDEN_B1_BLOCKS, KANDEN_B1_REAL_POS, KANDEN_B1_AREA_ANCHORS } from './detail_kanden_b1.js';
 
 // 施設が館×階に分かれる場合(三番街)は、zone を共有しつつ areas(shops.js のエリアID)で詳細地図を分ける。
@@ -34,6 +35,9 @@ export const DETAIL_MAPS = {
   // 関電不動産西梅田ビル地下街 B2F(中枢層)と B1F(浅層)。B1F は案内板が無いので仮配置(tools/kanden_b1_provisional.py)
   kanden_b2: { FLOOR: KANDEN_B2_FLOOR, WALK: KANDEN_B2_WALK, BLOCKS: KANDEN_B2_BLOCKS, REAL_POS: KANDEN_B2_REAL_POS, AREA_ANCHORS: KANDEN_B2_AREA_ANCHORS,
                zone: 'kanden', areas: ['kanden_b2'], floor: 'B1', name: '関電不動産西梅田ビル B2F', origin: [1600, 1050] }, // ガイド座標 0〜52 / -4〜39 → world z 1048〜1070
+  // LINKS UMEDA(リンクス梅田) B1F(浅層): 現地の館内案内板から。ヨドバシB1売場も1区画として持つ
+  links_b1: { FLOOR: LINKS_B1_FLOOR, WALK: LINKS_B1_WALK, BLOCKS: LINKS_B1_BLOCKS, REAL_POS: LINKS_B1_REAL_POS, AREA_ANCHORS: LINKS_B1_AREA_ANCHORS,
+              zone: 'links', areas: ['links_b1'], floor: 'S1', name: 'LINKS UMEDA B1F', origin: [1600, 1150] }, // ガイド座標 0〜155 / 0〜144 → world z 1150〜1222
   kanden_b1: { FLOOR: KANDEN_B1_FLOOR, WALK: KANDEN_B1_WALK, BLOCKS: KANDEN_B1_BLOCKS, REAL_POS: KANDEN_B1_REAL_POS, AREA_ANCHORS: KANDEN_B1_AREA_ANCHORS,
                zone: 'kanden', areas: ['kanden_b1'], floor: 'S1', name: '関電不動産西梅田ビル B1F(仮配置)', origin: [1600, 1100] }, // ガイド座標 0〜52 / 0〜39 → world z 1100〜1120
 };

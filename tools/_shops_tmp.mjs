@@ -61,7 +61,7 @@ export const SHOP_AREAS = {
   barchika: { floor: 'B1', zone: 'lucua', near: ['lucua_b2'], rect: [726.9, 819.8, 55.4, 57] }, // ルクアB2F=中枢層
   foodhall: { floor: 'B1', zone: 'lucua', near: ['lucua_b2'], rect: [678.7, 839.4, 48.8, 57] }, // ルクアB2F=中枢層
   // LINKS UMEDA B1（LINKS MARCHE・おいしいもの横丁）
-  links_b1: { floor: 'S1', zone: 'links', near: ['yodobashi'], rect: [773.5, 684.5, 123, 112.3] }, // リンクスB1F=浅層
+  links_b1: { floor: 'S1', zone: 'links', near: ['yodobashi'], rect: [773.5, 684.5, 123, 112.3], merged: true }, // リンクスB1F=浅層。詳細地図(detail_links_b1.js)があるので集約ドット=入口
   // 阪神梅田本店B1 スナックパーク
   snackpark: { floor: 'B1', zone: 'hanshin_dept', near: ['hanshin'], rect: [914.5, 1028.9, 34.3, 16] },
   // KITTE大阪B1 うめよこ
