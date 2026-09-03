@@ -17,6 +17,9 @@ export const LANDMARKS = [
   // --- 西梅田(ガーデンアベニュー南西端)。現地調査 2026-08-23 (tools/data/survey/2026-08-23_nishi_umeda.json) ---
   { id: 'lm_yellow_obj', name: '黄色い円形のオブジェ', floor: 'B1', mx: 236.5, my: 1420.0, zone: 'nishi_umeda',
     photo: 'photos/yellow_object.jpg', note: '出口6-1(左)と6-2(右)のY字路の股にある黄色い円形の金属オブジェ(KALEIDOSCOPE)。タップ位置(346,1357)は写真により分岐点へ補正' },
+  // --- ドーチカ⇔堂島ふらっと(近鉄堂島ビルB1F)の接続。現地の2点タップ 2026-09-03 (tools/data/survey/2026-09-03_dotica_dojima_flat.json) ---
+  { id: 'lm_dotica_df_stairs', name: '堂島ふらっとへの階段・ESC', floor: 'B1', mx: 692.9, my: 1525.8, zone: 'dotica',
+    note: 'ドーチカ C83。ドーチカから見て左が階段(23段、約3.9m上り)、右に上り下り2本のエスカレーター。上がった先が近鉄堂島ビルB1F「堂島ふらっと」' },
   // --- 吹き抜け(堂島アバンザのサンクンガーデン2つ)。館内案内板(2026-09-03)から。広域の位置は建物外形からの概略、
   //     詳細地図の位置は案内板の縮尺。現地の調査モード「吹き抜け」で置き換える ---
   { id: 'atr_avanza_n', name: '北サンクンガーデン(吹き抜け)', kind: 'atrium', floor: 'B1', zone: 'avanza', rect: [[758, 1478], [784, 1489]], note: '堂島アバンザ北側の吹き抜け。ドーチカから北の階段を上がった通路の先' },

@@ -1,0 +1,24 @@
+{
+ "version": 1,
+ "frame": "metric-v1",
+ "exported": "2026-09-03T08:14:11.495Z",
+ "_applied": "2026-09-03: 広域の通路グラフに反映(dotica_avz_m → dotica_df_s0(階段下) → dotica_df_s1(階段上) → dojima_flat)。段数23から高低差≈3.9m(rise.dh=16 は打ち間違いと判断、要確認)。ZONES.dojima_flat.depthM≈2(ドーチカ6m−3.9m)。エスカレーター(上下2本、階段の右=北側)はメモのみ",
+ "records": [
+  {
+   "id": "rmtl8y584",
+   "ts": "2026-09-03T08:11:57.556Z",
+   "type": "stairs",
+   "zone": "dotica",
+   "floor": "B1",
+   "floorSign": "B1F",
+   "px": [692.9, 1525.8],
+   "px2": [681.1, 1519.9],
+   "to": null,
+   "exit": null,
+   "note": "ドーチカから堂島ふらっとへは階段とエスカレーターがある。ドーチカから見て左が階段。右がエスカレーター。エスカレーターは登り降りの2本が平行に設置",
+   "gps": null,
+   "slope": null,
+   "rise": { "band": null, "dh": 16, "steps": 23 }
+  }
+ ]
+}
