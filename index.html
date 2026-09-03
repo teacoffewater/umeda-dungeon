@@ -229,7 +229,7 @@
   }
   #survey button.primary { background: linear-gradient(90deg, #3ec39a, #3a7bd5); color: #0a1530; font-weight: bold; border: none; }
   #survey button.danger { color: #ff8a8a; }
-  #survey input[type=text], #survey input[type=number], #survey textarea {
+  #survey input[type=text], #survey input[type=number], #survey textarea, #survey select {
     flex: 1; min-width: 120px; padding: 7px 9px; border-radius: 8px; font-size: 13px;
     background: #141b28; color: #dfe7f1; border: 1px solid rgba(120,150,190,0.35);
   }
@@ -363,6 +363,7 @@
     <div class="sv-row sv-status"><span id="sv-count">0件</span><span id="sv-msg"></span></div>
     <div class="sv-row"><span id="sv-gpsstate" class="sv-key" style="min-width:auto">GPS: 未確認</span><button id="sv-gpstest">GPSテスト</button></div>
     <div class="sv-row"><span class="sv-key">看板の階</span><div class="sv-row" id="sv-floor"></div></div>
+    <div class="sv-row"><span class="sv-key">詳細地図</span><select id="sv-detail"><option value="">広域(実座標)</option></select><button id="sv-detail-go">開く</button></div>
     <div class="sv-row"><span class="sv-key">種別</span><div class="sv-row" id="sv-types"></div></div>
     <div class="sv-row">
       <button id="sv-undo">取り消し</button>
@@ -395,6 +396,6 @@
   </div>
 </div>
 
-<script defer src="./app.js?v=63"></script>
+<script defer src="./app.js?v=64"></script>
 </body>
 </html>

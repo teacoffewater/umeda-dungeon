@@ -33107,10 +33107,12 @@
   });
 
   // survey.js
-  function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
+  function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail }) {
     const $ = (id) => document.getElementById(id);
     const bar = $("survey");
     if (!bar) throw new Error("#survey \u304C\u3042\u308A\u307E\u305B\u3093");
+    const curDetail = () => detail && detail.current() || null;
+    const isGuide = (rec) => typeof rec.frame === "string" && rec.frame.startsWith("guide:");
     let records = load();
     let selType = "stairs";
     let floorSign = "B1F";
@@ -33183,6 +33185,34 @@
       });
       c.dataset.to = s2;
       toEl.appendChild(c);
+    }
+    const detailSel = $("sv-detail"), detailGo = $("sv-detail-go");
+    if (detail && detailSel) {
+      for (const key of Object.keys(detail.maps)) {
+        const o = document.createElement("option");
+        o.value = key;
+        o.textContent = detail.nameOf(key);
+        detailSel.appendChild(o);
+      }
+      detailGo.addEventListener("click", () => {
+        if (pending) {
+          removeTemp(pending.marker);
+          pending = null;
+        }
+        if (draft) {
+          say("\u4FDD\u5B58\u304B\u30AD\u30E3\u30F3\u30BB\u30EB\u3092\u3057\u3066\u304B\u3089");
+          return;
+        }
+        const key = detailSel.value;
+        if (key) {
+          detail.enter(key);
+          say(`\u8A73\u7D30\u5730\u56F3\u300C${detail.nameOf(key)}\u300D\u3067\u8A18\u9332\u3057\u307E\u3059(\u5EA7\u6A19\u306F\u30AC\u30A4\u30C9\u5EA7\u6A19)`);
+        } else {
+          detail.exit();
+          say("\u5E83\u57DF(\u5B9F\u5EA7\u6A19)\u3067\u8A18\u9332\u3057\u307E\u3059");
+        }
+        renderChips();
+      });
     }
     $("sv-undo").addEventListener("click", undoLast);
     $("sv-export").addEventListener("click", exportJson);
@@ -33289,7 +33319,11 @@
         say("\u4FDD\u5B58\u304B\u30AD\u30E3\u30F3\u30BB\u30EB\u3092\u3057\u3066\u304B\u3089\u6B21\u3078");
         return;
       }
-      const mk = raycaster.intersectObjects([...markers.values()].flatMap((m) => m.meshes))[0];
+      const shown = (o) => {
+        for (let p = o; p; p = p.parent) if (!p.visible) return false;
+        return true;
+      };
+      const mk = raycaster.intersectObjects([...markers.values()].flatMap((m) => m.meshes).filter(shown))[0];
       if (mk) {
         const id = mk.object.userData.surveyId;
         const rec2 = records.find((r) => r.id === id);
@@ -33300,9 +33334,10 @@
         }
         return;
       }
-      const hit = hitFloor();
+      const dk = curDetail();
+      const hit = dk ? hitDetail(dk) : hitFloor();
       if (!hit) {
-        say("\u5E8A\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3002\u968E\u306E\u8868\u793A\u3092\u78BA\u8A8D");
+        say(dk ? "\u8A73\u7D30\u5730\u56F3\u306E\u5E8A\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093" : "\u5E8A\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3002\u968E\u306E\u8868\u793A\u3092\u78BA\u8A8D");
         return;
       }
       const t = TYPES[selType];
@@ -33320,6 +33355,8 @@
         floorSign,
         px: (pending || hit).px,
         px2: pending ? hit.px : null,
+        // 詳細地図で記録したものは座標系を記録に持たせる(広域の記録は frame 無し = 書き出し全体の metric-v1)
+        ...dk ? { frame: "guide:" + dk, detail: dk } : {},
         to: null,
         exit: null,
         note: "",
@@ -33336,6 +33373,21 @@
       }
       draft = { rec, hit2: hit };
       openForm(rec);
+    }
+    function hitDetail(key) {
+      const D = detail.of(key), M = detail.maps[key];
+      if (!D || !D.group) return null;
+      const targets = [];
+      D.group.traverse((o) => {
+        if (o.isMesh && o.visible) targets.push(o);
+      });
+      let p = raycaster.intersectObjects(targets, false)[0]?.point?.clone();
+      if (!p) {
+        p = new Vector3();
+        if (!raycaster.ray.intersectPlane(new Plane(new Vector3(0, 1, 0), -D.y), p)) return null;
+      }
+      const [gx, gy] = detail.w2g(key, [p.x, p.z]);
+      return { px: [r1(gx), r1(gy)], floor: M.floor || "B1", zone: M.zone || key, world: p, group: D.group, y: D.y };
     }
     function hitFloor() {
       const visible = FLOOR_ORDER.filter((f) => floorGroups[f].visible);
@@ -33405,7 +33457,7 @@
     function openForm(rec) {
       const t = TYPES[rec.type];
       $("sv-form").hidden = false;
-      $("sv-form-title").textContent = `${t.label} @ ${rec.zone} ${rec.floorSign} (${rec.px.join(", ")})`;
+      $("sv-form-title").textContent = `${t.label} @ ${rec.zone} ${rec.floorSign} (${rec.px.join(", ")})` + (isGuide(rec) ? ` [\u8A73\u7D30:${detail.nameOf(rec.detail)}]` : "");
       $("sv-to-row").hidden = !t.to;
       $("sv-exit-row").hidden = !t.exit;
       $("sv-slope-row").hidden = !t.slope;
@@ -33459,15 +33511,24 @@
       rebuildMarkers();
       say(`\u53D6\u308A\u6D88\u3057: ${describe(rec)}`);
     }
+    function placeOf(rec) {
+      if (isGuide(rec)) {
+        const D = detail && detail.of(rec.detail);
+        if (!D || !D.group) return null;
+        return { group: D.group, y: D.y, toWorld: (px2) => detail.g2w(rec.detail, px2) };
+      }
+      return { group: floorGroups[rec.floor] || floorGroups.B1, y: FLOOR_Y[rec.floor] ?? FLOOR_Y.B1, toWorld: m2w };
+    }
     function addMarker(rec) {
       const t = TYPES[rec.type] || TYPES.memo;
-      const y = FLOOR_Y[rec.floor] ?? FLOOR_Y.B1;
-      const g2 = floorGroups[rec.floor] || floorGroups.B1;
+      const place = placeOf(rec);
+      if (!place) return;
+      const { group: g2, y, toWorld } = place;
       const mat = new MeshBasicMaterial({ color: t.color });
       const meshes = [], labels = [];
       const mk = (px2, big) => {
         const m = new Mesh(new CylinderGeometry(big ? 1.6 : 1, big ? 1.6 : 1, 5, 10), mat);
-        const [x, z] = m2w(px2);
+        const [x, z] = toWorld(px2);
         m.position.set(x, y + 2.5, z);
         m.userData.surveyId = rec.id;
         m.renderOrder = 5;
@@ -33485,7 +33546,7 @@
       labels.push(label);
       if (rec.px2) {
         mk(rec.px2, false);
-        const [x1, z1] = m2w(rec.px), [x2, z2] = m2w(rec.px2);
+        const [x1, z1] = toWorld(rec.px), [x2, z2] = toWorld(rec.px2);
         const geo = new BufferGeometry().setFromPoints([new Vector3(x1, y + 2.5, z1), new Vector3(x2, y + 2.5, z2)]);
         const line = new Line(geo, new LineBasicMaterial({ color: t.color }));
         g2.add(line);
@@ -33497,12 +33558,17 @@
       for (const { meshes } of markers.values()) for (const m of meshes) m.parent?.remove(m);
       markers.clear();
       for (const r of records) addMarker(r);
-      $("sv-count").textContent = `${records.length}\u4EF6`;
+      renderCount();
+    }
+    function renderCount() {
+      const nGuide = records.filter(isGuide).length;
+      $("sv-count").textContent = `${records.length}\u4EF6` + (nGuide ? `(\u8A73\u7D30${nGuide})` : "");
     }
     function tempMarker(hit, color) {
       const m = new Mesh(new CylinderGeometry(1, 1, 5, 10), new MeshBasicMaterial({ color, transparent: true, opacity: 0.6 }));
-      m.position.set(hit.world.x, FLOOR_Y[hit.floor] + 2.5, hit.world.z);
-      floorGroups[hit.floor].add(m);
+      const y = hit.y ?? FLOOR_Y[hit.floor], g2 = hit.group || floorGroups[hit.floor];
+      m.position.set(hit.world.x, y + 2.5, hit.world.z);
+      g2.add(m);
       return m;
     }
     function removeTemp(m) {
@@ -33521,7 +33587,7 @@
     }
     function save() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, frame: FRAME, records }));
-      $("sv-count").textContent = `${records.length}\u4EF6`;
+      renderCount();
     }
     function exportText() {
       return JSON.stringify({ version: 1, frame: FRAME, exported: (/* @__PURE__ */ new Date()).toISOString(), records }, null, 1);
@@ -33603,12 +33669,14 @@
       return Number.isFinite(n) && n >= 0 ? n : fallback;
     }
     function say(msg) {
-      $("sv-msg").textContent = `[${TYPES[selType].label}] ${msg}`;
+      const dk = curDetail();
+      $("sv-msg").textContent = `[${TYPES[selType].label}${dk ? "\u30FB\u8A73\u7D30" : ""}] ${msg}`;
     }
     function describe(rec) {
       const t = TYPES[rec.type]?.label || rec.type;
       const sl = rec.slope ? ` ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}` : "";
-      return `${t}${sl}${riseText(rec)}${rec.exit ? " " + rec.exit : ""}${rec.to ? "\u2192" + rec.to : ""} (${rec.px.join(",")})`;
+      const where = isGuide(rec) ? `${rec.detail}:${rec.px.join(",")}` : rec.px.join(",");
+      return `${t}${sl}${riseText(rec)}${rec.exit ? " " + rec.exit : ""}${rec.to ? "\u2192" + rec.to : ""} (${where})`;
     }
     function shortLabel(rec) {
       const t = TYPES[rec.type]?.label || rec.type;
@@ -37326,8 +37394,20 @@
           floorGroups,
           FLOOR_Y,
           ZONES,
-          w2m: ([x, z]) => [x / 0.5 + 800, z / 0.5 + 1100]
+          w2m: ([x, z]) => [x / 0.5 + 800, z / 0.5 + 1100],
           // M2W の逆
+          // 詳細地図(ガイド座標系)にも記録できるように、施設の登録表・出入りの関数・座標変換を渡す
+          detail: {
+            maps: DETAIL_MAPS,
+            current: () => detailMode,
+            enter: enterDetail,
+            exit: exitDetail,
+            of: (key) => DETAIL[key],
+            g2w,
+            w2g: (key, [x, z]) => [(x - DETAIL_MAPS[key].origin[0]) / 0.5, (z - DETAIL_MAPS[key].origin[1]) / 0.5],
+            // g2w の逆
+            nameOf: (key) => DETAIL_MAPS[key].name || ZONES[DETAIL_MAPS[key].zone || key].name
+          }
         });
       }
       var raycaster = new Raycaster();

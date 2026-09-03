@@ -1,6 +1,9 @@
 // 現地調査モード(最小版)
 // ?survey=1 で有効。床をタップ → 種別を選んで保存 → localStorage に蓄積 → JSONで書き出す。
 // 座標は mx,my(メートル, metric-v1)。M2W の逆変換で world → mx,my に戻す。
+// 詳細地図(ガイド座標系)を開いて記録することもできる。その記録は frame: 'guide:<施設ID>' を持ち、
+// px はその施設のガイド座標(m)。広域の取り込み(import_region 等)はこれを無視し、詳細地図の元データ
+// (tools/data/detail/<施設>.json の階段・出入口)の位置合わせに使う。
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
@@ -27,10 +30,13 @@ export const TYPES = {
 const FLOOR_SIGNS = ['B2F', 'B1F', '1F', '2F'];
 const FLOOR_ORDER = ['S1', 'B1', 'B2']; // タップ面の既定は表示中の最上位
 
-export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
+export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail }) {
   const $ = id => document.getElementById(id);
   const bar = $('survey');
   if (!bar) throw new Error('#survey がありません');
+  // detail: { maps, current(), enter(key), exit(), of(key) → { group, y }, g2w(key, g), w2g(key, [x,z]), nameOf(key) }
+  const curDetail = () => (detail && detail.current()) || null;
+  const isGuide = rec => typeof rec.frame === 'string' && rec.frame.startsWith('guide:');
 
   // ---- 状態 ----
   let records = load();
@@ -75,6 +81,21 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   for (const s of FLOOR_SIGNS) {
     const c = chip(s, () => { if (draft) { draft.rec.to = draft.rec.to === s ? null : s; renderChips(); } });
     c.dataset.to = s; toEl.appendChild(c);
+  }
+  // 詳細地図の選択: 開いている間のタップはその施設のガイド座標で記録する
+  const detailSel = $('sv-detail'), detailGo = $('sv-detail-go');
+  if (detail && detailSel) {
+    for (const key of Object.keys(detail.maps)) {
+      const o = document.createElement('option'); o.value = key; o.textContent = detail.nameOf(key); detailSel.appendChild(o);
+    }
+    detailGo.addEventListener('click', () => {
+      if (pending) { removeTemp(pending.marker); pending = null; }
+      if (draft) { say('保存かキャンセルをしてから'); return; }
+      const key = detailSel.value;
+      if (key) { detail.enter(key); say(`詳細地図「${detail.nameOf(key)}」で記録します(座標はガイド座標)`); }
+      else { detail.exit(); say('広域(実座標)で記録します'); }
+      renderChips();
+    });
   }
   $('sv-undo').addEventListener('click', undoLast);
   $('sv-export').addEventListener('click', exportJson);
@@ -150,8 +171,9 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     raycaster.setFromCamera(ndc, camera);
     if (draft) { say('保存かキャンセルをしてから次へ'); return; }
 
-    // 既存マーカーをタップ → 削除
-    const mk = raycaster.intersectObjects([...markers.values()].flatMap(m => m.meshes))[0];
+    // 既存マーカーをタップ → 削除(Raycaster は非表示も拾うので、親まで表示中のものだけ)
+    const shown = o => { for (let p = o; p; p = p.parent) if (!p.visible) return false; return true; };
+    const mk = raycaster.intersectObjects([...markers.values()].flatMap(m => m.meshes).filter(shown))[0];
     if (mk) {
       const id = mk.object.userData.surveyId;
       const rec = records.find(r => r.id === id);
@@ -159,8 +181,9 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
       return;
     }
 
-    const hit = hitFloor();
-    if (!hit) { say('床が見つかりません。階の表示を確認'); return; }
+    const dk = curDetail();
+    const hit = dk ? hitDetail(dk) : hitFloor();
+    if (!hit) { say(dk ? '詳細地図の床が見つかりません' : '床が見つかりません。階の表示を確認'); return; }
     const t = TYPES[selType];
     if (t.two && !pending) {
       pending = { ...hit, marker: tempMarker(hit, t.color) };
@@ -171,6 +194,8 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
       id: 'r' + Date.now().toString(36), ts: new Date().toISOString(), type: selType,
       zone: (pending || hit).zone, floor: (pending || hit).floor, floorSign,
       px: (pending || hit).px, px2: pending ? hit.px : null,
+      // 詳細地図で記録したものは座標系を記録に持たせる(広域の記録は frame 無し = 書き出し全体の metric-v1)
+      ...(dk ? { frame: 'guide:' + dk, detail: dk } : {}),
       to: null, exit: null, note: '', gps: null,
       slope: t.slope ? { dir: 'up', grade: 'gentle' } : null, // 既定: 2点目に向かってゆるい上り
       // 高低差。band=ざっくり / dh=実測(m) / steps=段数。斜度は px・px2 から再計算できる派生値なので持たない
@@ -182,6 +207,19 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     openForm(rec);
   }
 
+  // 詳細地図の床(ガイド座標系の専用エリア)にレイキャストし、ガイド座標(m)で返す
+  function hitDetail(key) {
+    const D = detail.of(key), M = detail.maps[key];
+    if (!D || !D.group) return null;
+    const targets = []; D.group.traverse(o => { if (o.isMesh && o.visible) targets.push(o); });
+    let p = raycaster.intersectObjects(targets, false)[0]?.point?.clone();
+    if (!p) { // 床の外(区画の隙間など)はその施設の高さの平面で拾う
+      p = new THREE.Vector3();
+      if (!raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -D.y), p)) return null;
+    }
+    const [gx, gy] = detail.w2g(key, [p.x, p.z]);
+    return { px: [r1(gx), r1(gy)], floor: M.floor || 'B1', zone: M.zone || key, world: p, group: D.group, y: D.y };
+  }
   function hitFloor() {
     const visible = FLOOR_ORDER.filter(f => floorGroups[f].visible);
     const targets = visible.flatMap(f => floorGroups[f].children.filter(o => o.isMesh && o.visible));
@@ -243,7 +281,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   function openForm(rec) {
     const t = TYPES[rec.type];
     $('sv-form').hidden = false;
-    $('sv-form-title').textContent = `${t.label} @ ${rec.zone} ${rec.floorSign} (${rec.px.join(', ')})`;
+    $('sv-form-title').textContent = `${t.label} @ ${rec.zone} ${rec.floorSign} (${rec.px.join(', ')})` + (isGuide(rec) ? ` [詳細:${detail.nameOf(rec.detail)}]` : '');
     $('sv-to-row').hidden = !t.to;
     $('sv-exit-row').hidden = !t.exit;
     $('sv-slope-row').hidden = !t.slope;
@@ -282,15 +320,25 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   }
 
   // ---- マーカー ----
+  // 記録の置き場所: 広域の記録は階のグループ+実座標、詳細地図の記録はその施設の専用グループ+ガイド座標
+  function placeOf(rec) {
+    if (isGuide(rec)) {
+      const D = detail && detail.of(rec.detail);
+      if (!D || !D.group) return null; // 施設が無くなっていたら描かない(記録は残す)
+      return { group: D.group, y: D.y, toWorld: px => detail.g2w(rec.detail, px) };
+    }
+    return { group: floorGroups[rec.floor] || floorGroups.B1, y: FLOOR_Y[rec.floor] ?? FLOOR_Y.B1, toWorld: m2w };
+  }
   function addMarker(rec) {
     const t = TYPES[rec.type] || TYPES.memo;
-    const y = FLOOR_Y[rec.floor] ?? FLOOR_Y.B1;
-    const g = floorGroups[rec.floor] || floorGroups.B1;
+    const place = placeOf(rec);
+    if (!place) return;
+    const { group: g, y, toWorld } = place;
     const mat = new THREE.MeshBasicMaterial({ color: t.color });
     const meshes = [], labels = [];
     const mk = (px, big) => {
       const m = new THREE.Mesh(new THREE.CylinderGeometry(big ? 1.6 : 1.0, big ? 1.6 : 1.0, 5, 10), mat);
-      const [x, z] = m2w(px); m.position.set(x, y + 2.5, z);
+      const [x, z] = toWorld(px); m.position.set(x, y + 2.5, z);
       m.userData.surveyId = rec.id; m.renderOrder = 5; g.add(m); meshes.push(m); return m;
     };
     const m1 = mk(rec.px, true);
@@ -299,7 +347,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const label = new CSS2DObject(div); label.position.set(0, 4, 0); m1.add(label); labels.push(label);
     if (rec.px2) {
       mk(rec.px2, false);
-      const [x1, z1] = m2w(rec.px), [x2, z2] = m2w(rec.px2);
+      const [x1, z1] = toWorld(rec.px), [x2, z2] = toWorld(rec.px2);
       const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x1, y + 2.5, z1), new THREE.Vector3(x2, y + 2.5, z2)]);
       const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: t.color }));
       g.add(line); meshes.push(line);
@@ -310,12 +358,17 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     for (const { meshes } of markers.values()) for (const m of meshes) m.parent?.remove(m);
     markers.clear();
     for (const r of records) addMarker(r);
-    $('sv-count').textContent = `${records.length}件`;
+    renderCount();
+  }
+  function renderCount() {
+    const nGuide = records.filter(isGuide).length;
+    $('sv-count').textContent = `${records.length}件` + (nGuide ? `(詳細${nGuide})` : '');
   }
   function tempMarker(hit, color) {
     const m = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 5, 10), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.6 }));
-    m.position.set(hit.world.x, FLOOR_Y[hit.floor] + 2.5, hit.world.z);
-    floorGroups[hit.floor].add(m); return m;
+    const y = hit.y ?? FLOOR_Y[hit.floor], g = hit.group || floorGroups[hit.floor]; // 詳細地図なら専用グループに置く
+    m.position.set(hit.world.x, y + 2.5, hit.world.z);
+    g.add(m); return m;
   }
   function removeTemp(m) { m.parent?.remove(m); }
   function m2w([mx, my]) { return [(mx - 800) * 0.5, (my - 1100) * 0.5]; }
@@ -327,9 +380,10 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   }
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, frame: FRAME, records }));
-    $('sv-count').textContent = `${records.length}件`;
+    renderCount();
   }
   function exportText() {
+    // frame は広域の記録の座標系。詳細地図の記録は各記録の frame('guide:<施設ID>')が優先
     return JSON.stringify({ version: 1, frame: FRAME, exported: new Date().toISOString(), records }, null, 1);
   }
   async function exportJson() {
@@ -392,11 +446,12 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const n = parseFloat(String(v ?? '').trim());
     return Number.isFinite(n) && n >= 0 ? n : fallback;
   }
-  function say(msg) { $('sv-msg').textContent = `[${TYPES[selType].label}] ${msg}`; }
+  function say(msg) { const dk = curDetail(); $('sv-msg').textContent = `[${TYPES[selType].label}${dk ? '・詳細' : ''}] ${msg}`; }
   function describe(rec) {
     const t = TYPES[rec.type]?.label || rec.type;
     const sl = rec.slope ? ` ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}` : '';
-    return `${t}${sl}${riseText(rec)}${rec.exit ? ' ' + rec.exit : ''}${rec.to ? '→' + rec.to : ''} (${rec.px.join(',')})`;
+    const where = isGuide(rec) ? `${rec.detail}:${rec.px.join(',')}` : rec.px.join(',');
+    return `${t}${sl}${riseText(rec)}${rec.exit ? ' ' + rec.exit : ''}${rec.to ? '→' + rec.to : ''} (${where})`;
   }
   function shortLabel(rec) {
     const t = TYPES[rec.type]?.label || rec.type;

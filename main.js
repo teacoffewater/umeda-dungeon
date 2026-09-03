@@ -3041,6 +3041,12 @@ if (new URLSearchParams(location.search).get('survey') === '1') {
   survey = initSurvey({
     camera, floorGroups, FLOOR_Y, ZONES,
     w2m: ([x, z]) => [x / 0.5 + 800, z / 0.5 + 1100], // M2W の逆
+    // 詳細地図(ガイド座標系)にも記録できるように、施設の登録表・出入りの関数・座標変換を渡す
+    detail: {
+      maps: DETAIL_MAPS, current: () => detailMode, enter: enterDetail, exit: exitDetail, of: key => DETAIL[key],
+      g2w, w2g: (key, [x, z]) => [(x - DETAIL_MAPS[key].origin[0]) / 0.5, (z - DETAIL_MAPS[key].origin[1]) / 0.5], // g2w の逆
+      nameOf: key => DETAIL_MAPS[key].name || ZONES[DETAIL_MAPS[key].zone || key].name,
+    },
   });
 }
 
