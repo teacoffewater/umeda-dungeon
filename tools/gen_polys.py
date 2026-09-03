@@ -200,6 +200,7 @@ FACILITY_BLD = {
     'hanshin_dept': bpoly(502411898),
     'avanza': bpoly(178958655),
     'dojima_flat': bpoly(162185349),      # 近鉄堂島ビル(B1F 堂島ふらっと、ドーチカC83直結)
+    'kanden': bpoly(162380618),           # 関電不動産西梅田ビル(B1F/B2F 地下街、ドーチカC61直結)
     'ekimae': bpoly(70561756, 70561758, 135624699, 135624700),
     'hep': bpoly(161451126, 174789734),   # HEP FIVE + HEP NAVIO
     'osbld': bpoly(162157817),            # OSビル
@@ -212,7 +213,7 @@ CARVE = {'sanban': whity_band_raw,
 # 通路帯マスクの「穴」(帯がビル内でも生きる場所)は広め(+1.5)で開ける
 MASK_HOLES = {'sanban': whity_band,
               'hankyu_dept': unary_union([whity_band, mido_band]),
-              'hanshin_dept': f40_band, 'avanza': dotica_band, 'dojima_flat': dotica_band,  # ekimae×diamorの貫通穴は撤去(バラエティSTは第4ビル西縁沿い・貫通しない 2026-07-10)
+              'hanshin_dept': f40_band, 'avanza': dotica_band, 'dojima_flat': dotica_band, 'kanden': dotica_band,  # ekimae×diamorの貫通穴は撤去(バラエティSTは第4ビル西縁沿い・貫通しない 2026-07-10)
               'daimaru': dai_band, 'herbis': yotsu_band,
               'lucua': umekita_band, 'grandfront': umekita_band,
               'hep': hep_band, 'osbld': hep_band}
@@ -268,6 +269,7 @@ BUILDING_PLATES = [
     ('B1', 'links', plate(*byname['ヨドバシ梅田タワー'])),       # リンクス梅田B2F=中枢層(館内EV/ESCのみで接続)
     ('B1', 'avanza', plate(178958655)),              # 堂島アバンザ(ドーチカ直結)
     ('B1', 'dojima_flat', plate(162185349)),         # 近鉄堂島ビルB1F「堂島ふらっと」(ドーチカC83直結)
+    ('S1', 'kanden', plate(162380618)), ('B1', 'kanden', plate(162380618)),  # 関電不動産西梅田ビル地下街 B1F=浅層 / B2F=中枢層(ドーチカC61直結)
     ('S1', 'grandfront', plate(178942581)),          # グランフロント大阪(南館) B1F=浅層
     # HEP FIVE / HEP NAVIO / OSビル: B1Fでホワイティうめだ(ノースモール1・2)と直結
     # (公式アクセス・現地確認 2026-08-23。OSビルはノースモール2の突き当たり、J2階段で地上へ)
@@ -327,7 +329,7 @@ for fl, zone, cx, cy, r in DISCS:
 # 公共地下街が優先。ただしビル外形を7px縮めたマスクで「深く侵入」だけ防ぐ
 # (ビル際の公共通路は投影誤差±10px程度で重なるので、際は地下街色が勝つ)
 ORDER = ['sanban', 'links', 'grandfront', 'umekita', 'lucua', 'hilton', 'herbis', 'kitte', 'ema', 'hep', 'osbld', 'daimaru',
-         'hankyu_dept', 'hanshin_dept', 'avanza', 'dojima_flat', 'diamor', 'whity', 'umechika', 'osaka_sta',
+         'hankyu_dept', 'hanshin_dept', 'avanza', 'dojima_flat', 'kanden', 'diamor', 'whity', 'umechika', 'osaka_sta',
          'dotica', 'ekimae', 'sonechika', 'nishi_umeda', 'bldg', '_neutral']
 
 BOUNDS = box(20, 380, 1345, 1700)

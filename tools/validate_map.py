@@ -30,7 +30,7 @@ INTRUSION_WHITELIST = {('whity', 'sanban'), ('whity', 'hankyu_dept'), ('diamor',
                        ('umechika', 'hankyu_dept'),  # 御堂筋コンコース(阪急百の西壁沿い・実在)
                        ('osaka_sta', 'daimaru'), ('umechika', 'daimaru'),  # 大丸前コンコース(壁沿い・実在)
                        ('nishi_umeda', 'herbis'),  # 四つ橋筋沿い(ハービスENT東壁・実在)
-                       ('dotica', 'avanza'), ('dotica', 'dojima_flat'), ('sonechika', 'ekimae'),
+                       ('dotica', 'avanza'), ('dotica', 'dojima_flat'), ('dotica', 'kanden'), ('sonechika', 'ekimae'),
                        ('sanban', 'links')}  # 最後はOSMビル外形同士の重複(11m四方)由来
 
 # --- 床ポリゴン ---
@@ -69,7 +69,7 @@ def bp(*ids): return unary_union([bgeo[i] for i in ids])
 FAC = {'sanban': bp(*byname['大阪梅田']), 'links': bp(*byname['ヨドバシ梅田タワー']),
        'grandfront': bp(178942581), 'lucua': bp(162183788), 'hilton': bp(162158150, 162158151),
        'herbis': bp(162158152, 162158418), 'kitte': bp(1146510724), 'ema': bp(162158020), 'daimaru': bp(161450829),
-       'hankyu_dept': bp(588689735), 'hanshin_dept': bp(502411898), 'avanza': bp(178958655), 'dojima_flat': bp(162185349),
+       'hankyu_dept': bp(588689735), 'hanshin_dept': bp(502411898), 'avanza': bp(178958655), 'dojima_flat': bp(162185349), 'kanden': bp(162380618),
        'ekimae': bp(70561756, 70561758, 135624699, 135624700),
        'hep': bp(161451126, 174789734), 'osbld': bp(162157817)}  # HEP FIVE+NAVIO / OSビル(2026-08-23)
 for fl, zone, poly in finals:

@@ -32,6 +32,9 @@ export const SHOP_AREAS = {
   // 堂島アバンザ B1F(レストラン街)。個別の位置は詳細地図(館内案内板 2026-09-03)の管轄。広域は館で1点集約=詳細地図の入口
   avanza_b1: { floor: 'B1', zone: 'avanza', near: ['j_avz'], rect: [785.7, 1499.6, 30, 30], merged: true },
   dojima_flat: { floor: 'B1', zone: 'dojima_flat', near: ['dojima_flat'], rect: [661, 1507, 30, 40], merged: true }, // 近鉄堂島ビルB1F。詳細地図の入口
+  // 関電不動産西梅田ビル地下街: B1F(=浅層S1、詳細地図なし・館ノード選択)と B2F(=中枢層B1、ドーチカC61直結・詳細地図の入口)
+  kanden_b1: { floor: 'S1', zone: 'kanden', near: ['kanden_b1'], rect: [669, 1379, 30, 24], merged: true },
+  kanden_b2: { floor: 'B1', zone: 'kanden', near: ['kanden_b2'], rect: [669, 1379, 30, 24], merged: true },
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
   diamor_fashion: { floor: 'B1', zone: 'diamor', edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_diamor_e'], ['j_diamor_e', 'j_fashion_e']] },        // 西→東
   diamor_market: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'j_market_ne']] }, // 広場→北東
@@ -557,6 +560,19 @@ export const SHOPS_SCRAPED = [
   s('コキュリコット ディアモール店', 'diamor_variety', 16, '北東'),
   s('ディアモールチャンスセンター（宝くじ）', 'diamor_variety', 17, '北東'),
   s('ドコモショップ', 'diamor_variety', 18, '西'),
+  // ==== 関電不動産西梅田ビル地下街（ドーチカC61直結。現地のテナント板 2026-09-03） ====
+  g('リサイクルブティック フォーシーズンズ', 'kanden_b1', '中央'),
+  g('携帯電話 スモールアイランド', 'kanden_b1', '中央'),
+  g('nail salon Sou', 'kanden_b1', '中央'),
+  g('LETO', 'kanden_b1', '中央'),
+  g('SSS Kaneko stretch', 'kanden_b1', '中央'),
+  g('めん処 鍋物 呑処 はま栄', 'kanden_b1', '中央'),
+  g('Heilee brow', 'kanden_b1', '中央'),
+  g('NOVA 駅前留学', 'kanden_b1', '中央'),
+  g('中国料理 敦煌', 'kanden_b2', '南'),        // B2案内板 区画1(実位置は detail_kanden_b2.js)
+  g('とんこう', 'kanden_b2', '北'),            // 弁当・肉まん。区画3
+  g('割烹 小澤', 'kanden_b2', '南'),           // 美味しい庵。区画2
+  g('堂島喫茶 SUI', 'kanden_b2', '中央'),      // kohscoffee since 1972。B2案内板に区画名なし(無記名区画のどれか)
   // ==== 堂島ふらっと（近鉄堂島ビルB1F、ドーチカC83直結。現地の案内板 2026-09-03。番号=案内板の区画番号。実位置は detail_dojima_flat.js） ====
   g('ケア21グループ 研修センター 研修室A・B・C', 'dojima_flat', '西'), // 1(2区画)
   g('NAVI CLINIC', 'dojima_flat', '西'),                              // 2

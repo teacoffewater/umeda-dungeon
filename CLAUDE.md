@@ -86,7 +86,7 @@ tools/data/floorguides/whity_2016_labeled.pdf   ← 2016年公式フロアガイ
 
 - **地上に出さない。** 地上出口・地上専用通路は表示も案内もしない
 - **corridor ゾーン**（`nishi_umeda` / `sonechika`）は現地で施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない
-- **詳細地図を持つ施設は `detail_maps.js` の `DETAIL_MAPS` に登録したものだけ**（現在 `whity` / `avanza` / `dotica` / `dojima_flat` / 三番街の館×階4枚）。`enterDetail()` は未登録ゾーンでは何もしない。施設ごとに専用エリア（`origin`）を離して置き、互いに重ねない
+- **詳細地図を持つ施設は `detail_maps.js` の `DETAIL_MAPS` に登録したものだけ**（現在 `whity` / `avanza` / `dotica` / `dojima_flat` / `kanden_b2` / 三番街の館×階4枚）。`enterDetail()` は未登録ゾーンでは何もしない。施設ごとに専用エリア（`origin`）を離して置き、互いに重ねない
 - 詳細地図の案内に入る条件は「両端が**同じ施設**の詳細地図に載る店ノード」（`guidePosOf` は `type === 'shop'` かつ `DETAIL_MAPS[zone]` があるものだけ通す）。ゾーン地点を選ぶと広域案内のままになる
 - **詳細地図を持つ施設のモール集約ドットは詳細地図への入口。** 出発地・目的地には設定しない（店を選ぶのは詳細地図の管轄）。三番街・イーマのように詳細地図が無い施設のドットは従来どおり館ノードを選択する
 
