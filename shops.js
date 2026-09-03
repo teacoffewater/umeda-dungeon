@@ -38,7 +38,10 @@ export const SHOP_AREAS = {
   diamor_variety: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'diamor_04'], ['diamor_04', 'j_variety'], ['j_variety', 'j_diamor_e']] },  // バラエティST本通り(OSMカーブ追従)。第4ビルへの枝には店を置かない
 
   // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
-  dotica: { floor: 'B1', zone: 'dotica', edges: [['j_sone_w', 'dojima'], ['dojima', 'dotica_01'], ['dotica_01', 'avanza']] },
+  // ドーチカ: 詳細地図(detail_dotica.js)を持つので、広域では北・中・南の3点の集約ドット(=詳細地図の入口)。rect は通路上(幅10m)
+  dotica_n: { floor: 'B1', zone: 'dotica', near: ['dotica_02'],     rect: [710.5, 1381, 10, 40], merged: true }, // 北(西梅田側〜コクミンドラッグ堂島店)
+  dotica_c: { floor: 'B1', zone: 'dotica', near: ['dotica_avz_n'],  rect: [705.7, 1479, 10, 40], merged: true }, // 中(BIG VISION〜ドトール)
+  dotica_s: { floor: 'B1', zone: 'dotica', near: ['avanza'],        rect: [707, 1576, 10, 40], merged: true },   // 南(おたからや〜南端)
   // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
   ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], edges: [['j_metro', 'umechika_15'], ['umechika_15', 'umechika_11']] },
   // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）
@@ -553,60 +556,60 @@ export const SHOPS_SCRAPED = [
   s('コキュリコット ディアモール店', 'diamor_variety', 16, '北東'),
   s('ディアモールチャンスセンター（宝くじ）', 'diamor_variety', 17, '北東'),
   s('ドコモショップ', 'diamor_variety', 18, '西'),
-  // ==== ドーチカ（公式マップ区画番号を突合・北端→南端の通し順・全53店 2026-07） ====
-  s('三菱UFJ銀行ATM', 'dotica', 1, '西'),
-  s('新梅田コクミン薬局', 'dotica', 2, '東'),
-  s('KIEFEL COFFEE', 'dotica', 3, '西'),
-  s('ファミリーマート ドーチカ店', 'dotica', 4, '東'),
-  s('plus on ドーチカ店', 'dotica', 5, '西'),
-  s('レオニダス 大阪梅田店', 'dotica', 6, '西'),
-  s('インデアンカレー 堂島店', 'dotica', 7, '東'),
-  s('東京油組総本店 ドーチカ組', 'dotica', 8, '西'),
-  s('newKOBE 堂島店', 'dotica', 9, '東'),
-  s('わたしのダイニング × SAKAGURA', 'dotica', 10, '西'),
-  s('みずほ銀行ATM', 'dotica', 11, '東'),
-  s('ダル食堂 堂島地下街店', 'dotica', 12, '西'),
-  s('ミスタークイックマン', 'dotica', 13, '東'),
-  s('りそな銀行ATM', 'dotica', 14, '東'),
-  s('コクミンドラッグ ドーチカ店', 'dotica', 15, '西'),
-  s('ほけん百花 梅田ドーチカ店', 'dotica', 16, '東'),
-  s('J・マーケット大阪ドーチカ店', 'dotica', 17, '東'),
-  s('文字の店 堂島', 'dotica', 18, '西'),
-  s('じゃんぱら大阪堂島店', 'dotica', 19, '東'),
-  s('BIG VISION', 'dotica', 20, '西'),
-  s('中央コンタクト', 'dotica', 21, '西'),
-  s('コクミンドラッグ 堂島店', 'dotica', 22, '東'),
-  s('ちぐさ大阪うめだ支店', 'dotica', 23, '西'),
-  s('リフレッシュ工房オズ 堂島店', 'dotica', 24, '西'),
-  s('セブン銀行ATM', 'dotica', 25, '東'),
-  s('時計修理工房 白金堂 大阪梅田ドーチカ店', 'dotica', 26, '西'),
-  s('西梅田眼科クリニック', 'dotica', 27, '東'),
-  s('青森・岩手えぇもんショップ', 'dotica', 28, '西'),
-  s('TRARIUM by ACE', 'dotica', 29, '東'),
-  s('Buena.', 'dotica', 30, '西'),
-  s('KENFORD堂島地下街店', 'dotica', 31, '東'),
-  s('梅田もりわき骨盤鍼灸整骨院', 'dotica', 32, '西'),
-  s('千鳥屋宗家 堂島店', 'dotica', 33, '東'),
-  s('Perfect Suit FActory', 'dotica', 34, '西'),
-  s('ダイソー', 'dotica', 35, '西'),
-  s('クックデリ御膳 ドーチカ店', 'dotica', 36, '東'),
-  s('三井住友銀行ATM', 'dotica', 37, '西'),
-  s('ドトールコーヒーショップドーチカ', 'dotica', 38, '東'),
-  s('おたからや梅田ドーチカ店', 'dotica', 39, '西'),
-  s('KUSELESS', 'dotica', 40, '西'),
-  s('吉野家', 'dotica', 41, '西'),
-  s('都由堂島店', 'dotica', 42, '東'),
-  s('かっぽうぎ ドーチカ店', 'dotica', 43, '西'),
-  s('Barber the GM 堂島', 'dotica', 44, '東'),
-  s('おきがる串家物語', 'dotica', 45, '西'),
-  s('お酒の美術館 ドーチカ店', 'dotica', 46, '東'),
-  s('おらが蕎麦', 'dotica', 47, '西'),
-  s('ドットミーティング堂島貸会議室', 'dotica', 48, '東'),
-  s('海鮮居酒屋あいち', 'dotica', 49, '西'),
-  s('中央軒 ドーチカ店', 'dotica', 50, '東'),
-  s('つけ麺専門店 三田製麺所 ドーチカ店', 'dotica', 51, '西'),
-  s('CAFÉ ONthe', 'dotica', 52, '西'),
-  s('自家製麺杵屋', 'dotica', 53, '東'),
+  // ==== ドーチカ（公式マップの区画番号順・全53店 2026-07。コメントの番号=公式マップの通し番号。実位置は detail_dotica.js） ====
+  g('三菱UFJ銀行ATM', 'dotica_n', '西'), // 1
+  g('新梅田コクミン薬局', 'dotica_n', '東'), // 2
+  g('KIEFEL COFFEE', 'dotica_n', '西'), // 3
+  g('ファミリーマート ドーチカ店', 'dotica_n', '東'), // 4
+  g('plus on ドーチカ店', 'dotica_n', '西'), // 5
+  g('レオニダス 大阪梅田店', 'dotica_n', '西'), // 6
+  g('インデアンカレー 堂島店', 'dotica_n', '東'), // 7
+  g('東京油組総本店 ドーチカ組', 'dotica_n', '西'), // 8
+  g('newKOBE 堂島店', 'dotica_n', '東'), // 9
+  g('わたしのダイニング × SAKAGURA', 'dotica_n', '西'), // 10
+  g('みずほ銀行ATM', 'dotica_n', '東'), // 11
+  g('ダル食堂 堂島地下街店', 'dotica_n', '西'), // 12
+  g('ミスタークイックマン', 'dotica_n', '東'), // 13
+  g('りそな銀行ATM', 'dotica_n', '東'), // 14
+  g('コクミンドラッグ ドーチカ店', 'dotica_n', '西'), // 15
+  g('ほけん百花 梅田ドーチカ店', 'dotica_n', '東'), // 16
+  g('J・マーケット大阪ドーチカ店', 'dotica_n', '東'), // 17
+  g('文字の店 堂島', 'dotica_n', '西'), // 18
+  g('じゃんぱら大阪堂島店', 'dotica_n', '東'), // 19
+  g('BIG VISION', 'dotica_c', '西'), // 20
+  g('中央コンタクト', 'dotica_c', '西'), // 21
+  g('コクミンドラッグ 堂島店', 'dotica_c', '東'), // 22
+  g('ちぐさ大阪うめだ支店', 'dotica_c', '西'), // 23
+  g('リフレッシュ工房オズ 堂島店', 'dotica_c', '西'), // 24
+  g('セブン銀行ATM', 'dotica_c', '東'), // 25
+  g('時計修理工房 白金堂 大阪梅田ドーチカ店', 'dotica_c', '西'), // 26
+  g('西梅田眼科クリニック', 'dotica_c', '東'), // 27
+  g('青森・岩手えぇもんショップ', 'dotica_c', '西'), // 28
+  g('TRARIUM by ACE', 'dotica_c', '東'), // 29
+  g('Buena.', 'dotica_c', '西'), // 30
+  g('KENFORD堂島地下街店', 'dotica_c', '東'), // 31
+  g('梅田もりわき骨盤鍼灸整骨院', 'dotica_c', '西'), // 32
+  g('千鳥屋宗家 堂島店', 'dotica_c', '東'), // 33
+  g('Perfect Suit FActory', 'dotica_c', '西'), // 34
+  g('ダイソー', 'dotica_c', '西'), // 35
+  g('クックデリ御膳 ドーチカ店', 'dotica_c', '東'), // 36
+  g('三井住友銀行ATM', 'dotica_c', '西'), // 37
+  g('ドトールコーヒーショップドーチカ', 'dotica_c', '東'), // 38
+  g('おたからや梅田ドーチカ店', 'dotica_s', '西'), // 39
+  g('KUSELESS', 'dotica_s', '西'), // 40
+  g('吉野家', 'dotica_s', '西'), // 41
+  g('都由堂島店', 'dotica_s', '東'), // 42
+  g('かっぽうぎ ドーチカ店', 'dotica_s', '西'), // 43
+  g('Barber the GM 堂島', 'dotica_s', '東'), // 44
+  g('おきがる串家物語', 'dotica_s', '西'), // 45
+  g('お酒の美術館 ドーチカ店', 'dotica_s', '東'), // 46
+  g('おらが蕎麦', 'dotica_s', '西'), // 47
+  g('ドットミーティング堂島貸会議室', 'dotica_s', '東'), // 48
+  g('海鮮居酒屋あいち', 'dotica_s', '西'), // 49
+  g('中央軒 ドーチカ店', 'dotica_s', '東'), // 50
+  g('つけ麺専門店 三田製麺所 ドーチカ店', 'dotica_s', '西'), // 51
+  g('CAFÉ ONthe', 'dotica_s', '西'), // 52
+  g('自家製麺杵屋', 'dotica_s', '東'), // 53
   // ==== ルクアB2 バルチカ（公式マップ2026-06版・N=上確認済み・全26店） ====
   g('焼肉トラジ', 'barchika', '北西'),
   g('創業明治23年 徳田酒店', 'barchika', '北西'),

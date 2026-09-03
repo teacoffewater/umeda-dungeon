@@ -7,6 +7,7 @@ import * as SNB1 from './detail_sanban_n_b1.js';
 import * as SNB2 from './detail_sanban_n_b2.js';
 import * as SSB1 from './detail_sanban_s_b1.js';
 import * as SSB2 from './detail_sanban_s_b2.js';
+import { DOTICA_FLOOR, DOTICA_WALK, DOTICA_BLOCKS, DOTICA_REAL_POS, DOTICA_AREA_ANCHORS } from './detail_dotica.js';
 
 // 施設が館×階に分かれる場合(三番街)は、zone を共有しつつ areas(shops.js のエリアID)で詳細地図を分ける。
 // floor は描画する高さ(三番街B1F=浅層S1、B2F=中枢層B1)。name は詳細バーの表示名
@@ -22,4 +23,7 @@ export const DETAIL_MAPS = {
   sanban_s_b2: sanban(SSB2, 'SANBAN_S_B2', ['sanban_s_b2'], 'B1', '阪急三番街 南館B2F', [1600, 690]),
   whity:  { FLOOR: WHITY_FLOOR,  WALK: WHITY_WALK,  BLOCKS: WHITY_BLOCKS,  REAL_POS: WHITY_REAL_POS,  AREA_ANCHORS: WHITY_AREA_ANCHORS,  origin: [1600, 0] },   // ガイド座標 x -80〜200 / y -250〜90 → world x 1560〜1700 / z -125〜45
   avanza: { FLOOR: AVANZA_FLOOR, WALK: AVANZA_WALK, BLOCKS: AVANZA_BLOCKS, REAL_POS: AVANZA_REAL_POS, AREA_ANCHORS: AVANZA_AREA_ANCHORS, origin: [1600, 300] }, // ガイド座標 0〜60 / 0〜72 → world z 300〜336(ホワイティの南、重ならない)
+  // ドーチカ: 公式マップ(北を上に回転)。広域では北・中・南の3エリアの集約ドットが入口
+  dotica: { FLOOR: DOTICA_FLOOR, WALK: DOTICA_WALK, BLOCKS: DOTICA_BLOCKS, REAL_POS: DOTICA_REAL_POS, AREA_ANCHORS: DOTICA_AREA_ANCHORS,
+            zone: 'dotica', areas: ['dotica_n', 'dotica_c', 'dotica_s'], floor: 'B1', name: 'ドージマ地下センター', origin: [1600, 800] }, // ガイド座標 x -12〜40 / y 0〜290 → world z 800〜945
 };

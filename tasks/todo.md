@@ -28,13 +28,14 @@
 ## 2026-09-03〜04 ドーチカ集中調査(現地)
 - [x] 詳細地図の仕組みを複数施設対応に(detail_maps.js / DETAIL_MAPS)。ホワイティの挙動は不変
 - [x] tools/gen_detail.py(施設非依存の詳細データ生成) / tools/trace_linear.py(一本道: 軸+区画表→区画ポリゴン)
-- [ ] ドーチカ詳細: 案内板写真 → tools/data/detail/dotica_spec.json(下書き済み: 53店の順と側だけ) → trace_linear → gen_detail → detail_maps.js に登録(origin は whity と離す)
+- [x] ドーチカ詳細: 公式マップ(画像)→ tools/dotica_spec_from_map.py → trace_linear → gen_detail → detail_maps.js(origin z=800)。53店すべて実位置あり
+- [ ] ドーチカ詳細の精度: 公式マップを**ファイル**で受け取って色抽出に置き換える(いまは目読み ±1.5m)。C80/C84/C72 のどれがアバンザの階段3本(北/中/南)に当たるか現地で確認
 - [x] 堂島アバンザ詳細: 地下階の案内板写真 → tools/data/detail/avanza.json → gen_detail(区画13・店9。ドーチカ本線は床から除外済み。接続3本の階段は案内板の位置)
 - [ ] 広域のドーチカ⇔アバンザ接続3本(dotica_avz_n / dotica_avz_m / avanza→j_avz)の位置と段数を現地の2点タップで確定。現状は案内板の比率からの仮値
 - [x] 阪急三番街詳細(並行作業): 北館B1F/B2F・南館B1F/B2F を館×階の4枚に(tools/extract_sanbangai_png.py + 現地案内板の番号→店名表)。集約ドット・館ノードのタップ=詳細地図へ
 - [ ] 三番街: 北館/南館の実寸(rect)と B2F 連絡通路2本の位置を現地で確認(いまは案内板の比率と OSM の市道から)。台北餃子張記(案内板に無い)が未対応。南館B1F/B2F の区画番号→店名の残り確認(ラベルが密なので現地で見比べる)
 - [ ] 広域: 調査JSON(北端の口・幅/広場/壁・出口番号C-60/C-72の確定・階段/ESC/EV・ビル接続部・目印)を規約どおり反映(regions.json→import_region→gen_polys / VERTICALS / landmarks)
-- [ ] 広域のドーチカ店を集約ドット(北・中・南の3点=詳細地図の入口)に(shops.js の dotica を3エリア merged に分割)
+- [x] 広域のドーチカ店を集約ドット(北・中・南の3点=詳細地図の入口)に(shops.js の dotica を3エリア merged に分割)
 - [ ] 接続ビル(堂島グランドビル・新ダイビル等): OSM外形 → ZONES/床プレート、接続部は調査の「通路あり」から
 - [ ] photos/ の実体3枚が未コミット(landmarks.js が参照、本番404)。写真運用を始める前に決着
 - [ ] 坂・階段の高低差(survey の rise)の受け皿を main.js 側に作る(SLOPES / VERTICALS.rise)。地図表現はシェブロン帯+案内文の案

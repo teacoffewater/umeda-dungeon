@@ -57,26 +57,32 @@ def main(zone):
 
     pos = {}  # side → 起点からの距離
     blocks, shops = [], []
+    walks = list(spec.get('walks', []))
     for b in spec['blocks']:
         side = b['side']
-        s0 = pos.get(side, 0.0) + float(b.get('gap', 0))
+        # at: 起点からの絶対距離(m)。資料の画像から読んだ位置を直接置くときに使う(無ければ並び順に詰める)
+        s0 = float(b['at']) if 'at' in b else pos.get(side, 0.0) + float(b.get('gap', 0))
         s1 = s0 + float(b['len'])
-        pos[side] = s1
+        pos[side] = max(pos.get(side, 0.0), s1)
         depth = float(b.get('depth', 8))
+        off = float(b.get('off', 0))  # 通路の縁からの後退(m)。奥に並ぶ区画(前に浅い区画がある)に使う
         (p0, d0) = frame(s0)
         (p1, d1) = frame(s1)
         n0, n1 = side_normal(d0, side), side_normal(d1, side)
         corners = [
-            (p0[0] + n0[0] * half, p0[1] + n0[1] * half),
-            (p1[0] + n1[0] * half, p1[1] + n1[1] * half),
-            (p1[0] + n1[0] * (half + depth), p1[1] + n1[1] * (half + depth)),
-            (p0[0] + n0[0] * (half + depth), p0[1] + n0[1] * (half + depth)),
+            (p0[0] + n0[0] * (half + off), p0[1] + n0[1] * (half + off)),
+            (p1[0] + n1[0] * (half + off), p1[1] + n1[1] * (half + off)),
+            (p1[0] + n1[0] * (half + off + depth), p1[1] + n1[1] * (half + off + depth)),
+            (p0[0] + n0[0] * (half + off + depth), p0[1] + n0[1] * (half + off + depth)),
         ]
         poly = Polygon(corners)
         if not poly.is_valid or poly.area < 1:
             print(f'  区画 {b.get("no")} をスキップ(形が不正)')
             continue
         g = [[round(x, 1), round(y, 1)] for x, y in corners]
+        if b.get('walk'):  # 出入口・接続通路: 区画ではなく歩ける床として足す
+            walks.append(g)
+            continue
         out = {'g': g, 'mall': b.get('mall', zone)}
         if b.get('no') is not None:
             out['no'] = str(b['no'])
@@ -92,7 +98,7 @@ def main(zone):
 
     # 床 = 通路の帯 ∪ 区画 ∪ 追加通路。角の隙間を少し閉じる
     corridor = axis.buffer(half, cap_style=2, join_style=2)
-    parts = [corridor] + [Polygon(b['g']) for b in blocks] + [Polygon(w) for w in spec.get('walks', [])]
+    parts = [corridor] + [Polygon(b['g']) for b in blocks] + [Polygon(w) for w in walks]
     floor = unary_union(parts).buffer(1.0, join_style=2).buffer(-1.0, join_style=2).simplify(0.2)
     if floor.geom_type == 'MultiPolygon':
         floor = max(floor.geoms, key=lambda c: c.area)
@@ -103,7 +109,7 @@ def main(zone):
         'outline_g': outline,
         'blocks': blocks,
         'shops': shops,
-        'walks': spec.get('walks', []),
+        'walks': walks,
         'area_anchors': spec.get('area_anchors', {}),
     }
     dst = os.path.join(ROOT, 'tools/data/detail', f'{zone}.json')

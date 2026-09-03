@@ -1,5 +1,5 @@
 {
- "source": "下書き: shops.js(2026-07 公式マップ採録) の order/side から生成。資料(案内板写真)で len・no・gap を確定する",
+ "source": "ドージマ地下センター 公式フロアマップ(2026-09-03 受領)。tools/dotica_spec_from_map.py が画像から目で読んだ px 範囲から生成。縮尺 0.155m/px(通路全長≈300mから)。北を上に回転",
  "axis": [
   [
    0,
@@ -7,434 +7,485 @@
   ],
   [
    0,
-   300
+   196.8
+  ],
+  [
+   24.9,
+   287.8
   ]
  ],
- "width": 6.0,
+ "width": 8.0,
  "blocks": [
   {
-   "no": "1",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "三菱UFJ銀行ATM",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "2",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 3.9,
+   "len": 17.0,
    "name": "新梅田コクミン薬局",
-   "_todo": "len/no は資料で確定"
+   "no": "2"
   },
   {
-   "no": "3",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "KIEFEL COFFEE",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "4",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 20.9,
+   "len": 21.0,
    "name": "ファミリーマート ドーチカ店",
-   "_todo": "len/no は資料で確定"
+   "no": "4"
   },
   {
-   "no": "5",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "plus on ドーチカ店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "6",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "レオニダス 大阪梅田店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "7",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 41.9,
+   "len": 10.0,
    "name": "インデアンカレー 堂島店",
-   "_todo": "len/no は資料で確定"
+   "no": "7"
   },
   {
-   "no": "8",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "東京油組総本店 ドーチカ組",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "9",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 51.9,
+   "len": 7.0,
    "name": "newKOBE 堂島店",
-   "_todo": "len/no は資料で確定"
+   "no": "9"
   },
   {
-   "no": "10",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "わたしのダイニング × SAKAGURA",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "11",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 58.9,
+   "len": 4.2,
    "name": "みずほ銀行ATM",
-   "_todo": "len/no は資料で確定"
+   "no": "11"
   },
   {
-   "no": "12",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "ダル食堂 堂島地下街店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "13",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 63.1,
+   "len": 5.9,
    "name": "ミスタークイックマン",
-   "_todo": "len/no は資料で確定"
+   "no": "13"
   },
   {
-   "no": "14",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 69.0,
+   "len": 3.4,
    "name": "りそな銀行ATM",
-   "_todo": "len/no は資料で確定"
+   "no": "14"
   },
   {
-   "no": "15",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "コクミンドラッグ ドーチカ店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "16",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 72.4,
+   "len": 10.5,
    "name": "ほけん百花 梅田ドーチカ店",
-   "_todo": "len/no は資料で確定"
+   "no": "16"
   },
   {
-   "no": "17",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 82.9,
+   "len": 5.8,
    "name": "J・マーケット大阪ドーチカ店",
-   "_todo": "len/no は資料で確定"
+   "no": "17"
   },
   {
-   "no": "18",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "文字の店 堂島",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "19",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 88.7,
+   "len": 5.1,
    "name": "じゃんぱら大阪堂島店",
-   "_todo": "len/no は資料で確定"
+   "no": "19"
   },
   {
-   "no": "20",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "BIG VISION",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "21",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "中央コンタクト",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "22",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 93.8,
+   "len": 20.9,
    "name": "コクミンドラッグ 堂島店",
-   "_todo": "len/no は資料で確定"
+   "no": "22"
   },
   {
-   "no": "23",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "ちぐさ大阪うめだ支店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "24",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "リフレッシュ工房オズ 堂島店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "25",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 119.3,
+   "len": 6.6,
    "name": "セブン銀行ATM",
-   "_todo": "len/no は資料で確定"
+   "no": "25"
   },
   {
-   "no": "26",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "時計修理工房 白金堂 大阪梅田ドーチカ店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "27",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 125.9,
+   "len": 13.6,
    "name": "西梅田眼科クリニック",
-   "_todo": "len/no は資料で確定"
+   "no": "27"
   },
   {
-   "no": "28",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "青森・岩手えぇもんショップ",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "29",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 139.5,
+   "len": 5.1,
    "name": "TRARIUM by ACE",
-   "_todo": "len/no は資料で確定"
+   "no": "29"
   },
   {
-   "no": "30",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "Buena.",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "31",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 144.6,
+   "len": 6.5,
    "name": "KENFORD堂島地下街店",
-   "_todo": "len/no は資料で確定"
+   "no": "31"
   },
   {
-   "no": "32",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "梅田もりわき骨盤鍼灸整骨院",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "33",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 151.1,
+   "len": 17.8,
    "name": "千鳥屋宗家 堂島店",
-   "_todo": "len/no は資料で確定"
+   "no": "33"
   },
   {
-   "no": "34",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "Perfect Suit FActory",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "35",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "ダイソー",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "36",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 172.8,
+   "len": 9.6,
    "name": "クックデリ御膳 ドーチカ店",
-   "_todo": "len/no は資料で確定"
+   "no": "36"
   },
   {
-   "no": "37",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "三井住友銀行ATM",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "38",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 182.4,
+   "len": 15.3,
    "name": "ドトールコーヒーショップドーチカ",
-   "_todo": "len/no は資料で確定"
+   "no": "38"
   },
   {
-   "no": "39",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "おたからや梅田ドーチカ店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "40",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "KUSELESS",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "41",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "吉野家",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "42",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 201.7,
+   "len": 8.9,
    "name": "都由堂島店",
-   "_todo": "len/no は資料で確定"
+   "no": "42"
   },
   {
-   "no": "43",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "かっぽうぎ ドーチカ店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "44",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 210.6,
+   "len": 9.9,
    "name": "Barber the GM 堂島",
-   "_todo": "len/no は資料で確定"
+   "no": "44"
   },
   {
-   "no": "45",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "おきがる串家物語",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "46",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 220.5,
+   "len": 8.1,
    "name": "お酒の美術館 ドーチカ店",
-   "_todo": "len/no は資料で確定"
+   "no": "46"
   },
   {
-   "no": "47",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "おらが蕎麦",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "48",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 228.6,
+   "len": 13.9,
    "name": "ドットミーティング堂島貸会議室",
-   "_todo": "len/no は資料で確定"
+   "no": "48"
   },
   {
-   "no": "49",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "海鮮居酒屋あいち",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "50",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 242.5,
+   "len": 15.1,
    "name": "中央軒 ドーチカ店",
-   "_todo": "len/no は資料で確定"
+   "no": "50"
   },
   {
-   "no": "51",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "つけ麺専門店 三田製麺所 ドーチカ店",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "52",
-   "side": "W",
-   "len": 7.5,
-   "depth": 8,
-   "name": "CAFÉ ONthe",
-   "_todo": "len/no は資料で確定"
-  },
-  {
-   "no": "53",
    "side": "E",
-   "len": 7.5,
-   "depth": 8,
+   "at": 257.6,
+   "len": 11.8,
+   "depth": 6,
+   "mall": "広場",
+   "label": "天使の広場"
+  },
+  {
+   "side": "E",
+   "at": 269.9,
+   "len": 10.3,
    "name": "自家製麺杵屋",
-   "_todo": "len/no は資料で確定"
+   "no": "53"
+  },
+  {
+   "side": "E",
+   "at": 280.2,
+   "len": 7.7,
+   "depth": 6,
+   "mall": "トイレ"
+  },
+  {
+   "side": "W",
+   "at": 2.3,
+   "len": 18.6,
+   "name": "三菱UFJ銀行ATM",
+   "no": "1"
+  },
+  {
+   "side": "W",
+   "at": 20.9,
+   "len": 5.0,
+   "name": "KIEFEL COFFEE",
+   "no": "3"
+  },
+  {
+   "side": "W",
+   "at": 29.4,
+   "len": 13.5,
+   "name": "plus on ドーチカ店",
+   "no": "5",
+   "depth": 3
+  },
+  {
+   "side": "W",
+   "at": 42.9,
+   "len": 13.7,
+   "name": "レオニダス 大阪梅田店",
+   "no": "6",
+   "depth": 3
+  },
+  {
+   "side": "W",
+   "at": 29.4,
+   "len": 10.1,
+   "depth": 4,
+   "off": 3,
+   "mall": "案内所"
+  },
+  {
+   "side": "W",
+   "at": 39.5,
+   "len": 4.7,
+   "depth": 4,
+   "off": 3,
+   "mall": "トイレ"
+  },
+  {
+   "side": "W",
+   "at": 44.2,
+   "len": 11.6,
+   "name": "東京油組総本店 ドーチカ組",
+   "no": "8",
+   "depth": 6,
+   "off": 3
+  },
+  {
+   "side": "W",
+   "at": 55.8,
+   "len": 5.4,
+   "name": "わたしのダイニング × SAKAGURA",
+   "no": "10"
+  },
+  {
+   "side": "W",
+   "at": 61.2,
+   "len": 5.0,
+   "name": "ダル食堂 堂島地下街店",
+   "no": "12"
+  },
+  {
+   "side": "W",
+   "at": 66.2,
+   "len": 19.4,
+   "name": "コクミンドラッグ ドーチカ店",
+   "no": "15"
+  },
+  {
+   "side": "W",
+   "at": 85.6,
+   "len": 4.6,
+   "name": "文字の店 堂島",
+   "no": "18"
+  },
+  {
+   "side": "W",
+   "at": 90.2,
+   "len": 9.8,
+   "name": "BIG VISION",
+   "no": "20"
+  },
+  {
+   "side": "W",
+   "at": 100.0,
+   "len": 4.9,
+   "name": "中央コンタクト",
+   "no": "21"
+  },
+  {
+   "side": "W",
+   "at": 104.9,
+   "len": 8.6,
+   "name": "ちぐさ大阪うめだ支店",
+   "no": "23",
+   "depth": 3.5
+  },
+  {
+   "side": "W",
+   "at": 104.9,
+   "len": 12.1,
+   "name": "リフレッシュ工房オズ 堂島店",
+   "no": "24",
+   "depth": 4.5,
+   "off": 3.5
+  },
+  {
+   "side": "W",
+   "at": 117.0,
+   "len": 8.9,
+   "name": "時計修理工房 白金堂 大阪梅田ドーチカ店",
+   "no": "26"
+  },
+  {
+   "side": "W",
+   "at": 125.9,
+   "len": 13.6,
+   "name": "青森・岩手えぇもんショップ",
+   "no": "28"
+  },
+  {
+   "side": "W",
+   "at": 139.5,
+   "len": 8.5,
+   "name": "Buena.",
+   "no": "30"
+  },
+  {
+   "side": "W",
+   "at": 148.0,
+   "len": 7.0,
+   "name": "梅田もりわき骨盤鍼灸整骨院",
+   "no": "32"
+  },
+  {
+   "side": "W",
+   "at": 155.0,
+   "len": 12.7,
+   "name": "Perfect Suit FActory",
+   "no": "34"
+  },
+  {
+   "side": "W",
+   "at": 167.7,
+   "len": 15.2,
+   "name": "ダイソー",
+   "no": "35"
+  },
+  {
+   "side": "W",
+   "at": 182.9,
+   "len": 5.7,
+   "name": "三井住友銀行ATM",
+   "no": "37"
+  },
+  {
+   "side": "W",
+   "at": 192.0,
+   "len": 3.3,
+   "name": "KUSELESS",
+   "no": "40"
+  },
+  {
+   "side": "W",
+   "at": 195.3,
+   "len": 3.5,
+   "name": "おたからや梅田ドーチカ店",
+   "no": "39"
+  },
+  {
+   "side": "W",
+   "at": 198.8,
+   "len": 10.5,
+   "name": "吉野家",
+   "no": "41"
+  },
+  {
+   "side": "W",
+   "at": 209.3,
+   "len": 7.2,
+   "name": "かっぽうぎ ドーチカ店",
+   "no": "43"
+  },
+  {
+   "side": "W",
+   "at": 216.5,
+   "len": 12.1,
+   "name": "おきがる串家物語",
+   "no": "45"
+  },
+  {
+   "side": "W",
+   "at": 228.6,
+   "len": 12.9,
+   "name": "おらが蕎麦",
+   "no": "47"
+  },
+  {
+   "side": "W",
+   "at": 241.5,
+   "len": 8.1,
+   "name": "海鮮居酒屋あいち",
+   "no": "49"
+  },
+  {
+   "side": "W",
+   "at": 249.6,
+   "len": 8.0,
+   "name": "つけ麺専門店 三田製麺所 ドーチカ店",
+   "no": "51"
+  },
+  {
+   "side": "W",
+   "at": 257.6,
+   "len": 4.9,
+   "depth": 6,
+   "mall": "空き"
+  },
+  {
+   "side": "W",
+   "at": 262.5,
+   "len": 12.0,
+   "name": "CAFÉ ONthe",
+   "no": "52"
+  },
+  {
+   "side": "W",
+   "at": 275.0,
+   "len": 6.5,
+   "depth": 6,
+   "mall": "トイレ"
+  },
+  {
+   "side": "W",
+   "at": 30.2,
+   "len": 8.1,
+   "depth": 12,
+   "walk": true,
+   "label": "C61 関電不動産西梅田ビル"
+  },
+  {
+   "side": "W",
+   "at": 86.0,
+   "len": 3.9,
+   "depth": 6,
+   "walk": true,
+   "label": "C69"
+  },
+  {
+   "side": "E",
+   "at": 115.0,
+   "len": 4.0,
+   "depth": 8,
+   "walk": true,
+   "label": "C72"
+  },
+  {
+   "side": "E",
+   "at": 169.4,
+   "len": 3.4,
+   "depth": 10,
+   "walk": true,
+   "label": "C80 堂島アバンザ"
+  },
+  {
+   "side": "W",
+   "at": 189.1,
+   "len": 3.6,
+   "depth": 6,
+   "walk": true,
+   "label": "C83 近鉄堂島ビル"
+  },
+  {
+   "side": "E",
+   "at": 198.0,
+   "len": 3.7,
+   "depth": 8,
+   "walk": true,
+   "label": "C84 ホテルエルセラーン大阪"
   }
  ],
  "extras": [],

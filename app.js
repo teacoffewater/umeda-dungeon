@@ -31555,7 +31555,13 @@
         diamor_variety: { floor: "B1", zone: "diamor", edges: [["enkei", "diamor_03"], ["diamor_03", "diamor_04"], ["diamor_04", "j_variety"], ["j_variety", "j_diamor_e"]] },
         // バラエティST本通り(OSMカーブ追従)。第4ビルへの枝には店を置かない
         // ドーチカ（南北一本道: 西梅田駅南改札→堂島アバンザ）
-        dotica: { floor: "B1", zone: "dotica", edges: [["j_sone_w", "dojima"], ["dojima", "dotica_01"], ["dotica_01", "avanza"]] },
+        // ドーチカ: 詳細地図(detail_dotica.js)を持つので、広域では北・中・南の3点の集約ドット(=詳細地図の入口)。rect は通路上(幅10m)
+        dotica_n: { floor: "B1", zone: "dotica", near: ["dotica_02"], rect: [710.5, 1381, 10, 40], merged: true },
+        // 北(西梅田側〜コクミンドラッグ堂島店)
+        dotica_c: { floor: "B1", zone: "dotica", near: ["dotica_avz_n"], rect: [705.7, 1479, 10, 40], merged: true },
+        // 中(BIG VISION〜ドトール)
+        dotica_s: { floor: "B1", zone: "dotica", near: ["avanza"], rect: [707, 1576, 10, 40], merged: true },
+        // 南(おたからや〜南端)
         // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
         ekimo: { floor: "B1", zone: "umechika", near: ["j_metro"], edges: [["j_metro", "umechika_15"], ["umechika_15", "umechika_11"]] },
         // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）
@@ -32073,60 +32079,113 @@
         s("\u30B3\u30AD\u30E5\u30EA\u30B3\u30C3\u30C8 \u30C7\u30A3\u30A2\u30E2\u30FC\u30EB\u5E97", "diamor_variety", 16, "\u5317\u6771"),
         s("\u30C7\u30A3\u30A2\u30E2\u30FC\u30EB\u30C1\u30E3\u30F3\u30B9\u30BB\u30F3\u30BF\u30FC\uFF08\u5B9D\u304F\u3058\uFF09", "diamor_variety", 17, "\u5317\u6771"),
         s("\u30C9\u30B3\u30E2\u30B7\u30E7\u30C3\u30D7", "diamor_variety", 18, "\u897F"),
-        // ==== ドーチカ（公式マップ区画番号を突合・北端→南端の通し順・全53店 2026-07） ====
-        s("\u4E09\u83F1UFJ\u9280\u884CATM", "dotica", 1, "\u897F"),
-        s("\u65B0\u6885\u7530\u30B3\u30AF\u30DF\u30F3\u85AC\u5C40", "dotica", 2, "\u6771"),
-        s("KIEFEL COFFEE", "dotica", 3, "\u897F"),
-        s("\u30D5\u30A1\u30DF\u30EA\u30FC\u30DE\u30FC\u30C8 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 4, "\u6771"),
-        s("plus on \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 5, "\u897F"),
-        s("\u30EC\u30AA\u30CB\u30C0\u30B9 \u5927\u962A\u6885\u7530\u5E97", "dotica", 6, "\u897F"),
-        s("\u30A4\u30F3\u30C7\u30A2\u30F3\u30AB\u30EC\u30FC \u5802\u5CF6\u5E97", "dotica", 7, "\u6771"),
-        s("\u6771\u4EAC\u6CB9\u7D44\u7DCF\u672C\u5E97 \u30C9\u30FC\u30C1\u30AB\u7D44", "dotica", 8, "\u897F"),
-        s("newKOBE \u5802\u5CF6\u5E97", "dotica", 9, "\u6771"),
-        s("\u308F\u305F\u3057\u306E\u30C0\u30A4\u30CB\u30F3\u30B0 \xD7 SAKAGURA", "dotica", 10, "\u897F"),
-        s("\u307F\u305A\u307B\u9280\u884CATM", "dotica", 11, "\u6771"),
-        s("\u30C0\u30EB\u98DF\u5802 \u5802\u5CF6\u5730\u4E0B\u8857\u5E97", "dotica", 12, "\u897F"),
-        s("\u30DF\u30B9\u30BF\u30FC\u30AF\u30A4\u30C3\u30AF\u30DE\u30F3", "dotica", 13, "\u6771"),
-        s("\u308A\u305D\u306A\u9280\u884CATM", "dotica", 14, "\u6771"),
-        s("\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 15, "\u897F"),
-        s("\u307B\u3051\u3093\u767E\u82B1 \u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 16, "\u6771"),
-        s("J\u30FB\u30DE\u30FC\u30B1\u30C3\u30C8\u5927\u962A\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 17, "\u6771"),
-        s("\u6587\u5B57\u306E\u5E97 \u5802\u5CF6", "dotica", 18, "\u897F"),
-        s("\u3058\u3083\u3093\u3071\u3089\u5927\u962A\u5802\u5CF6\u5E97", "dotica", 19, "\u6771"),
-        s("BIG VISION", "dotica", 20, "\u897F"),
-        s("\u4E2D\u592E\u30B3\u30F3\u30BF\u30AF\u30C8", "dotica", 21, "\u897F"),
-        s("\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u5802\u5CF6\u5E97", "dotica", 22, "\u6771"),
-        s("\u3061\u3050\u3055\u5927\u962A\u3046\u3081\u3060\u652F\u5E97", "dotica", 23, "\u897F"),
-        s("\u30EA\u30D5\u30EC\u30C3\u30B7\u30E5\u5DE5\u623F\u30AA\u30BA \u5802\u5CF6\u5E97", "dotica", 24, "\u897F"),
-        s("\u30BB\u30D6\u30F3\u9280\u884CATM", "dotica", 25, "\u6771"),
-        s("\u6642\u8A08\u4FEE\u7406\u5DE5\u623F \u767D\u91D1\u5802 \u5927\u962A\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 26, "\u897F"),
-        s("\u897F\u6885\u7530\u773C\u79D1\u30AF\u30EA\u30CB\u30C3\u30AF", "dotica", 27, "\u6771"),
-        s("\u9752\u68EE\u30FB\u5CA9\u624B\u3048\u3047\u3082\u3093\u30B7\u30E7\u30C3\u30D7", "dotica", 28, "\u897F"),
-        s("TRARIUM by ACE", "dotica", 29, "\u6771"),
-        s("Buena.", "dotica", 30, "\u897F"),
-        s("KENFORD\u5802\u5CF6\u5730\u4E0B\u8857\u5E97", "dotica", 31, "\u6771"),
-        s("\u6885\u7530\u3082\u308A\u308F\u304D\u9AA8\u76E4\u937C\u7078\u6574\u9AA8\u9662", "dotica", 32, "\u897F"),
-        s("\u5343\u9CE5\u5C4B\u5B97\u5BB6 \u5802\u5CF6\u5E97", "dotica", 33, "\u6771"),
-        s("Perfect Suit FActory", "dotica", 34, "\u897F"),
-        s("\u30C0\u30A4\u30BD\u30FC", "dotica", 35, "\u897F"),
-        s("\u30AF\u30C3\u30AF\u30C7\u30EA\u5FA1\u81B3 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 36, "\u6771"),
-        s("\u4E09\u4E95\u4F4F\u53CB\u9280\u884CATM", "dotica", 37, "\u897F"),
-        s("\u30C9\u30C8\u30FC\u30EB\u30B3\u30FC\u30D2\u30FC\u30B7\u30E7\u30C3\u30D7\u30C9\u30FC\u30C1\u30AB", "dotica", 38, "\u6771"),
-        s("\u304A\u305F\u304B\u3089\u3084\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 39, "\u897F"),
-        s("KUSELESS", "dotica", 40, "\u897F"),
-        s("\u5409\u91CE\u5BB6", "dotica", 41, "\u897F"),
-        s("\u90FD\u7531\u5802\u5CF6\u5E97", "dotica", 42, "\u6771"),
-        s("\u304B\u3063\u307D\u3046\u304E \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 43, "\u897F"),
-        s("Barber the GM \u5802\u5CF6", "dotica", 44, "\u6771"),
-        s("\u304A\u304D\u304C\u308B\u4E32\u5BB6\u7269\u8A9E", "dotica", 45, "\u897F"),
-        s("\u304A\u9152\u306E\u7F8E\u8853\u9928 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 46, "\u6771"),
-        s("\u304A\u3089\u304C\u854E\u9EA6", "dotica", 47, "\u897F"),
-        s("\u30C9\u30C3\u30C8\u30DF\u30FC\u30C6\u30A3\u30F3\u30B0\u5802\u5CF6\u8CB8\u4F1A\u8B70\u5BA4", "dotica", 48, "\u6771"),
-        s("\u6D77\u9BAE\u5C45\u9152\u5C4B\u3042\u3044\u3061", "dotica", 49, "\u897F"),
-        s("\u4E2D\u592E\u8ED2 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 50, "\u6771"),
-        s("\u3064\u3051\u9EBA\u5C02\u9580\u5E97 \u4E09\u7530\u88FD\u9EBA\u6240 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica", 51, "\u897F"),
-        s("CAF\xC9 ONthe", "dotica", 52, "\u897F"),
-        s("\u81EA\u5BB6\u88FD\u9EBA\u6775\u5C4B", "dotica", 53, "\u6771"),
+        // ==== ドーチカ（公式マップの区画番号順・全53店 2026-07。コメントの番号=公式マップの通し番号。実位置は detail_dotica.js） ====
+        g("\u4E09\u83F1UFJ\u9280\u884CATM", "dotica_n", "\u897F"),
+        // 1
+        g("\u65B0\u6885\u7530\u30B3\u30AF\u30DF\u30F3\u85AC\u5C40", "dotica_n", "\u6771"),
+        // 2
+        g("KIEFEL COFFEE", "dotica_n", "\u897F"),
+        // 3
+        g("\u30D5\u30A1\u30DF\u30EA\u30FC\u30DE\u30FC\u30C8 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_n", "\u6771"),
+        // 4
+        g("plus on \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_n", "\u897F"),
+        // 5
+        g("\u30EC\u30AA\u30CB\u30C0\u30B9 \u5927\u962A\u6885\u7530\u5E97", "dotica_n", "\u897F"),
+        // 6
+        g("\u30A4\u30F3\u30C7\u30A2\u30F3\u30AB\u30EC\u30FC \u5802\u5CF6\u5E97", "dotica_n", "\u6771"),
+        // 7
+        g("\u6771\u4EAC\u6CB9\u7D44\u7DCF\u672C\u5E97 \u30C9\u30FC\u30C1\u30AB\u7D44", "dotica_n", "\u897F"),
+        // 8
+        g("newKOBE \u5802\u5CF6\u5E97", "dotica_n", "\u6771"),
+        // 9
+        g("\u308F\u305F\u3057\u306E\u30C0\u30A4\u30CB\u30F3\u30B0 \xD7 SAKAGURA", "dotica_n", "\u897F"),
+        // 10
+        g("\u307F\u305A\u307B\u9280\u884CATM", "dotica_n", "\u6771"),
+        // 11
+        g("\u30C0\u30EB\u98DF\u5802 \u5802\u5CF6\u5730\u4E0B\u8857\u5E97", "dotica_n", "\u897F"),
+        // 12
+        g("\u30DF\u30B9\u30BF\u30FC\u30AF\u30A4\u30C3\u30AF\u30DE\u30F3", "dotica_n", "\u6771"),
+        // 13
+        g("\u308A\u305D\u306A\u9280\u884CATM", "dotica_n", "\u6771"),
+        // 14
+        g("\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_n", "\u897F"),
+        // 15
+        g("\u307B\u3051\u3093\u767E\u82B1 \u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_n", "\u6771"),
+        // 16
+        g("J\u30FB\u30DE\u30FC\u30B1\u30C3\u30C8\u5927\u962A\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_n", "\u6771"),
+        // 17
+        g("\u6587\u5B57\u306E\u5E97 \u5802\u5CF6", "dotica_n", "\u897F"),
+        // 18
+        g("\u3058\u3083\u3093\u3071\u3089\u5927\u962A\u5802\u5CF6\u5E97", "dotica_n", "\u6771"),
+        // 19
+        g("BIG VISION", "dotica_c", "\u897F"),
+        // 20
+        g("\u4E2D\u592E\u30B3\u30F3\u30BF\u30AF\u30C8", "dotica_c", "\u897F"),
+        // 21
+        g("\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u5802\u5CF6\u5E97", "dotica_c", "\u6771"),
+        // 22
+        g("\u3061\u3050\u3055\u5927\u962A\u3046\u3081\u3060\u652F\u5E97", "dotica_c", "\u897F"),
+        // 23
+        g("\u30EA\u30D5\u30EC\u30C3\u30B7\u30E5\u5DE5\u623F\u30AA\u30BA \u5802\u5CF6\u5E97", "dotica_c", "\u897F"),
+        // 24
+        g("\u30BB\u30D6\u30F3\u9280\u884CATM", "dotica_c", "\u6771"),
+        // 25
+        g("\u6642\u8A08\u4FEE\u7406\u5DE5\u623F \u767D\u91D1\u5802 \u5927\u962A\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_c", "\u897F"),
+        // 26
+        g("\u897F\u6885\u7530\u773C\u79D1\u30AF\u30EA\u30CB\u30C3\u30AF", "dotica_c", "\u6771"),
+        // 27
+        g("\u9752\u68EE\u30FB\u5CA9\u624B\u3048\u3047\u3082\u3093\u30B7\u30E7\u30C3\u30D7", "dotica_c", "\u897F"),
+        // 28
+        g("TRARIUM by ACE", "dotica_c", "\u6771"),
+        // 29
+        g("Buena.", "dotica_c", "\u897F"),
+        // 30
+        g("KENFORD\u5802\u5CF6\u5730\u4E0B\u8857\u5E97", "dotica_c", "\u6771"),
+        // 31
+        g("\u6885\u7530\u3082\u308A\u308F\u304D\u9AA8\u76E4\u937C\u7078\u6574\u9AA8\u9662", "dotica_c", "\u897F"),
+        // 32
+        g("\u5343\u9CE5\u5C4B\u5B97\u5BB6 \u5802\u5CF6\u5E97", "dotica_c", "\u6771"),
+        // 33
+        g("Perfect Suit FActory", "dotica_c", "\u897F"),
+        // 34
+        g("\u30C0\u30A4\u30BD\u30FC", "dotica_c", "\u897F"),
+        // 35
+        g("\u30AF\u30C3\u30AF\u30C7\u30EA\u5FA1\u81B3 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_c", "\u6771"),
+        // 36
+        g("\u4E09\u4E95\u4F4F\u53CB\u9280\u884CATM", "dotica_c", "\u897F"),
+        // 37
+        g("\u30C9\u30C8\u30FC\u30EB\u30B3\u30FC\u30D2\u30FC\u30B7\u30E7\u30C3\u30D7\u30C9\u30FC\u30C1\u30AB", "dotica_c", "\u6771"),
+        // 38
+        g("\u304A\u305F\u304B\u3089\u3084\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_s", "\u897F"),
+        // 39
+        g("KUSELESS", "dotica_s", "\u897F"),
+        // 40
+        g("\u5409\u91CE\u5BB6", "dotica_s", "\u897F"),
+        // 41
+        g("\u90FD\u7531\u5802\u5CF6\u5E97", "dotica_s", "\u6771"),
+        // 42
+        g("\u304B\u3063\u307D\u3046\u304E \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_s", "\u897F"),
+        // 43
+        g("Barber the GM \u5802\u5CF6", "dotica_s", "\u6771"),
+        // 44
+        g("\u304A\u304D\u304C\u308B\u4E32\u5BB6\u7269\u8A9E", "dotica_s", "\u897F"),
+        // 45
+        g("\u304A\u9152\u306E\u7F8E\u8853\u9928 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_s", "\u6771"),
+        // 46
+        g("\u304A\u3089\u304C\u854E\u9EA6", "dotica_s", "\u897F"),
+        // 47
+        g("\u30C9\u30C3\u30C8\u30DF\u30FC\u30C6\u30A3\u30F3\u30B0\u5802\u5CF6\u8CB8\u4F1A\u8B70\u5BA4", "dotica_s", "\u6771"),
+        // 48
+        g("\u6D77\u9BAE\u5C45\u9152\u5C4B\u3042\u3044\u3061", "dotica_s", "\u897F"),
+        // 49
+        g("\u4E2D\u592E\u8ED2 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_s", "\u6771"),
+        // 50
+        g("\u3064\u3051\u9EBA\u5C02\u9580\u5E97 \u4E09\u7530\u88FD\u9EBA\u6240 \u30C9\u30FC\u30C1\u30AB\u5E97", "dotica_s", "\u897F"),
+        // 51
+        g("CAF\xC9 ONthe", "dotica_s", "\u897F"),
+        // 52
+        g("\u81EA\u5BB6\u88FD\u9EBA\u6775\u5C4B", "dotica_s", "\u6771"),
+        // 53
         // ==== ルクアB2 バルチカ（公式マップ2026-06版・N=上確認済み・全26店） ====
         g("\u713C\u8089\u30C8\u30E9\u30B8", "barchika", "\u5317\u897F"),
         g("\u5275\u696D\u660E\u6CBB23\u5E74 \u5FB3\u7530\u9152\u5E97", "barchika", "\u5317\u897F"),
@@ -33843,6 +33902,18 @@
     }
   });
 
+  // detail_dotica.js
+  var DOTICA_FLOOR, DOTICA_WALK, DOTICA_AREA_ANCHORS, DOTICA_BLOCKS, DOTICA_REAL_POS;
+  var init_detail_dotica = __esm({
+    "detail_dotica.js"() {
+      DOTICA_FLOOR = [{ "pts": [[-12, 2.3], [-12, 25.9], [-4, 25.9], [-4, 29.4], [-11, 29.4], [-11, 30.2], [-16, 30.2], [-16, 38.3], [-11, 38.3], [-11, 44.2], [-13, 44.2], [-13, 55.8], [-12, 55.8], [-12, 188.6], [-10, 188.6], [-10, 192], [-12, 192], [-12, 195.3], [-11, 201.9], [4.5, 258.6], [6.4, 258.1], [7.7, 262.8], [5.8, 263.3], [8.9, 274.9], [10.9, 274.4], [12.7, 281.1], [18.5, 279.6], [21, 288.9], [28.8, 286.7], [27.9, 283.6], [33.7, 282], [31.7, 274.6], [33.6, 274.1], [30.9, 264.1], [28.9, 264.7], [25.7, 252.8], [27.6, 252.3], [11.8, 194.4], [12, 172.8], [14, 172.8], [14, 169.4], [12, 169.4], [12, 3.9], [4, 3.9], [4, 0], [-4, 0], [-4, 2.3]], "holes": [] }];
+      DOTICA_WALK = { "x0": -16, "y0": 0, "cell": 1.5, "w": 35, "h": 194, "bits": "AB8AAAD4AAAAwAcAAAA+AAAA8AEAAIAPAAAAfAAAAOADAAAAHwAAAPgAAADABwAAAD4AAADwAQAAgA8AAAB8AAAA4AMAAAAfAAAA+AAAAMAHAAAAPgAAAPABAACADwAAAHwAAADgAwAAAB8AAAD4AAAAwAcAAAA+AAAA8AEAAIAPAAAAfAAAAOADAAAAHwAAAPgAAADABwAAAD4AAADwAQAAgA8AAAB8AAAA4AMAAAAfAAAA+AAAAMAHAAAAPgAAAPABAACADwAAAHwAAADgAwAAAB8AAAD4AAAAwAcAAAA+AAAA8AEAAIAPAAAAfAAAAOADAAAAHwAAAPgAAADABwAAAD4AAADwAQAAgA8AAAB8AAAA4AMAAAAfAAAA+AAAAMAHAAAAPgAAAPABAACADwAAAHwAAADgAwAAAB8AAAD4AAAAwAcAAAA+AAAA/H8AAOD/AwAA/B8AAOD/AAAAHwAAAPgAAADABwAAAD4AAADwAQAAgA8AAAB8AAAA4AMAAAAfAAAA+AAAAMAHAAAAPgAAAPABAACADwAAAHwAAADgAwAAAB8AAAD4AAAAwAcAAAA+AAAA8AEAAIAPAAAAfAAAAOADAAAAHwAAAPgAAADABwAAAD4AAADwAQAAgA8AAAB8AAAA4AMAAAAfAAAA+H8AAMD/AwAAPgAAAPABAACADwAAAHwAAADgAwAAAB8AAAD4AAAAwAcAAAA+AAAA8AEAAIAPAADAfwAAAP4DAAAAHwAAAPgAAADA5wEAAP4PAADwPwAAAD8AAAD4AAAAwA8AAAB+AAAA4AMAAAAfAAAA+AEAAMAPAAAAfAAAAOAHAAAAPwAAAPABAACADwAAAPwAAADgBwAAAD4AAADwAQAAgB8AAAD8AAAAwAcAAAB+AAAA8AMAAAAfAAAA+AAAAMAPAAAAfgAAAOADAAAAHwAAAPgBAADADwAAAHwAAADgBwAAAD8AAADwAQAAgA8AAAD8AAAA4AcAAAA+AAAA8AEAAIAfAAAA/AAAAMAHAAAAfgAAAPADAAAAHwAAAPgAAADADwAAAH4AAADgAwAAAB8AAAD4AQAAwA8AAAB8AAAA4AcAAAA/AAAA8AEAAIAPAAAA/AAAAOADAAAAAAAAAAAA" };
+      DOTICA_AREA_ANCHORS = { "dotica_n": [0.6, 55.6], "dotica_c": [-1.2, 140.3], "dotica_s": [7.1, 228.4] };
+      DOTICA_BLOCKS = [{ "g": [[4, 3.9], [4, 20.9], [12, 20.9], [12, 3.9]], "mall": "dotica", "no": "2" }, { "g": [[4, 20.9], [4, 41.9], [12, 41.9], [12, 20.9]], "mall": "dotica", "no": "4" }, { "g": [[4, 41.9], [4, 51.9], [12, 51.9], [12, 41.9]], "mall": "dotica", "no": "7" }, { "g": [[4, 51.9], [4, 58.9], [12, 58.9], [12, 51.9]], "mall": "dotica", "no": "9" }, { "g": [[4, 58.9], [4, 63.1], [12, 63.1], [12, 58.9]], "mall": "dotica", "no": "11" }, { "g": [[4, 63.1], [4, 69], [12, 69], [12, 63.1]], "mall": "dotica", "no": "13" }, { "g": [[4, 69], [4, 72.4], [12, 72.4], [12, 69]], "mall": "dotica", "no": "14" }, { "g": [[4, 72.4], [4, 82.9], [12, 82.9], [12, 72.4]], "mall": "dotica", "no": "16" }, { "g": [[4, 82.9], [4, 88.7], [12, 88.7], [12, 82.9]], "mall": "dotica", "no": "17" }, { "g": [[4, 88.7], [4, 93.8], [12, 93.8], [12, 88.7]], "mall": "dotica", "no": "19" }, { "g": [[4, 93.8], [4, 114.7], [12, 114.7], [12, 93.8]], "mall": "dotica", "no": "22" }, { "g": [[4, 119.3], [4, 125.9], [12, 125.9], [12, 119.3]], "mall": "dotica", "no": "25" }, { "g": [[4, 125.9], [4, 139.5], [12, 139.5], [12, 125.9]], "mall": "dotica", "no": "27" }, { "g": [[4, 139.5], [4, 144.6], [12, 144.6], [12, 139.5]], "mall": "dotica", "no": "29" }, { "g": [[4, 144.6], [4, 151.1], [12, 151.1], [12, 144.6]], "mall": "dotica", "no": "31" }, { "g": [[4, 151.1], [4, 168.9], [12, 168.9], [12, 151.1]], "mall": "dotica", "no": "33" }, { "g": [[4, 172.8], [4, 182.4], [12, 182.4], [12, 172.8]], "mall": "dotica", "no": "36" }, { "g": [[4, 182.4], [4.1, 196.6], [11.8, 194.5], [12, 182.4]], "mall": "dotica", "no": "38" }, { "g": [[5.2, 200.5], [7.5, 209.1], [15.2, 206.9], [12.9, 198.4]], "mall": "dotica", "no": "42" }, { "g": [[7.5, 209.1], [10.1, 218.6], [17.8, 216.5], [15.2, 206.9]], "mall": "dotica", "no": "44" }, { "g": [[10.1, 218.6], [12.3, 226.4], [20, 224.3], [17.8, 216.5]], "mall": "dotica", "no": "46" }, { "g": [[12.3, 226.4], [15.9, 239.8], [23.6, 237.7], [20, 224.3]], "mall": "dotica", "no": "48" }, { "g": [[15.9, 239.8], [19.9, 254.4], [27.6, 252.3], [23.6, 237.7]], "mall": "dotica", "no": "50" }, { "g": [[19.9, 254.4], [23, 265.8], [28.8, 264.2], [25.7, 252.8]], "mall": "\u5E83\u5834" }, { "g": [[23.2, 266.3], [25.9, 276.2], [33.6, 274.1], [30.9, 264.1]], "mall": "dotica", "no": "53" }, { "g": [[25.9, 276.2], [27.9, 283.6], [33.7, 282], [31.7, 274.6]], "mall": "\u30C8\u30A4\u30EC" }, { "g": [[-4, 2.3], [-12, 2.3], [-12, 20.9], [-4, 20.9]], "mall": "dotica", "no": "1" }, { "g": [[-4, 20.9], [-12, 20.9], [-12, 25.9], [-4, 25.9]], "mall": "dotica", "no": "3" }, { "g": [[-4, 29.4], [-7, 29.4], [-7, 42.9], [-4, 42.9]], "mall": "dotica", "no": "5" }, { "g": [[-4, 42.9], [-7, 42.9], [-7, 56.6], [-4, 56.6]], "mall": "dotica", "no": "6" }, { "g": [[-7, 29.4], [-11, 29.4], [-11, 39.5], [-7, 39.5]], "mall": "\u6848\u5185\u6240" }, { "g": [[-7, 39.5], [-11, 39.5], [-11, 44.2], [-7, 44.2]], "mall": "\u30C8\u30A4\u30EC" }, { "g": [[-7, 44.2], [-13, 44.2], [-13, 55.8], [-7, 55.8]], "mall": "dotica", "no": "8" }, { "g": [[-4, 55.8], [-12, 55.8], [-12, 61.2], [-4, 61.2]], "mall": "dotica", "no": "10" }, { "g": [[-4, 61.2], [-12, 61.2], [-12, 66.2], [-4, 66.2]], "mall": "dotica", "no": "12" }, { "g": [[-4, 66.2], [-12, 66.2], [-12, 85.6], [-4, 85.6]], "mall": "dotica", "no": "15" }, { "g": [[-4, 85.6], [-12, 85.6], [-12, 90.2], [-4, 90.2]], "mall": "dotica", "no": "18" }, { "g": [[-4, 90.2], [-12, 90.2], [-12, 100], [-4, 100]], "mall": "dotica", "no": "20" }, { "g": [[-4, 100], [-12, 100], [-12, 104.9], [-4, 104.9]], "mall": "dotica", "no": "21" }, { "g": [[-4, 104.9], [-7.5, 104.9], [-7.5, 113.5], [-4, 113.5]], "mall": "dotica", "no": "23" }, { "g": [[-7.5, 104.9], [-12, 104.9], [-12, 117], [-7.5, 117]], "mall": "dotica", "no": "24" }, { "g": [[-4, 117], [-12, 117], [-12, 125.9], [-4, 125.9]], "mall": "dotica", "no": "26" }, { "g": [[-4, 125.9], [-12, 125.9], [-12, 139.5], [-4, 139.5]], "mall": "dotica", "no": "28" }, { "g": [[-4, 139.5], [-12, 139.5], [-12, 148], [-4, 148]], "mall": "dotica", "no": "30" }, { "g": [[-4, 148], [-12, 148], [-12, 155], [-4, 155]], "mall": "dotica", "no": "32" }, { "g": [[-4, 155], [-12, 155], [-12, 167.7], [-4, 167.7]], "mall": "dotica", "no": "34" }, { "g": [[-4, 167.7], [-12, 167.7], [-12, 182.9], [-4, 182.9]], "mall": "dotica", "no": "35" }, { "g": [[-4, 182.9], [-12, 182.9], [-12, 188.6], [-4, 188.6]], "mall": "dotica", "no": "37" }, { "g": [[-4, 192], [-12, 192], [-12, 195.3], [-4, 195.3]], "mall": "dotica", "no": "40" }, { "g": [[-4, 195.3], [-12, 195.3], [-11, 201.9], [-3.3, 199.8]], "mall": "dotica", "no": "39" }, { "g": [[-3.3, 199.8], [-11, 201.9], [-8.3, 212], [-0.6, 209.9]], "mall": "dotica", "no": "41" }, { "g": [[-0.6, 209.9], [-8.3, 212], [-6.4, 219], [1.3, 216.9]], "mall": "dotica", "no": "43" }, { "g": [[1.3, 216.9], [-6.4, 219], [-3.2, 230.6], [4.5, 228.5]], "mall": "dotica", "no": "45" }, { "g": [[4.5, 228.5], [-3.2, 230.6], [0.2, 243.1], [7.9, 241]], "mall": "dotica", "no": "47" }, { "g": [[7.9, 241], [0.2, 243.1], [2.4, 250.9], [10.1, 248.8]], "mall": "dotica", "no": "49" }, { "g": [[10.1, 248.8], [2.4, 250.9], [4.5, 258.6], [12.2, 256.5]], "mall": "dotica", "no": "51" }, { "g": [[12.2, 256.5], [6.4, 258.1], [7.7, 262.8], [13.5, 261.2]], "mall": "\u7A7A\u304D" }, { "g": [[13.5, 261.2], [5.8, 263.3], [8.9, 274.9], [16.6, 272.8]], "mall": "dotica", "no": "52" }, { "g": [[16.8, 273.3], [11, 274.9], [12.7, 281.1], [18.5, 279.6]], "mall": "\u30C8\u30A4\u30EC" }];
+      DOTICA_REAL_POS = { "\u4E09\u83F1UFJ\u9280\u884CATM": [-8, 11.6], "\u65B0\u6885\u7530\u30B3\u30AF\u30DF\u30F3\u85AC\u5C40": [8, 12.4], "KIEFEL COFFEE": [-8, 23.4], "\u30D5\u30A1\u30DF\u30EA\u30FC\u30DE\u30FC\u30C8 \u30C9\u30FC\u30C1\u30AB\u5E97": [8, 31.4], "plus on \u30C9\u30FC\u30C1\u30AB\u5E97": [-5.5, 36.2], "\u30EC\u30AA\u30CB\u30C0\u30B9 \u5927\u962A\u6885\u7530\u5E97": [-5.5, 49.8], "\u30A4\u30F3\u30C7\u30A2\u30F3\u30AB\u30EC\u30FC \u5802\u5CF6\u5E97": [8, 46.9], "\u6771\u4EAC\u6CB9\u7D44\u7DCF\u672C\u5E97 \u30C9\u30FC\u30C1\u30AB\u7D44": [-10, 50], "newKOBE \u5802\u5CF6\u5E97": [8, 55.4], "\u308F\u305F\u3057\u306E\u30C0\u30A4\u30CB\u30F3\u30B0 \xD7 SAKAGURA": [-8, 58.5], "\u307F\u305A\u307B\u9280\u884CATM": [8, 61], "\u30C0\u30EB\u98DF\u5802 \u5802\u5CF6\u5730\u4E0B\u8857\u5E97": [-8, 63.7], "\u30DF\u30B9\u30BF\u30FC\u30AF\u30A4\u30C3\u30AF\u30DE\u30F3": [8, 66], "\u308A\u305D\u306A\u9280\u884CATM": [8, 70.7], "\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u30C9\u30FC\u30C1\u30AB\u5E97": [-8, 75.9], "\u307B\u3051\u3093\u767E\u82B1 \u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97": [8, 77.7], "J\u30FB\u30DE\u30FC\u30B1\u30C3\u30C8\u5927\u962A\u30C9\u30FC\u30C1\u30AB\u5E97": [8, 85.8], "\u6587\u5B57\u306E\u5E97 \u5802\u5CF6": [-8, 87.9], "\u3058\u3083\u3093\u3071\u3089\u5927\u962A\u5802\u5CF6\u5E97": [8, 91.2], "BIG VISION": [-8, 95.1], "\u4E2D\u592E\u30B3\u30F3\u30BF\u30AF\u30C8": [-8, 102.4], "\u30B3\u30AF\u30DF\u30F3\u30C9\u30E9\u30C3\u30B0 \u5802\u5CF6\u5E97": [8, 104.3], "\u3061\u3050\u3055\u5927\u962A\u3046\u3081\u3060\u652F\u5E97": [-5.8, 109.2], "\u30EA\u30D5\u30EC\u30C3\u30B7\u30E5\u5DE5\u623F\u30AA\u30BA \u5802\u5CF6\u5E97": [-9.8, 111], "\u30BB\u30D6\u30F3\u9280\u884CATM": [8, 122.6], "\u6642\u8A08\u4FEE\u7406\u5DE5\u623F \u767D\u91D1\u5802 \u5927\u962A\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97": [-8, 121.5], "\u897F\u6885\u7530\u773C\u79D1\u30AF\u30EA\u30CB\u30C3\u30AF": [8, 132.7], "\u9752\u68EE\u30FB\u5CA9\u624B\u3048\u3047\u3082\u3093\u30B7\u30E7\u30C3\u30D7": [-8, 132.7], "TRARIUM by ACE": [8, 142.1], "Buena.": [-8, 143.8], "KENFORD\u5802\u5CF6\u5730\u4E0B\u8857\u5E97": [8, 147.8], "\u6885\u7530\u3082\u308A\u308F\u304D\u9AA8\u76E4\u937C\u7078\u6574\u9AA8\u9662": [-8, 151.5], "\u5343\u9CE5\u5C4B\u5B97\u5BB6 \u5802\u5CF6\u5E97": [8, 160], "Perfect Suit FActory": [-8, 161.3], "\u30C0\u30A4\u30BD\u30FC": [-8, 175.3], "\u30AF\u30C3\u30AF\u30C7\u30EA\u5FA1\u81B3 \u30C9\u30FC\u30C1\u30AB\u5E97": [8, 177.6], "\u4E09\u4E95\u4F4F\u53CB\u9280\u884CATM": [-8, 185.8], "\u30C9\u30C8\u30FC\u30EB\u30B3\u30FC\u30D2\u30FC\u30B7\u30E7\u30C3\u30D7\u30C9\u30FC\u30C1\u30AB": [7.9, 189], "\u304A\u305F\u304B\u3089\u3084\u6885\u7530\u30C9\u30FC\u30C1\u30AB\u5E97": [-7.8, 198.1], "KUSELESS": [-8, 193.7], "\u5409\u91CE\u5BB6": [-5.8, 205.9], "\u90FD\u7531\u5802\u5CF6\u5E97": [10.2, 203.7], "\u304B\u3063\u307D\u3046\u304E \u30C9\u30FC\u30C1\u30AB\u5E97": [-3.5, 214.4], "Barber the GM \u5802\u5CF6": [12.7, 212.8], "\u304A\u304D\u304C\u308B\u4E32\u5BB6\u7269\u8A9E": [-0.9, 223.7], "\u304A\u9152\u306E\u7F8E\u8853\u9928 \u30C9\u30FC\u30C1\u30AB\u5E97": [15, 221.5], "\u304A\u3089\u304C\u854E\u9EA6": [2.4, 235.8], "\u30C9\u30C3\u30C8\u30DF\u30FC\u30C6\u30A3\u30F3\u30B0\u5802\u5CF6\u8CB8\u4F1A\u8B70\u5BA4": [17.9, 232.1], "\u6D77\u9BAE\u5C45\u9152\u5C4B\u3042\u3044\u3061": [5.1, 245.9], "\u4E2D\u592E\u8ED2 \u30C9\u30FC\u30C1\u30AB\u5E97": [21.8, 246.1], "\u3064\u3051\u9EBA\u5C02\u9580\u5E97 \u4E09\u7530\u88FD\u9EBA\u6240 \u30C9\u30FC\u30C1\u30AB\u5E97": [7.3, 253.7], "CAF\xC9 ONthe": [11.2, 268.1], "\u81EA\u5BB6\u88FD\u9EBA\u6775\u5C4B": [28.4, 270.2] };
+    }
+  });
+
   // detail_maps.js
   var sanban, DETAIL_MAPS;
   var init_detail_maps = __esm({
@@ -33853,6 +33924,7 @@
       init_detail_sanban_n_b2();
       init_detail_sanban_s_b1();
       init_detail_sanban_s_b2();
+      init_detail_dotica();
       sanban = (m, p, areas, floor, name, origin) => ({
         FLOOR: m[p + "_FLOOR"],
         WALK: m[p + "_WALK"],
@@ -33873,8 +33945,22 @@
         sanban_s_b2: sanban(detail_sanban_s_b2_exports, "SANBAN_S_B2", ["sanban_s_b2"], "B1", "\u962A\u6025\u4E09\u756A\u8857 \u5357\u9928B2F", [1600, 690]),
         whity: { FLOOR: WHITY_FLOOR, WALK: WHITY_WALK, BLOCKS: WHITY_BLOCKS, REAL_POS: WHITY_REAL_POS, AREA_ANCHORS: WHITY_AREA_ANCHORS, origin: [1600, 0] },
         // ガイド座標 x -80〜200 / y -250〜90 → world x 1560〜1700 / z -125〜45
-        avanza: { FLOOR: AVANZA_FLOOR, WALK: AVANZA_WALK, BLOCKS: AVANZA_BLOCKS, REAL_POS: AVANZA_REAL_POS, AREA_ANCHORS: AVANZA_AREA_ANCHORS, origin: [1600, 300] }
+        avanza: { FLOOR: AVANZA_FLOOR, WALK: AVANZA_WALK, BLOCKS: AVANZA_BLOCKS, REAL_POS: AVANZA_REAL_POS, AREA_ANCHORS: AVANZA_AREA_ANCHORS, origin: [1600, 300] },
         // ガイド座標 0〜60 / 0〜72 → world z 300〜336(ホワイティの南、重ならない)
+        // ドーチカ: 公式マップ(北を上に回転)。広域では北・中・南の3エリアの集約ドットが入口
+        dotica: {
+          FLOOR: DOTICA_FLOOR,
+          WALK: DOTICA_WALK,
+          BLOCKS: DOTICA_BLOCKS,
+          REAL_POS: DOTICA_REAL_POS,
+          AREA_ANCHORS: DOTICA_AREA_ANCHORS,
+          zone: "dotica",
+          areas: ["dotica_n", "dotica_c", "dotica_s"],
+          floor: "B1",
+          name: "\u30C9\u30FC\u30B8\u30DE\u5730\u4E0B\u30BB\u30F3\u30BF\u30FC",
+          origin: [1600, 800]
+        }
+        // ガイド座標 x -12〜40 / y 0〜290 → world z 800〜945
       };
     }
   });
