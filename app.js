@@ -31653,6 +31653,8 @@
         g("\u4ED9\u53F0\u725B\u305F\u3093 \u9EA6\u3068\u308D \u4E09\u4EE3\u76EE\u6587\u6CBB", "sanban_n_b2", "\u6771"),
         g("\u30E8\u30FC\u30AD\u30FC\u30BA\u30AF\u30EC\u30FC\u30D7\u30EA\u30FC / \u30D4\u30FC\u30B9\u30AA\u30D6\u30D9\u30A4\u30AF", "sanban_n_b2", "\u5357\u6771"),
         g("1\u30DD\u30F3\u30C9\u306E\u30B9\u30C6\u30FC\u30AD\u30CF\u30F3\u30D0\u30FC\u30B0 \u30BF\u30B1\u30EB", "sanban_n_b2", "\u5357"),
+        g("\u820E\u9234", "sanban_n_b2", "\u5357"),
+        // 区画14(現地の案内板 2026-09-03。公式マップ採録時には無かった)
         g("\u307F\u305D\u304B\u3064 \u77E2\u5834\u3068\u3093", "sanban_n_b2", "\u5357"),
         g("\u4E2D\u83EF\u305D\u3070\u5C02\u9580 \u30D0\u30E9\u305D\u3070\u5C4B", "sanban_n_b2", "\u5357\u897F"),
         g("\u5927\u962A\u30FB\u5802\u5CF6 \u3068\u308D\u5BB6", "sanban_n_b2", "\u5357\u897F"),
@@ -33751,13 +33753,70 @@
     }
   });
 
+  // detail_sanban_n_b1.js
+  var detail_sanban_n_b1_exports = {};
+  __export(detail_sanban_n_b1_exports, {
+    SANBAN_N_B1_AREA_ANCHORS: () => SANBAN_N_B1_AREA_ANCHORS,
+    SANBAN_N_B1_BLOCKS: () => SANBAN_N_B1_BLOCKS,
+    SANBAN_N_B1_FLOOR: () => SANBAN_N_B1_FLOOR,
+    SANBAN_N_B1_REAL_POS: () => SANBAN_N_B1_REAL_POS,
+    SANBAN_N_B1_WALK: () => SANBAN_N_B1_WALK
+  });
+  var SANBAN_N_B1_FLOOR, SANBAN_N_B1_WALK, SANBAN_N_B1_AREA_ANCHORS, SANBAN_N_B1_BLOCKS, SANBAN_N_B1_REAL_POS;
+  var init_detail_sanban_n_b1 = __esm({
+    "detail_sanban_n_b1.js"() {
+      SANBAN_N_B1_FLOOR = [{ "pts": [[4.8, 38.5], [10.2, 38.7], [10.2, 40.2], [18.9, 40.2], [33.8, 39.5], [33.8, 39.1], [36.1, 39.1], [36.1, 37.8], [38.8, 37.8], [38.8, 36.7], [40.9, 36.5], [43.3, 36.5], [43.3, 38.7], [61, 37.1], [61, 33.4], [60.1, 33.4], [60.1, 31.1], [61, 30.9], [61, 20.3], [64.9, 20.3], [64.6, 16.6], [69.7, 16.6], [69.7, 38.2], [14.7, 42], [35.2, 42], [35.2, 40.8], [70, 38.6], [70.3, 9.9], [70, 8.3], [66.7, 7.4], [66.7, 6.4], [68.1, 5.3], [69.3, 5.3], [69.4, 4.2], [68.3, 4.1], [67.4, 2.8], [64.9, 2.4], [63.8, 2.8], [62.8, 4], [62.8, 5.9], [61, 5.9], [49.1, 2.4], [37.7, 2.4], [37.7, 0], [22.5, 0], [22.5, 2.4], [21, 2.4], [21, 0], [16.7, 0], [16.7, 1.4], [15, 1.4], [15, 0], [7.1, 0], [7.2, 2.4], [-0.3, 2.5], [-0.3, 42], [0, 2.7], [7.5, 2.7], [7.5, 5.7], [2.7, 5.7], [2.7, 36], [5.1, 36]], "holes": [] }];
+      SANBAN_N_B1_WALK = { "x0": -0.3, "y0": 0, "cell": 1.5, "w": 49, "h": 30, "bits": "4Lv/AQAAwH//AwAAAPz//z/wAPiP///jAfAf/x/+AeA//gH8D8B//AP4H4B/4P+jAAD/wP9HAAD+gR8AAAD8Az8AAAD4B/7/PwDwD/z/fgBgEACAwQDAYAAAAwCAwQMABgD8gw8ADAD4/38AGAAw//8BPADg//8PeADA/////wwA4P8/wB8AwP//gQAAgP9/AAEA8P//AAIA8P8JAAQAAP4fABwAAADwBwAAAAAAAAAAAAAAAAAAAA==" };
+      SANBAN_N_B1_AREA_ANCHORS = { "sanban_n_b1": [29.7, 26.7] };
+      SANBAN_N_B1_BLOCKS = [{ "g": [[2.7, 5.7], [2.7, 24.1], [12.2, 24.1], [12.2, 10.2], [12, 10.2], [12, 9.9], [11.7, 9.8], [11.6, 9.4], [11.3, 9.3], [11.3, 3.2], [7.5, 3.2], [7.5, 5.7]], "mall": "sanban_n_b1", "no": "1" }, { "g": [[2.7, 31.8], [2.7, 36], [4.8, 36], [4.8, 35.8], [8.6, 35.8], [8.6, 36], [12.2, 36], [12.2, 31.8]], "mall": "sanban_n_b1", "no": "3" }, { "g": [[5.9, 26.7], [5.9, 29.2], [9, 29.2], [9, 26.7]], "mall": "sanban_n_b1", "no": "2" }, { "g": [[14.7, 19.8], [14.7, 26], [21.5, 26], [21.5, 19.8]], "mall": "sanban_n_b1", "no": "1" }, { "g": [[23.4, 37.1], [23.4, 39.5], [26.7, 39.5], [26.7, 37.1], [26.6, 37.1], [26.6, 37], [23.6, 37], [23.6, 37.1]], "mall": "sanban_n_b1", "no": "7" }, { "g": [[25.1, 4.1], [25.1, 9.7], [24.9, 9.7], [24.9, 9.8], [24.6, 9.8], [24.5, 10.1], [29.1, 10.1], [29.1, 4.1]], "mall": "sanban_n_b1", "no": "5" }, { "g": [[24.2, 10.3], [24.2, 16], [24.3, 16], [24.3, 16.1], [33.2, 16.1], [33.2, 10.4]], "mall": "sanban_n_b1", "no": "6" }, { "g": [[24.2, 16.4], [24.2, 21.3], [24.3, 21.3], [24.6, 21.7], [24.9, 21.7], [25.4, 22.1], [25.7, 22.1], [26.1, 22.5], [26.4, 22.5], [26.4, 22.7], [26.6, 22.7], [27, 23.1], [27.3, 23.1], [27.8, 23.5], [28.1, 23.5], [28.5, 24], [28.8, 24], [28.8, 24.1], [29, 24.1], [29.4, 24.5], [29.7, 24.5], [30.2, 25], [30.5, 25], [30.9, 25.4], [31.2, 25.4], [31.2, 25.5], [31.4, 25.5], [31.8, 26], [32.1, 26], [32.6, 26.4], [32.9, 26.4], [33.3, 26.9], [33.6, 26.9], [33.6, 27], [33.8, 27], [34.2, 27.4], [34.5, 27.4], [34.5, 27.5], [34.7, 27.5], [35, 27.9], [35.3, 27.9], [35.8, 28.3], [36.1, 28.3], [36.5, 28.7], [36.8, 28.7], [36.8, 28.8], [37, 28.8], [37.4, 29.3], [37.7, 29.3], [37.7, 29.4], [48.4, 29.4], [48.4, 27.2], [50.8, 27.2], [50.8, 19.5], [33.2, 19.5], [33.2, 16.4]], "mall": "sanban_n_b1", "no": "6" }, { "g": [[28.8, 36.9], [28.8, 39.5], [29.7, 39.5], [29.7, 39.3], [30.8, 39.3], [30.8, 39.5], [33.8, 39.5], [33.8, 39.1], [35.2, 39.1], [35.2, 39], [35.9, 39], [35.9, 37.8], [35.8, 37.8], [35.8, 37.6], [35.3, 37.4], [35.3, 37.1], [35.2, 37.1], [35, 36.9]], "mall": "sanban_n_b1", "no": "8" }, { "g": [[35.3, 34.6], [35.3, 36.8], [35.5, 36.8], [35.5, 37], [35.8, 37.1], [35.8, 37.4], [35.9, 37.4], [36.2, 37.7], [38.6, 37.7], [38.6, 36.7], [40.9, 36.7], [40.9, 36.5], [43.1, 36.5], [43.1, 36.4], [43.3, 36.4], [43.3, 34.2], [36.7, 34], [36.7, 34.6]], "mall": "sanban_n_b1", "no": "10" }, { "g": [[36.7, 32.4], [39.8, 32.4], [39.8, 33.9], [43.6, 33.9], [43.6, 38.7], [44, 38.7], [44, 38.6], [44.8, 38.6], [44.8, 38.5], [45.5, 38.5], [45.5, 38.4], [46.3, 38.4], [46.3, 38.2], [47.6, 38.2], [47.6, 38.1], [48.8, 38.1], [48.8, 38], [50.2, 38], [50.2, 37.9], [52.9, 37.8], [52.9, 37.7], [54.1, 37.7], [54.1, 37.6], [55.4, 37.6], [55.4, 37.5], [58.1, 37.4], [58.1, 37.2], [59.3, 37.2], [59.3, 37.1], [60.7, 37.1], [60.7, 33.5], [50.6, 33.5], [50.5, 33.3], [50.2, 33.3], [49.9, 32.9], [49.6, 32.9], [49.1, 32.5], [48.8, 32.5], [48.4, 32.1], [48.1, 32.1], [47.6, 31.6], [47.3, 31.6], [47.3, 31.5], [47.2, 31.5], [46.9, 31.2], [46.6, 31.2], [46.4, 30.9], [38.9, 30.9], [38.9, 31.1], [38.6, 31.1], [38.2, 31.5], [37.9, 31.5], [37.4, 31.9], [37.1, 31.9], [37.1, 32.1], [36.7, 32.3]], "mall": "sanban_n_b1", "no": "11" }, { "g": [[41.9, 7.3], [41.9, 11.1], [48.7, 11.1], [48.7, 10.6], [52.4, 10.6], [52.4, 13.4], [48.7, 13.4], [48.7, 12.9], [41.9, 12.9], [41.9, 16.9], [42.1, 16.9], [42.1, 17], [61, 17], [61, 16.9], [62, 16.9], [62, 16.8], [62.2, 16.8], [62.2, 16.6], [69.8, 16.6], [69.8, 9.9], [60.8, 9.9], [60.8, 10.1], [61, 10.1], [61, 10.3], [61.1, 10.3], [61.1, 10.5], [61.3, 10.5], [61.3, 11.5], [61.1, 11.5], [61.1, 11.6], [59.9, 11.6], [59.9, 11.5], [59.8, 11.5], [59.8, 10.6], [59.6, 10.6], [59.6, 10.5], [58.9, 10.5], [58.9, 10.6], [58.7, 10.6], [58.7, 12.8], [58.6, 12.8], [58.6, 12.9], [57.4, 12.9], [57.4, 12.8], [57.2, 12.8], [57.2, 10.6], [57.4, 10.6], [57.4, 10.3], [57.5, 10.3], [57.5, 10.1], [57.7, 10.1], [57.7, 9.9], [55.9, 9.9], [55.9, 5.4], [49.1, 5.4], [49.1, 7.2], [49, 7.2], [49, 7.3]], "mall": "sanban_n_b1", "no": "12" }, { "g": [[53.5, 17.9], [53.5, 31.1], [56.8, 31.1], [56.8, 30.6], [60.4, 30.6], [60.4, 31.1], [60.7, 31.1], [60.7, 19.7], [54.8, 19.7], [54.8, 17.9]], "mall": "sanban_n_b1", "no": "6" }];
+      SANBAN_N_B1_REAL_POS = { "\u30CB\u30C8\u30EA \u30C7\u30B3\u30DB\u30FC\u30E0": [12.8, 18.7], "\u30D5\u30C3\u30C8\u30BB\u30E9\u30D4\u30FC": [7.4, 28], "\u30AB\u30FC\u30C9\u30B7\u30E7\u30C3\u30D7 \u30DF\u30F3\u30C8": [7.5, 33.9], "\u9244\u9053\u6A21\u578B\u306E\u5E97 \u30DD\u30DD\u30F3\u30C7\u30C3\u30BF": [27.1, 7.1], "\u30AD\u30C7\u30A4\u30E9\u30F3\u30C9 / \u3069\u3093\u3050\u308A\u5171\u548C\u56FD / \u30B9\u30CC\u30FC\u30D4\u30FC\u30BF\u30A6\u30F3": [41.3, 20.4], "\u30D7\u30EA\u30F3\u30BB\u30B9\u30A2\u30C3\u30B7\u30E5": [25.1, 38.2], "\u30A6\u30EB\u30C8\u30E9\u30DE\u30F3\u30EF\u30FC\u30EB\u30C9M78": [32.2, 38.2], "\u30DB\u30ED\u30E9\u30A4\u30D6\u30D7\u30ED\u30C0\u30AF\u30B7\u30E7\u30F3 \u30AA\u30D5\u30A3\u30B7\u30E3\u30EB\u30B7\u30E7\u30C3\u30D7": [39, 35.6], "\u30AB\u30EF\u30C1\uFF08\u753B\u6750\u30FB\u6587\u5177\uFF09": [49.5, 34.8], "\u30E6\u30B6\u30EF\u30E4": [55.1, 12.4] };
+    }
+  });
+
+  // detail_sanban_n_b2.js
+  var detail_sanban_n_b2_exports = {};
+  __export(detail_sanban_n_b2_exports, {
+    SANBAN_N_B2_AREA_ANCHORS: () => SANBAN_N_B2_AREA_ANCHORS,
+    SANBAN_N_B2_BLOCKS: () => SANBAN_N_B2_BLOCKS,
+    SANBAN_N_B2_FLOOR: () => SANBAN_N_B2_FLOOR,
+    SANBAN_N_B2_REAL_POS: () => SANBAN_N_B2_REAL_POS,
+    SANBAN_N_B2_WALK: () => SANBAN_N_B2_WALK
+  });
+  var SANBAN_N_B2_FLOOR, SANBAN_N_B2_WALK, SANBAN_N_B2_AREA_ANCHORS, SANBAN_N_B2_BLOCKS, SANBAN_N_B2_REAL_POS;
+  var init_detail_sanban_n_b2 = __esm({
+    "detail_sanban_n_b2.js"() {
+      SANBAN_N_B2_FLOOR = [{ "pts": [[0.1, 9.9], [-0.2, 11.5], [10.1, 11.5], [10.1, 27.3], [-0.3, 27.4], [0.1, 27.9], [-0.2, 29.5], [10.1, 29.5], [10.1, 36.6], [40, 36.6], [40, 35.9], [63.3, 34.5], [63.3, 3.1], [62.6, 3.1], [62.6, 0.1], [11.4, -0.2], [11.2, 0.9], [10.1, 1.3], [10.1, 9.2], [-0.2, 9.2]], "holes": [] }];
+      SANBAN_N_B2_WALK = { "x0": -0.3, "y0": -0.2, "cell": 1.5, "w": 44, "h": 26, "bits": "AP////8DyP///z+A///P/wPI///PP4D8////A/j///w////////z////zz+A/////wP4///PP4D/////A/j8//8/gP//z/8D+Pz//D+A/////wP4//j8P4DP////A/j///8////////z/////z8A4P///wP4////P4D/Z4L/A/j///8AgP//BwAAAAAAAAA=" };
+      SANBAN_N_B2_AREA_ANCHORS = { "sanban_n_b2": [31.6, 17.4] };
+      SANBAN_N_B2_BLOCKS = [{ "g": [[10.9, 29.2], [10.9, 30.9], [18.9, 30.9], [18.9, 29.8], [14, 29.8], [14, 29.2], [13.6, 29.2], [11.1, 29.2]], "mall": "sanban_n_b2", "no": "12" }, { "g": [[11.3, 1.6], [11.3, 3.2], [14.1, 3.2], [14.1, 1.6]], "mall": "sanban_n_b2", "no": "18" }, { "g": [[11.3, 3.6], [11.3, 5.2], [14.1, 5.2], [14.1, 3.6]], "mall": "sanban_n_b2", "no": "17" }, { "g": [[11.3, 6.1], [11.3, 7.8], [14.1, 7.8], [14.1, 6.1]], "mall": "sanban_n_b2", "no": "16" }, { "g": [[17.6, 16.2], [17.6, 17.8], [20.4, 17.8], [20.4, 16.2]], "mall": "sanban_n_b2", "no": "15" }, { "g": [[17.6, 18.8], [17.6, 20.5], [20.4, 20.5], [20.4, 18.8]], "mall": "sanban_n_b2", "no": "14" }, { "g": [[17.8, 23.6], [17.8, 25.3], [20.6, 25.3], [20.6, 23.6]], "mall": "sanban_n_b2", "no": "13" }, { "g": [[28.3, 33], [28.3, 34.5], [31.2, 34.5], [31.2, 33.2], [31.1, 33.2], [31.1, 33]], "mall": "sanban_n_b2", "no": "11" }, { "g": [[29.3, 22.1], [29.3, 23.6], [34.4, 23.6], [34.4, 22.1], [33.3, 22.1], [33.3, 21.8], [30.4, 21.8], [30.4, 22.1]], "mall": "sanban_n_b2", "no": "8" }, { "g": [[33.7, 33], [33.7, 34.5], [36.5, 34.5], [36.5, 33]], "mall": "sanban_n_b2", "no": "10" }, { "g": [[38.1, 33.1], [38.5, 34.8], [39.3, 34.8], [39.8, 34.8], [39.8, 34.7], [42.6, 34.6], [42.6, 34.5], [44, 34.5], [45.5, 34.5], [45.5, 34.4], [45.6, 34.4], [45.6, 34], [45.5, 34], [45.5, 33.4], [45.4, 33.4], [45.2, 32.7], [43.3, 32.7], [43.3, 32.5], [40.3, 32.5], [40.3, 32.9], [39.3, 32.8], [39.3, 33], [38.2, 33], [38.2, 33.1]], "mall": "sanban_n_b2", "no": "9" }, { "g": [[41, 7.6], [41, 9.3], [44, 9.3], [44, 7.7], [43.8, 7.7], [43.8, 7.6]], "mall": "sanban_n_b2", "no": "3" }, { "g": [[41.6, 2.6], [41.6, 4.3], [44.4, 4.3], [44.4, 2.6]], "mall": "sanban_n_b2", "no": "1" }, { "g": [[42.3, 18.5], [42.3, 20.1], [45.1, 20.1], [45.1, 18.5]], "mall": "sanban_n_b2", "no": "6" }, { "g": [[42.3, 21.6], [42.3, 23.3], [45.1, 23.3], [45.1, 21.6]], "mall": "sanban_n_b2", "no": "7" }, { "g": [[47.7, 4.3], [47.7, 5.8], [50.5, 5.8], [50.5, 4.3]], "mall": "sanban_n_b2", "no": "2" }, { "g": [[47.7, 10], [47.7, 11.6], [50.5, 11.6], [50.5, 10]], "mall": "sanban_n_b2", "no": "4" }, { "g": [[47.7, 13.1], [47.7, 14.8], [50.5, 14.8], [50.5, 13.1]], "mall": "sanban_n_b2", "no": "5" }];
+      SANBAN_N_B2_REAL_POS = { "\u3069\u3046\u3068\u3093\u307C\u308A\u795E\u5EA7\xD7\u9752\u85CD": [43, 3.5], "\u5929\u4E3C\u30FB\u5929\u4E32\u30FB\u4E32\u30AB\u30C4 \u3044\u3057\u306E\u3084": [49.1, 5.1], "\u8D8A\u5357\u8DEF \u30A8\u30C4\u30CA\u30F3\u30EB\u30FC": [42.5, 8.4], "\u304A\u597D\u307F\u713C \u6E05\u5341\u90CE": [49.1, 10.8], "\u30DF\u30A2\u30AD\u30C3\u30C1\u30F3": [49.1, 14], "\u30EA:\u30A8\u30F3\u30C8\u697D\u97D3\u5802": [43.7, 19.3], "\u30A4\u30BF\u30EA\u30A2\u30F3\u30C0\u30A4\u30CB\u30F3\u30B0 \u30DA\u30B9\u30AB": [43.7, 22.4], "&\u30B3\u30FC\u30D2\u30FC \u30E1\u30BE\u30F3\u30AB\u30A4\u30B6\u30FC": [31.9, 22.7], "\u30D5\u30EC\u30C3\u30B7\u30E5\u30CD\u30B9\u30D0\u30FC\u30AC\u30FC": [41.8, 33.6], "\u30C0\u30D1\u30A4\u30C0\u30F3105": [35.1, 33.8], "\u4ED9\u53F0\u725B\u305F\u3093 \u9EA6\u3068\u308D \u4E09\u4EE3\u76EE\u6587\u6CBB": [29.7, 33.8], "\u30E8\u30FC\u30AD\u30FC\u30BA\u30AF\u30EC\u30FC\u30D7\u30EA\u30FC / \u30D4\u30FC\u30B9\u30AA\u30D6\u30D9\u30A4\u30AF": [14.5, 30.2], "1\u30DD\u30F3\u30C9\u306E\u30B9\u30C6\u30FC\u30AD\u30CF\u30F3\u30D0\u30FC\u30B0 \u30BF\u30B1\u30EB": [19.2, 24.5], "\u820E\u9234": [19, 19.6], "\u307F\u305D\u304B\u3064 \u77E2\u5834\u3068\u3093": [12.7, 2.4], "\u4E2D\u83EF\u305D\u3070\u5C02\u9580 \u30D0\u30E9\u305D\u3070\u5C4B": [12.7, 7], "\u5927\u962A\u30FB\u5802\u5CF6 \u3068\u308D\u5BB6": [12.7, 4.4], "\u5BAE\u6B66\u8B83\u5C90\u3046\u3069\u3093": [19, 17] };
+    }
+  });
+
   // detail_maps.js
-  var DETAIL_MAPS;
+  var sanban, DETAIL_MAPS;
   var init_detail_maps = __esm({
     "detail_maps.js"() {
       init_detail_whity();
       init_detail_avanza();
+      init_detail_sanban_n_b1();
+      init_detail_sanban_n_b2();
+      sanban = (m, p, areas, floor, name, origin) => ({
+        FLOOR: m[p + "_FLOOR"],
+        WALK: m[p + "_WALK"],
+        BLOCKS: m[p + "_BLOCKS"],
+        REAL_POS: m[p + "_REAL_POS"],
+        AREA_ANCHORS: m[p + "_AREA_ANCHORS"],
+        zone: "sanban",
+        areas,
+        floor,
+        name,
+        origin
+      });
       DETAIL_MAPS = {
+        sanban_n_b1: sanban(detail_sanban_n_b1_exports, "SANBAN_N_B1", ["sanban_n_b1"], "S1", "\u962A\u6025\u4E09\u756A\u8857 \u5317\u9928B1F", [1600, 500]),
+        // ガイド座標 0〜70 / 0〜42 → world z 500〜521
+        sanban_n_b2: sanban(detail_sanban_n_b2_exports, "SANBAN_N_B2", ["sanban_n_b2"], "B1", "\u962A\u6025\u4E09\u756A\u8857 \u5317\u9928B2F", [1600, 560]),
         whity: { FLOOR: WHITY_FLOOR, WALK: WHITY_WALK, BLOCKS: WHITY_BLOCKS, REAL_POS: WHITY_REAL_POS, AREA_ANCHORS: WHITY_AREA_ANCHORS, origin: [1600, 0] },
         // ガイド座標 x -80〜200 / y -250〜90 → world x 1560〜1700 / z -125〜45
         avanza: { FLOOR: AVANZA_FLOOR, WALK: AVANZA_WALK, BLOCKS: AVANZA_BLOCKS, REAL_POS: AVANZA_REAL_POS, AREA_ANCHORS: AVANZA_AREA_ANCHORS, origin: [1600, 300] }
@@ -34753,7 +34812,7 @@
                 });
               });
             }
-            if (a.merged) MERGED_DOTS.push({ mx: cx, my: cy, floor: a.floor, zone: a.zone, near: a.near[0] });
+            if (a.merged) MERGED_DOTS.push({ mx: cx, my: cy, floor: a.floor, zone: a.zone, area: areaId, near: a.near[0] });
             continue;
           }
           const segs = [];
@@ -34868,7 +34927,7 @@
         scene,
         DETAIL_MAPS,
         // 開発用: 検証時にカメラ操作・状態確認に使う。z は詳細地図の施設ID(省略時は開いている施設、無ければ whity)
-        dbgDetail: (z = detailMode || "whity") => ({ zone: z, ids: DETAIL[z].shopIds.length, labels: DETAIL[z].labels.length, mode: detailMode, realKeys: Object.keys(DETAIL_MAPS[z].REAL_POS).length, sampleNode: NODES.find((n) => n.type === "shop" && n.zone === z)?.name }),
+        dbgDetail: (z = detailMode || "whity") => ({ zone: z, ids: DETAIL[z].shopIds.length, labels: DETAIL[z].labels.length, mode: detailMode, realKeys: Object.keys(DETAIL_MAPS[z].REAL_POS).length, sampleNode: NODES.find((n) => detailKeyOfShop(n) === z)?.name }),
         dbgNav: (a, b, z = detailMode || "whity") => DETAIL[z].nav(a, b),
         dbgReal: (name, z = "whity") => DETAIL_MAPS[z].REAL_POS[name],
         dbgWalk: (z = "whity") => DETAIL_MAPS[z].WALK
@@ -35408,7 +35467,43 @@
       var g2w = (zone, [gx, gy]) => [gx * 0.5 + DETAIL_MAPS[zone].origin[0], gy * 0.5 + DETAIL_MAPS[zone].origin[1]];
       var detailMode = null;
       var DETAIL = {};
-      for (const zone of Object.keys(DETAIL_MAPS)) DETAIL[zone] = { group: null, blockByShop: {}, shopIds: [], labels: [], anchors: [], nav: null };
+      for (const [key, M] of Object.entries(DETAIL_MAPS)) {
+        const a = M.areas && SHOP_AREAS[M.areas[0]];
+        const [ex, ez] = a ? M2W([a.rect[0], a.rect[1]]) : M2W(ZONES[M.zone || key].label);
+        DETAIL[key] = {
+          group: null,
+          blockByShop: {},
+          shopIds: [],
+          labels: [],
+          anchors: [],
+          nav: null,
+          y: FLOOR_Y[M.floor || "B1"],
+          entry: [ex, ez]
+        };
+      }
+      function detailKeyOfArea(area2, zone) {
+        for (const [k, M] of Object.entries(DETAIL_MAPS)) {
+          if (M.areas) {
+            if (area2 && M.areas.includes(area2)) return k;
+          } else if ((M.zone || k) === zone) return k;
+        }
+        return null;
+      }
+      var detailKeyOfShop = (n) => n && n.type === "shop" ? detailKeyOfArea(n.area, n.zone) : null;
+      function detailKeyForFloorHit(hit) {
+        const { zone, floor } = hit.object.userData;
+        let best = null, bd = Infinity;
+        for (const [k, M] of Object.entries(DETAIL_MAPS)) {
+          if ((M.zone || k) !== zone || (M.floor || "B1") !== (floor || "B1")) continue;
+          const [ex, ez] = DETAIL[k].entry;
+          const d = Math.hypot(hit.point.x - ex, hit.point.z - ez);
+          if (d < bd) {
+            bd = d;
+            best = k;
+          }
+        }
+        return best;
+      }
       function buildDetailLabels(zone) {
         const D = DETAIL[zone];
         if (D.labels.length) return;
@@ -35445,7 +35540,7 @@
         buildDetailLabels(zoneId);
         for (const d of D.labels) d.lab.visible = true;
         document.getElementById("detail-bar").hidden = false;
-        document.getElementById("detail-bar-name").textContent = ZONES[zoneId].name + " \u8A73\u7D30\u5730\u56F3";
+        document.getElementById("detail-bar-name").textContent = (DETAIL_MAPS[zoneId].name || ZONES[DETAIL_MAPS[zoneId].zone || zoneId].name) + " \u8A73\u7D30\u5730\u56F3";
         hideForDetail(floorGroups.S1);
         hideForDetail(floorGroups.B1);
         hideForDetail(floorGroups.B2);
@@ -35496,9 +35591,9 @@
         controls.minDistance = 40;
         camAnim = {
           fromPos: camera.position.clone(),
-          toPos: new Vector3(c.x, FLOOR_Y.B1 + r * 1.7, c.z + 0.1),
+          toPos: new Vector3(c.x, D.y + r * 1.7, c.z + 0.1),
           fromTgt: controls.target.clone(),
-          toTgt: new Vector3(c.x, FLOOR_Y.B1, c.z),
+          toTgt: new Vector3(c.x, D.y, c.z),
           start: performance.now(),
           dur: 900,
           hard: true
@@ -35899,8 +35994,11 @@
         });
         const mesh = new Mesh(mergedDotGeo, mergedDotMats[md.zone]);
         mesh.position.set(x, FLOOR_Y[md.floor] + 1.7, z);
-        if (DETAIL_MAPS[md.zone]) {
+        const detailKey = detailKeyOfArea(md.area, md.zone);
+        if (detailKey) {
           mesh.userData.zone = md.zone;
+          mesh.userData.floor = md.floor;
+          mesh.userData.detailKey = detailKey;
         } else {
           mesh.userData.nodeId = md.near;
           nodeMeshes.push(mesh);
@@ -35933,12 +36031,12 @@
             shape.holes.push(path);
           }
           const geo = new ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
-          const mesh = new Mesh(geo, zoneMats[zone] || corridorMat);
+          const mesh = new Mesh(geo, zoneMats[M.zone || zone] || corridorMat);
           mesh.rotation.x = -Math.PI / 2;
-          mesh.position.y = FLOOR_Y.B1 - 1.5;
+          mesh.position.y = D.y - 1.5;
           detailGroup.add(mesh);
         }
-        const zc = ZONES[zone].color;
+        const zc = ZONES[M.zone || zone].color;
         const occMat = new MeshStandardMaterial({
           color: new Color(zc).lerp(new Color(16777215), 0.5),
           emissive: new Color(zc).multiplyScalar(0.35),
@@ -35954,7 +36052,7 @@
           }
           return c;
         };
-        const shopsReal = NODES.filter((n) => n.type === "shop" && n.zone === zone && M.REAL_POS[n.name]);
+        const shopsReal = NODES.filter((n) => detailKeyOfShop(n) === zone && M.REAL_POS[n.name]);
         D.shopIds = shopsReal.map((n) => n.id);
         const blockShops = M.BLOCKS.map(() => []);
         const centroid = (b) => {
@@ -35992,7 +36090,7 @@
           geo.rotateX(-Math.PI / 2);
           const occ = blockShops[i].length > 0;
           const mesh = new Mesh(geo, occ ? occMat : vacMat);
-          mesh.position.y = FLOOR_Y.B1 + 1.5;
+          mesh.position.y = D.y + 1.5;
           const [cgx, cgy] = centroid(b);
           mesh.userData.center = W([cgx, cgy]);
           D.anchors.push(mesh.userData.center[0], mesh.userData.center[1]);
@@ -36100,11 +36198,11 @@
         }
       }
       function guidePosOf(n) {
-        if (!n || n.type !== "shop") return null;
-        const M = DETAIL_MAPS[n.zone];
+        const key = detailKeyOfShop(n);
+        const M = key && DETAIL_MAPS[key];
         if (!M) return null;
         const pos = M.REAL_POS[n.name] || M.AREA_ANCHORS[n.area] || null;
-        return pos ? { zone: n.zone, pos } : null;
+        return pos ? { zone: key, pos } : null;
       }
       function drawDetailRoute(startId, goalId) {
         clearDetailRoute();
@@ -36113,9 +36211,10 @@
         const zone = a.zone;
         const gpath = DETAIL[zone].nav(a.pos, b.pos);
         if (!gpath) return null;
+        const y0 = DETAIL[zone].y;
         const pts = [a.pos, ...gpath, b.pos].map((g2) => {
           const [x, z] = g2w(zone, g2);
-          return new Vector3(x, FLOOR_Y.B1 + 6, z);
+          return new Vector3(x, y0 + 6, z);
         });
         detailRouteGroup = new Group();
         detailRouteZone = zone;
@@ -36124,7 +36223,7 @@
           new TubeGeometry(curve, 140, 1.2, 8, false),
           new MeshStandardMaterial({ color: 16777215, emissive: 14540253, emissiveIntensity: 1.3 })
         ));
-        const base = (v) => new Vector3(v.x, FLOOR_Y.B1, v.z);
+        const base = (v) => new Vector3(v.x, y0, v.z);
         detailRouteGroup.add(makeStartPerson(base(pts[0])));
         detailRouteGroup.add(makeGoalFlag(base(pts[pts.length - 1])));
         DETAIL[zone].group.add(detailRouteGroup);
@@ -36973,8 +37072,10 @@
         raycaster.setFromCamera(pointer, camera);
         const hit = raycaster.intersectObjects(nodeMeshes.filter((m) => m.parent.visible && (m.visible || nodeById[m.userData.nodeId]?.type !== "shop")))[0];
         if (!hit) {
-          const fl2 = raycaster.intersectObjects(floorGroups.B1.children.filter((o) => o.isMesh && o.visible), false)[0];
-          if (fl2 && DETAIL_MAPS[fl2.object.userData.zone]) enterDetail(fl2.object.userData.zone);
+          const floorMeshes = ["S1", "B1", "B2"].flatMap((f) => floorGroups[f].visible ? floorGroups[f].children.filter((o) => o.isMesh && o.visible) : []);
+          const fl2 = raycaster.intersectObjects(floorMeshes, false)[0];
+          const dk = fl2 && (fl2.object.userData.detailKey || detailKeyForFloorHit(fl2));
+          if (dk) enterDetail(dk);
           return;
         }
         const id = hit.object.userData.nodeId;

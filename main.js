@@ -749,7 +749,7 @@ const MERGED_DOTS = []; // merged指定エリアの代表ドット(店の形は�
             small: true, noDot: a.merged, type: 'shop' }); // ホール内は小径ドット。mergedは個別ドットを描かない
         });
       }
-      if (a.merged) MERGED_DOTS.push({ mx: cx, my: cy, floor: a.floor, zone: a.zone, near: a.near[0] });
+      if (a.merged) MERGED_DOTS.push({ mx: cx, my: cy, floor: a.floor, zone: a.zone, area: areaId, near: a.near[0] });
       continue;
     }
     // セグメント列: edges指定なら実在の通路に吸着（床のない場所に店を置かない）
@@ -867,7 +867,7 @@ renderer.domElement.addEventListener('pointerdown', e => {
 renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
 window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, DETAIL_MAPS, // 開発用: 検証時にカメラ操作・状態確認に使う。z は詳細地図の施設ID(省略時は開いている施設、無ければ whity)
-  dbgDetail: (z = detailMode || 'whity') => ({ zone: z, ids: DETAIL[z].shopIds.length, labels: DETAIL[z].labels.length, mode: detailMode, realKeys: Object.keys(DETAIL_MAPS[z].REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === z)?.name }),
+  dbgDetail: (z = detailMode || 'whity') => ({ zone: z, ids: DETAIL[z].shopIds.length, labels: DETAIL[z].labels.length, mode: detailMode, realKeys: Object.keys(DETAIL_MAPS[z].REAL_POS).length, sampleNode: NODES.find(n => detailKeyOfShop(n) === z)?.name }),
   dbgNav: (a, b, z = detailMode || 'whity') => DETAIL[z].nav(a, b), dbgReal: (name, z = 'whity') => DETAIL_MAPS[z].REAL_POS[name], dbgWalk: (z = 'whity') => DETAIL_MAPS[z].WALK };
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.9));
@@ -1386,7 +1386,34 @@ var detailMode = null; // (前方のイベントハンドラから参照する�
 // 施設ごとの詳細地図の実体。group=専用グループ / blockByShop=店ID→区画メッシュ / shopIds=実位置を持つ店 /
 // labels=店名ラベル / anchors=地図の実体がある位置([x,z,...] パンで見失わないための基準) / nav=ガイド内経路探索
 const DETAIL = {};
-for (const zone of Object.keys(DETAIL_MAPS)) DETAIL[zone] = { group: null, blockByShop: {}, shopIds: [], labels: [], anchors: [], nav: null };
+for (const [key, M] of Object.entries(DETAIL_MAPS)) {
+  // entry: 広域側でこの詳細地図が「どこにあるか」(床タップで館×階を選ぶ基準)。areas の rect 中心、無ければゾーンのラベル位置
+  const a = M.areas && SHOP_AREAS[M.areas[0]];
+  const [ex, ez] = a ? M2W([a.rect[0], a.rect[1]]) : M2W(ZONES[M.zone || key].label);
+  DETAIL[key] = { group: null, blockByShop: {}, shopIds: [], labels: [], anchors: [], nav: null,
+                  y: FLOOR_Y[M.floor || 'B1'], entry: [ex, ez] };
+}
+// 店・エリア → 詳細地図のキー。areas を持つ施設(三番街の館×階)はエリアで、それ以外はゾーンで引く
+function detailKeyOfArea(area, zone) {
+  for (const [k, M] of Object.entries(DETAIL_MAPS)) {
+    if (M.areas) { if (area && M.areas.includes(area)) return k; }
+    else if ((M.zone || k) === zone) return k;
+  }
+  return null;
+}
+const detailKeyOfShop = n => (n && n.type === 'shop') ? detailKeyOfArea(n.area, n.zone) : null;
+// 床タップ → 詳細地図。同じゾーン・同じ階に複数の詳細地図があれば(北館/南館)、タップ位置に近い方
+function detailKeyForFloorHit(hit) {
+  const { zone, floor } = hit.object.userData;
+  let best = null, bd = Infinity;
+  for (const [k, M] of Object.entries(DETAIL_MAPS)) {
+    if ((M.zone || k) !== zone || (M.floor || 'B1') !== (floor || 'B1')) continue;
+    const [ex, ez] = DETAIL[k].entry;
+    const d = Math.hypot(hit.point.x - ex, hit.point.z - ez);
+    if (d < bd) { bd = d; best = k; }
+  }
+  return best;
+}
 function buildDetailLabels(zone) {
   const D = DETAIL[zone];
   if (D.labels.length) return;
@@ -1418,7 +1445,7 @@ function enterDetail(zoneId) {
   buildDetailLabels(zoneId);
   for (const d of D.labels) d.lab.visible = true;
   document.getElementById('detail-bar').hidden = false;
-  document.getElementById('detail-bar-name').textContent = ZONES[zoneId].name + ' 詳細地図';
+  document.getElementById('detail-bar-name').textContent = (DETAIL_MAPS[zoneId].name || ZONES[DETAIL_MAPS[zoneId].zone || zoneId].name) + ' 詳細地図';
   // 詳細地図=ガイド座標系の別画面。広域(実座標)のものは丸ごと隠して専用エリアへ飛ぶ
   hideForDetail(floorGroups.S1); hideForDetail(floorGroups.B1); hideForDetail(floorGroups.B2);
   hideForDetail(groundGroup); hideForDetail(vertGroup);
@@ -1453,8 +1480,8 @@ function enterDetail(zoneId) {
   controls.screenSpacePanning = false; // パンは床面に沿って動かす(地図らしい移動)
   controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI / 3; // 傾きは60°まで(現在の角度より広いので跳ねない)
   controls.minDistance = 40;
-  camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(c.x, FLOOR_Y.B1 + r * 1.7, c.z + 0.1),
-              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, FLOOR_Y.B1, c.z), start: performance.now(), dur: 900, hard: true };
+  camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(c.x, D.y + r * 1.7, c.z + 0.1),
+              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, D.y, c.z), start: performance.now(), dur: 900, hard: true };
 }
 function exitDetail() {
   if (!detailMode) return;
@@ -1879,8 +1906,9 @@ for (const md of MERGED_DOTS) {
   });
   const mesh = new THREE.Mesh(mergedDotGeo, mergedDotMats[md.zone]);
   mesh.position.set(x, FLOOR_Y[md.floor] + 1.7, z);
-  if (DETAIL_MAPS[md.zone]) {
-    mesh.userData.zone = md.zone; // 床タップと同じ扱い(=詳細地図へ)。館ノードは名前を持たない通路の交差点なので端点にしない
+  const detailKey = detailKeyOfArea(md.area, md.zone);
+  if (detailKey) {
+    mesh.userData.zone = md.zone; mesh.userData.floor = md.floor; mesh.userData.detailKey = detailKey; // 床タップと同じ扱い(=その館×階の詳細地図へ)。館ノードは名前を持たない通路の交差点なので端点にしない
   } else {
     mesh.userData.nodeId = md.near; // タップ=館ノードを選択
     nodeMeshes.push(mesh);
@@ -1915,14 +1943,14 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
       shape.holes.push(path);
     }
     const geo = new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
-    const mesh = new THREE.Mesh(geo, zoneMats[zone] || corridorMat);
+    const mesh = new THREE.Mesh(geo, zoneMats[M.zone || zone] || corridorMat);
     mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = FLOOR_Y.B1 - 1.5;
+    mesh.position.y = D.y - 1.5; // その館×階の高さ(三番街B1Fは浅層)
     detailGroup.add(mesh);
   }
 
   // テナント区画: 店が特定できた区画は施設色で光らせ、それ以外は暗い灰青
-  const zc = ZONES[zone].color;
+  const zc = ZONES[M.zone || zone].color;
   const occMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(zc).lerp(new THREE.Color(0xffffff), 0.5),
     emissive: new THREE.Color(zc).multiplyScalar(0.35), roughness: 0.5, side: THREE.DoubleSide,
@@ -1937,7 +1965,7 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
     return c;
   };
   // 各区画にガイド上の店を割り当てる(区画内 → だめなら重心4m以内の最寄り)
-  const shopsReal = NODES.filter(n => n.type === 'shop' && n.zone === zone && M.REAL_POS[n.name]);
+  const shopsReal = NODES.filter(n => detailKeyOfShop(n) === zone && M.REAL_POS[n.name]);
   D.shopIds = shopsReal.map(n => n.id);
   const blockShops = M.BLOCKS.map(() => []);
   const centroid = b => {
@@ -1968,7 +1996,7 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
     geo.rotateX(-Math.PI / 2); // 押し出しを上向きに(座標はワールド値のまま)
     const occ = blockShops[i].length > 0;
     const mesh = new THREE.Mesh(geo, occ ? occMat : vacMat);
-    mesh.position.y = FLOOR_Y.B1 + 1.5; // 床スラブの上に乗せる
+    mesh.position.y = D.y + 1.5; // 床スラブの上に乗せる
     const [cgx, cgy] = centroid(b);
     mesh.userData.center = W([cgx, cgy]); // ラベルの置き場所(区画の重心)
     D.anchors.push(mesh.userData.center[0], mesh.userData.center[1]);
@@ -2067,11 +2095,11 @@ function clearDetailRoute() {
 // 店のガイド上の位置: 名前一致した店は正確な位置、それ以外は所属モール区分の代表点(エリアまで案内)。
 // 詳細地図を持つ施設の店だけ通す。戻り値は { zone, pos }
 function guidePosOf(n) {
-  if (!n || n.type !== 'shop') return null;
-  const M = DETAIL_MAPS[n.zone];
+  const key = detailKeyOfShop(n);
+  const M = key && DETAIL_MAPS[key];
   if (!M) return null;
   const pos = M.REAL_POS[n.name] || M.AREA_ANCHORS[n.area] || null;
-  return pos ? { zone: n.zone, pos } : null;
+  return pos ? { zone: key, pos } : null;
 }
 // 両端が同じ施設の詳細地図に載る店ならガイド内経路を描き、その施設IDを返す(なければ null)
 function drawDetailRoute(startId, goalId) {
@@ -2081,9 +2109,10 @@ function drawDetailRoute(startId, goalId) {
   const zone = a.zone;
   const gpath = DETAIL[zone].nav(a.pos, b.pos);
   if (!gpath) return null;
+  const y0 = DETAIL[zone].y;
   const pts = [a.pos, ...gpath, b.pos].map(g => {
     const [x, z] = g2w(zone, g);
-    return new THREE.Vector3(x, FLOOR_Y.B1 + 6, z);
+    return new THREE.Vector3(x, y0 + 6, z);
   });
   detailRouteGroup = new THREE.Group();
   detailRouteZone = zone;
@@ -2092,7 +2121,7 @@ function drawDetailRoute(startId, goalId) {
     new THREE.TubeGeometry(curve, 140, 1.2, 8, false),
     new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xdddddd, emissiveIntensity: 1.3 })
   ));
-  const base = v => new THREE.Vector3(v.x, FLOOR_Y.B1, v.z);
+  const base = v => new THREE.Vector3(v.x, y0, v.z);
   detailRouteGroup.add(makeStartPerson(base(pts[0])));
   detailRouteGroup.add(makeGoalFlag(base(pts[pts.length - 1])));
   DETAIL[zone].group.add(detailRouteGroup);
@@ -3017,8 +3046,11 @@ renderer.domElement.addEventListener('pointerup', e => {
     m.parent.visible && (m.visible || nodeById[m.userData.nodeId]?.type !== 'shop')))[0];
   if (!hit) {
     // 店・スポットに当たらなければ床を調べ、詳細データのある施設なら詳細モードへ
-    const fl = raycaster.intersectObjects(floorGroups.B1.children.filter(o => o.isMesh && o.visible), false)[0];
-    if (fl && DETAIL_MAPS[fl.object.userData.zone]) enterDetail(fl.object.userData.zone);
+    // 表示中の全階の床を調べる(三番街B1Fは浅層にある)。詳細地図を持つ館×階ならそこへ
+    const floorMeshes = ['S1', 'B1', 'B2'].flatMap(f => floorGroups[f].visible ? floorGroups[f].children.filter(o => o.isMesh && o.visible) : []);
+    const fl = raycaster.intersectObjects(floorMeshes, false)[0];
+    const dk = fl && (fl.object.userData.detailKey || detailKeyForFloorHit(fl));
+    if (dk) enterDetail(dk);
     return;
   }
   const id = hit.object.userData.nodeId;

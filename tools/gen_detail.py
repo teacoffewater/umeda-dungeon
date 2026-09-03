@@ -111,7 +111,8 @@ def main(zone):
 
     # --- 5) 現在の店(shops.js)との名前照合 ---
     sh = open(os.path.join(ROOT, 'shops.js')).read()
-    area_ids = re.findall(r"^\s*(\w+):\s*\{[^}]*zone:\s*'%s'" % re.escape(zone), sh, re.M)
+    # 館×階で分ける施設(三番街)は JSON の areas でエリアを指定。無ければ zone に属するエリア全部
+    area_ids = d.get('areas') or re.findall(r"^\s*(\w+):\s*\{[^}]*zone:\s*'%s'" % re.escape(zone), sh, re.M)
     cur, area_of = [], {}
     # 通路型 s('店名', 'エリア', …) とホール型 g('店名', 'エリア', …) の両方。店名は ' でも " でも囲める
     for m in re.finditer(r"""[sg]\((['"])(.+?)\1, '(\w+)'""", sh):
