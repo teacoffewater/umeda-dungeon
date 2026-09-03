@@ -51,7 +51,7 @@ const ZONES = {
   hankyu_dept: { name: '阪急百貨店',            color: 0x8b3548, label: [986.7, 864.1] },   // 阪急マルーン(床の重心)
   hanshin_dept:{ name: '阪神百貨店',            color: 0x3f5f9e, label: [954.4, 1061.3] },  // 阪神ネイビー(床の重心)
   avanza:      { name: '堂島アバンザ',          color: 0x9a8f52, label: [782.9, 1514.8] },  // オリーブ
-  dojima_flat: { name: '堂島ふらっと',          color: 0x3f9a6e, label: [661, 1507], depthM: 2 }, // 近鉄堂島ビルB1F(ドーチカC83直結)。案内板の緑。深さはドーチカ6m−階段23段≈3.9m(現地 2026-09-03)
+  dojima_flat: { name: '堂島ふらっと',          color: 0x3f9a6e, label: [661, 1507], depthM: 2.89 }, // 近鉄堂島ビルB1F(ドーチカC83直結)。案内板の緑。深さは現地実測 289cm(2026-09-03)。ドーチカ6m−階段23段(≈3.1m、蹴上げ≈13.5cm)と整合
   kanden:      { name: '関電不動産西梅田ビル地下街', color: 0x3a78c2, label: [669, 1379] }, // B1F=浅層・B2F=中枢層(ドーチカC61直結)。テナント板の青
   ekimae:      { name: '大阪駅前ビル',          color: 0xdb5a66, label: [904.2, 1221.8] },  // 鮮明な赤(そねちかとの分離)
   sonechika:   { name: '曽根崎地下歩道(そねちか)', color: 0x7f93b0, label: [1023.8, 1319.1], corridor: true },  // 東梅田改札へ向かうただの通路として扱う

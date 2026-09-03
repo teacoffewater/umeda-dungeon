@@ -2,7 +2,7 @@
  "version": 1,
  "frame": "metric-v1",
  "exported": "2026-09-03T08:14:11.495Z",
- "_applied": "2026-09-03: 広域の通路グラフに反映(dotica_avz_m → dotica_df_s0(階段下) → dotica_df_s1(階段上) → dojima_flat)。段数23から高低差≈3.9m(rise.dh=16 は打ち間違いと判断、要確認)。ZONES.dojima_flat.depthM≈2(ドーチカ6m−3.9m)。エスカレーター(上下2本、階段の右=北側)はメモのみ",
+ "_applied": "2026-09-03: 広域の通路グラフに反映(dotica_avz_m → dotica_df_s0(階段下) → dotica_df_s1(階段上) → dojima_flat)。段数23から高低差≈3.9m(rise.dh=16 は打ち間違いと判断、要確認)。ZONES.dojima_flat.depthM=2.89(現地実測。ドーチカ6m−2.89m=3.1m/23段=蹴上げ≈13.5cm で整合)。エスカレーター(上下2本、階段の右=北側)はメモのみ",
  "records": [
   {
    "id": "rmtl8y584",
