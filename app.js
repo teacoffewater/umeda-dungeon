@@ -33023,7 +33023,7 @@
         }
         selType = key;
         renderChips();
-        say(t.two ? "1\u70B9\u76EE\u3092\u30BF\u30C3\u30D7" : "\u5E8A\u3092\u30BF\u30C3\u30D7");
+        say(t.two ? t.tap1 || "1\u70B9\u76EE\u3092\u30BF\u30C3\u30D7" : "\u5E8A\u3092\u30BF\u30C3\u30D7");
       });
       c.dataset.type = key;
       typesEl.appendChild(c);
@@ -33170,7 +33170,7 @@
       const t = TYPES[selType];
       if (t.two && !pending) {
         pending = { ...hit, marker: tempMarker(hit, t.color) };
-        say("2\u70B9\u76EE\u3092\u30BF\u30C3\u30D7");
+        say(t.tap2 || "2\u70B9\u76EE\u3092\u30BF\u30C3\u30D7");
         return;
       }
       const rec = {
@@ -33501,13 +33501,14 @@
       STORAGE_KEY = "survey_v1";
       FRAME = "metric-v1";
       TYPES = {
-        stairs: { label: "\u968E\u6BB5", color: 10135224, to: true, rise: true },
+        // 階段・坂は2点もの。踏み面の水平距離が分かるので、高低差を入れれば斜度が出る
+        stairs: { label: "\u968E\u6BB5", color: 10135224, to: true, rise: true, two: true, tap1: "\u968E\u6BB5\u306E\u624B\u524D\u3092\u30BF\u30C3\u30D7", tap2: "\u968E\u6BB5\u306E\u884C\u304D\u5148\u5074\u3092\u30BF\u30C3\u30D7" },
         ev: { label: "EV", color: 8038399, to: true },
         esc: { label: "ESC", color: 16761405, to: true },
         wall: { label: "\u58C1\u30FB\u884C\u304D\u6B62\u307E\u308A", color: 16734810, two: true },
         corridor: { label: "\u901A\u8DEF\u3042\u308A", color: 8257486, two: true },
-        slope: { label: "\u5742", color: 16755021, two: true, slope: true, rise: true },
-        // 始まり→終わりの順に2点。上り/下りは2点目に向かって
+        slope: { label: "\u5742", color: 16755021, two: true, slope: true, rise: true, tap1: "\u5742\u306E\u59CB\u307E\u308A\u3092\u30BF\u30C3\u30D7", tap2: "\u5742\u306E\u7D42\u308F\u308A\u3092\u30BF\u30C3\u30D7" },
+        // 上り/下りは2点目に向かって
         exit: { label: "\u51FA\u53E3\u756A\u53F7", color: 16777215, exit: true },
         shop: { label: "\u5E97", color: 16754893 },
         landmark: { label: "\u76EE\u5370", color: 16769126 },

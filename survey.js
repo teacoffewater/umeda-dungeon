@@ -11,12 +11,13 @@ const FRAME = 'metric-v1';
 // rise: 高低差を記録する種別(坂・階段)。ざっくりチップ + 実測(高低差m / 段数)の併用。
 // 坂は2点ものなので水平距離が分かり、高低差を入れると斜度が自動で出る
 export const TYPES = {
-  stairs:   { label: '階段',        color: 0x9aa6b8, to: true, rise: true },
+  // 階段・坂は2点もの。踏み面の水平距離が分かるので、高低差を入れれば斜度が出る
+  stairs:   { label: '階段',        color: 0x9aa6b8, to: true, rise: true, two: true, tap1: '階段の手前をタップ', tap2: '階段の行き先側をタップ' },
   ev:       { label: 'EV',          color: 0x7aa7ff, to: true },
   esc:      { label: 'ESC',         color: 0xffc23d, to: true },
   wall:     { label: '壁・行き止まり', color: 0xff5a5a, two: true },
   corridor: { label: '通路あり',    color: 0x7dffce, two: true },
-  slope:    { label: '坂',          color: 0xffa94d, two: true, slope: true, rise: true }, // 始まり→終わりの順に2点。上り/下りは2点目に向かって
+  slope:    { label: '坂',          color: 0xffa94d, two: true, slope: true, rise: true, tap1: '坂の始まりをタップ', tap2: '坂の終わりをタップ' }, // 上り/下りは2点目に向かって
   exit:     { label: '出口番号',    color: 0xffffff, exit: true },
   shop:     { label: '店',          color: 0xffa8cd },
   landmark: { label: '目印',        color: 0xffe066 },
@@ -63,7 +64,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const c = chip(t.label, () => {
       // 種別を変えたら、途中だった2点ものの1点目は破棄してやり直し(別種別で保存されるのを防ぐ)
       if (pending) { removeTemp(pending.marker); pending = null; }
-      selType = key; renderChips(); say(t.two ? '1点目をタップ' : '床をタップ');
+      selType = key; renderChips(); say(t.two ? (t.tap1 || '1点目をタップ') : '床をタップ');
     });
     c.dataset.type = key; typesEl.appendChild(c);
   }
@@ -163,7 +164,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const t = TYPES[selType];
     if (t.two && !pending) {
       pending = { ...hit, marker: tempMarker(hit, t.color) };
-      say('2点目をタップ');
+      say(t.tap2 || '2点目をタップ');
       return;
     }
     const rec = {
