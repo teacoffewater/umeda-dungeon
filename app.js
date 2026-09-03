@@ -32981,8 +32981,20 @@
     const markers = /* @__PURE__ */ new Map();
     const raycaster = new Raycaster();
     const ndc = new Vector2();
-    const typesEl = $("sv-types"), floorEl = $("sv-floor"), toEl = $("sv-to"), slopeEl = $("sv-slope");
+    const typesEl = $("sv-types"), floorEl = $("sv-floor"), toEl = $("sv-to"), slopeEl = $("sv-slope"), riseEl = $("sv-rise");
     const SLOPE_DIR = { up: "\u4E0A\u308A", down: "\u4E0B\u308A" }, SLOPE_GRADE = { gentle: "\u3086\u308B\u3044", normal: "\u3075\u3064\u3046", steep: "\u6025" };
+    const RISE_BAND = { h1: "\u301C1m", h2: "1\u301C2m", h4: "2\u301C4m", h4p: "4m\u301C" };
+    const STEP_RISE_M = 0.17;
+    for (const [k, v] of Object.entries(RISE_BAND)) {
+      const c = chip(v, () => {
+        if (draft?.rec.rise) {
+          draft.rec.rise.band = draft.rec.rise.band === k ? null : k;
+          renderChips();
+        }
+      });
+      c.dataset.rband = k;
+      riseEl.appendChild(c);
+    }
     for (const [k, v] of Object.entries(SLOPE_DIR)) {
       const c = chip(v, () => {
         if (draft?.rec.slope) {
@@ -33044,6 +33056,8 @@
         say("\u5168\u6D88\u53BB\u3057\u307E\u3057\u305F");
       }
     });
+    $("sv-dh").addEventListener("input", renderRiseCalc);
+    $("sv-steps").addEventListener("input", renderRiseCalc);
     $("sv-save").addEventListener("click", saveDraft);
     $("sv-cancel").addEventListener("click", cancelDraft);
     $("sv-copy").addEventListener("click", copyExport);
@@ -33172,8 +33186,11 @@
         exit: null,
         note: "",
         gps: null,
-        slope: t.slope ? { dir: "up", grade: "gentle" } : null
+        slope: t.slope ? { dir: "up", grade: "gentle" } : null,
         // 既定: 2点目に向かってゆるい上り
+        // 高低差。band=ざっくり / dh=実測(m) / steps=段数。斜度は px・px2 から再計算できる派生値なので持たない
+        // (convert_survey.py が座標フレームを変換するため、計算済みの値を持つと古くなる)
+        rise: t.rise ? { band: null, dh: null, steps: null } : null
       };
       if (pending) {
         removeTemp(pending.marker);
@@ -33254,8 +33271,13 @@
       $("sv-to-row").hidden = !t.to;
       $("sv-exit-row").hidden = !t.exit;
       $("sv-slope-row").hidden = !t.slope;
+      $("sv-rise-row").hidden = !t.rise;
+      $("sv-rise-num-row").hidden = !t.rise;
       $("sv-exit").value = "";
       $("sv-note").value = "";
+      $("sv-dh").value = "";
+      $("sv-steps").value = "";
+      renderRiseCalc();
       gpsBtn.disabled = false;
       gpsBtn.textContent = "GPS\u3092\u4ED8\u3051\u308B";
       renderChips();
@@ -33266,6 +33288,10 @@
       const rec = draft.rec;
       rec.exit = $("sv-exit").value.trim() || null;
       rec.note = $("sv-note").value.trim();
+      if (rec.rise) {
+        rec.rise.steps = numOr(null, $("sv-steps").value);
+        rec.rise.dh = numOr(rec.rise.steps != null ? r1(rec.rise.steps * STEP_RISE_M) : null, $("sv-dh").value);
+      }
       records.push(rec);
       save();
       addMarker(rec);
@@ -33406,6 +33432,37 @@
         const sl = draft?.rec.slope;
         c.classList.toggle("on", !!sl && (c.dataset.sdir ? c.dataset.sdir === sl.dir : c.dataset.sgrade === sl.grade));
       }
+      for (const c of riseEl.children) c.classList.toggle("on", c.dataset.rband === draft?.rec.rise?.band);
+    }
+    function renderRiseCalc() {
+      const el = $("sv-rise-calc");
+      if (!el) return;
+      const rec = draft?.rec;
+      if (!rec?.rise) {
+        el.textContent = "";
+        return;
+      }
+      const steps = numOr(null, $("sv-steps").value);
+      const dh = numOr(steps != null ? r1(steps * STEP_RISE_M) : null, $("sv-dh").value);
+      const parts = [];
+      if (steps != null && !$("sv-dh").value.trim()) parts.push(`${steps}\u6BB5 \u2192 \u9AD8\u4F4E\u5DEE \u7D04${r1(steps * STEP_RISE_M)}m`);
+      const d = horizDist(rec);
+      if (d != null) {
+        parts.push(`\u6C34\u5E73${r1(d)}m`);
+        if (dh != null && d > 0.5) {
+          const pct = dh / d * 100;
+          parts.push(`\u659C\u5EA6 \u7D04${r1(pct)}%(${r1(Math.atan2(dh, d) * 180 / Math.PI)}\xB0)`);
+        }
+      }
+      el.textContent = parts.join(" / ");
+    }
+    function horizDist(rec) {
+      if (!rec?.px2) return null;
+      return Math.hypot(rec.px2[0] - rec.px[0], rec.px2[1] - rec.px[1]);
+    }
+    function numOr(fallback, v) {
+      const n = parseFloat(String(v ?? "").trim());
+      return Number.isFinite(n) && n >= 0 ? n : fallback;
     }
     function say(msg) {
       $("sv-msg").textContent = `[${TYPES[selType].label}] ${msg}`;
@@ -33413,12 +33470,23 @@
     function describe(rec) {
       const t = TYPES[rec.type]?.label || rec.type;
       const sl = rec.slope ? ` ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}` : "";
-      return `${t}${sl}${rec.exit ? " " + rec.exit : ""}${rec.to ? "\u2192" + rec.to : ""} (${rec.px.join(",")})`;
+      return `${t}${sl}${riseText(rec)}${rec.exit ? " " + rec.exit : ""}${rec.to ? "\u2192" + rec.to : ""} (${rec.px.join(",")})`;
     }
     function shortLabel(rec) {
       const t = TYPES[rec.type]?.label || rec.type;
-      if (rec.slope) return `\u5742 ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}`;
-      return rec.exit ? `\u51FA\u53E3 ${rec.exit}` : rec.to ? `${t}\u2192${rec.to}` : rec.note ? `${t}: ${rec.note.slice(0, 10)}` : t;
+      if (rec.slope) return `\u5742 ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}${riseText(rec)}`;
+      return rec.exit ? `\u51FA\u53E3 ${rec.exit}` : rec.to ? `${t}\u2192${rec.to}${riseText(rec)}` : rec.note ? `${t}: ${rec.note.slice(0, 10)}` : `${t}${riseText(rec)}`;
+    }
+    function riseText(rec) {
+      const r = rec.rise;
+      if (!r || r.dh == null && r.steps == null && !r.band) return "";
+      const bits = [];
+      if (r.steps != null) bits.push(`${r.steps}\u6BB5`);
+      if (r.dh != null) bits.push(`${r.dh}m`);
+      else if (r.band) bits.push(RISE_BAND[r.band]);
+      const d = horizDist(rec);
+      if (r.dh != null && d != null && d > 0.5) bits.push(`${r1(r.dh / d * 100)}%`);
+      return ` [${bits.join(" ")}]`;
     }
     function r1(v) {
       return Math.round(v * 10) / 10;
@@ -33433,12 +33501,12 @@
       STORAGE_KEY = "survey_v1";
       FRAME = "metric-v1";
       TYPES = {
-        stairs: { label: "\u968E\u6BB5", color: 10135224, to: true },
+        stairs: { label: "\u968E\u6BB5", color: 10135224, to: true, rise: true },
         ev: { label: "EV", color: 8038399, to: true },
         esc: { label: "ESC", color: 16761405, to: true },
         wall: { label: "\u58C1\u30FB\u884C\u304D\u6B62\u307E\u308A", color: 16734810, two: true },
         corridor: { label: "\u901A\u8DEF\u3042\u308A", color: 8257486, two: true },
-        slope: { label: "\u5742", color: 16755021, two: true, slope: true },
+        slope: { label: "\u5742", color: 16755021, two: true, slope: true, rise: true },
         // 始まり→終わりの順に2点。上り/下りは2点目に向かって
         exit: { label: "\u51FA\u53E3\u756A\u53F7", color: 16777215, exit: true },
         shop: { label: "\u5E97", color: 16754893 },
