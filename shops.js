@@ -11,10 +11,12 @@
 export const SHOP_AREAS = {
   // 阪急三番街（ホール型: 3×3グリッドで配置。rect=[中心mx, 中心my, 幅, 奥行] メートル）
   // merged: 店舗の形状は将来対応。それまで個別ドットは描かず館ごとに1点へ集約(検索・ルート案内はそのまま)
-  sanban_n_b1: { floor: 'S1', zone: 'sanban', near: ['sanban_n_b1'], rect: [950, 520, 70, 42], merged: true }, // 北館B1F=浅層
-  sanban_n_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b2'], rect: [950, 520, 70, 42], merged: true }, // 北館B2F=中枢層
-  sanban_s_b1: { floor: 'S1', zone: 'sanban', near: ['sanban_s_b1'], rect: [973, 682.8, 75.3, 49.9], merged: true }, // 南館B1F=浅層
-  sanban_s_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b2'], rect: [973, 682.8, 75.3, 49.9], merged: true }, // 南館B2F=中枢層
+  // 北館/南館の間は市道(OSMの建物内通路道路、y≈565〜575)。北館はその北、南館はその南(紀伊國屋1Fの直下から南端まで)
+  // near[0]=館ノード(格子中央から接続)、near[1..]=格子の最寄り点から接続する追加の出入口(B2Fの連絡通路2本)
+  sanban_n_b1: { floor: 'S1', zone: 'sanban', near: ['sanban_n_b1'], rect: [950, 520, 70, 42], merged: true }, // 北館B1F=浅層(南館と直結なし)
+  sanban_n_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_n_b2', 'sanban_n2_w', 'sanban_n2_e'], rect: [950, 520, 70, 42], merged: true }, // 北館B2F=中枢層
+  sanban_s_b1: { floor: 'S1', zone: 'sanban', near: ['sanban_s_b1'], rect: [972, 665, 75.3, 49.9], merged: true }, // 南館B1F=浅層
+  sanban_s_b2: { floor: 'B1', zone: 'sanban', near: ['sanban_s_b2', 'sanban_s2_w', 'sanban_s2_e'], rect: [972, 665, 75.3, 49.9], merged: true }, // 南館B2F=中枢層
   // ホワイティうめだ: 広域地図は公式フロアマップのモール区分(10エリア)単位でしか場所を持たない。
   // 店の個別位置は詳細地図(ガイド座標系)の管轄。rect中心=そのモールの通路の中点、merged=1点集約
   whity_petit:  { floor: 'B1', zone: 'whity', near: ['j_pchn'],    rect: [1033.2, 590.6, 24, 24], merged: true }, // プチシャン

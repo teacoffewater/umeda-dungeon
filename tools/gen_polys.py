@@ -228,6 +228,14 @@ def facility_mask_total():
         _fm_cache['m'] = unary_union(parts)
     return _fm_cache['m']
 
+# 阪急三番街 北館/南館の間の市道(幅10m)と、B2Fでその下を渡る小さい連絡通路2本(幅4m)。
+# 市道の線形は OSM の建物内通路道路(way 682682107, highway=service tunnel=building_passage)の東西区間
+# (934,573)→(1001,561) を建物の両縁まで延ばしたもの。紀伊國屋(1F, OSM 362616258)はこの南=南館側
+# 通路の位置は main.js の sanban_n2_w/e・sanban_s2_w/e と同じ(案内板の比率: 建物の東端から22%、西端から26%)
+SANBAN_ROAD = LineString([(895, 580), (934, 573), (982, 564), (1001, 561), (1045, 555)]).buffer(5, cap_style=2)
+SANBAN_B2_LINKS = unary_union([LineString([(938, 558), (938, 587)]).buffer(2, cap_style=2),
+                               LineString([(988, 549), (988, 578)]).buffer(2, cap_style=2)])
+
 # (floor, zone, polygon)
 BUILDING_PLATES = [
     # 大阪駅前ビル1〜4 (地下街扱い: ゾーン色を維持)。三番街と同じくB1F=浅層(S1)/B2F=中枢層(B1)
@@ -236,10 +244,10 @@ BUILDING_PLATES = [
     ('S1', 'ekimae', plate(135624699)), ('B1', 'ekimae', plate(135624699)),
     ('S1', 'ekimae', plate(135624700)), ('B1', 'ekimae', plate(135624700)),
     # 阪急三番街 = 阪急大阪梅田駅ビル直下。B1F=浅層(S1)、B2F=中枢層(B1)
-    # B1Fは北館/南館が間の市道で分断(直結なし・B2F経由)。B2F「川の流れる街」は貫通
-    ('S1', 'sanban', plate(*byname['大阪梅田']).difference(
-        LineString([(915, 603), (1040, 577)]).buffer(8, cap_style=2))),
-    ('B1', 'sanban', plate(*byname['大阪梅田'])),
+    # 北館/南館の間の市道(y≈565〜575、OSMの建物内通路道路)で分断。B1Fは直結なし(B2F経由)、B2Fは市道の下を小さい連絡通路2本で結ぶ
+    # (現地の案内板 2026-09-03)
+    ('S1', 'sanban', plate(*byname['大阪梅田']).difference(SANBAN_ROAD)),
+    ('B1', 'sanban', plate(*byname['大阪梅田']).difference(SANBAN_ROAD.difference(SANBAN_B2_LINKS))),
     # JR大阪駅構内+駅ビル=浅層(三番街・リンクス・ルクアB1Fと同層)
     ('S1', 'osaka_sta', osaka_sta_poly.buffer(3.5, join_style=2)),
     ('S1', 'lucua', plate(162183788)),               # ルクア+ルクア1100(ノースゲート) B1F=浅層
@@ -338,6 +346,8 @@ for floor in ('S1', 'B1', 'B2'):
         u = unary_union(groups[key]).buffer(0)
         # クロージング(膨張→収縮)で幅違い合流部の欠けを均す
         u = u.buffer(1.6, join_style=2).buffer(-1.6, join_style=2)
+        if zone == 'sanban':  # 市道の分断は通路帯・OSM中心線(1Fの横丁が紛れる)より優先。B2Fは連絡通路2本だけ残す
+            u = u.difference(SANBAN_ROAD if floor == 'S1' else SANBAN_ROAD.difference(SANBAN_B2_LINKS))
         if zone in FACILITY_BLD:
             if zone != 'ekimae':
                 u = u.intersection(FACILITY_BLD[zone].buffer(4, join_style=2))  # 施設色はビルの外に出さない
