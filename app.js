@@ -33107,7 +33107,8 @@
   });
 
   // survey.js
-  function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail }) {
+  function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail, yOf }) {
+    const floorY = (zone, floor) => (yOf ? yOf(zone, floor) : FLOOR_Y[floor]) ?? FLOOR_Y.B1;
     const $ = (id) => document.getElementById(id);
     const bar = $("survey");
     if (!bar) throw new Error("#survey \u304C\u3042\u308A\u307E\u305B\u3093");
@@ -33517,7 +33518,7 @@
         if (!D || !D.group) return null;
         return { group: D.group, y: D.y, toWorld: (px2) => detail.g2w(rec.detail, px2) };
       }
-      return { group: floorGroups[rec.floor] || floorGroups.B1, y: FLOOR_Y[rec.floor] ?? FLOOR_Y.B1, toWorld: m2w };
+      return { group: floorGroups[rec.floor] || floorGroups.B1, y: floorY(rec.zone, rec.floor), toWorld: m2w };
     }
     function addMarker(rec) {
       const t = TYPES[rec.type] || TYPES.memo;
@@ -33566,7 +33567,7 @@
     }
     function tempMarker(hit, color) {
       const m = new Mesh(new CylinderGeometry(1, 1, 5, 10), new MeshBasicMaterial({ color, transparent: true, opacity: 0.6 }));
-      const y = hit.y ?? FLOOR_Y[hit.floor], g2 = hit.group || floorGroups[hit.floor];
+      const y = hit.y ?? floorY(hit.zone, hit.floor), g2 = hit.group || floorGroups[hit.floor];
       m.position.set(hit.world.x, y + 2.5, hit.world.z);
       g2.add(m);
       return m;
@@ -34204,6 +34205,15 @@
       init_detail_maps();
       var FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
       var GROUND_Y = 112;
+      var DEPTH_DEFAULT = { S1: 3, B1: 6, B2: 9 };
+      var Y_PER_M = (FLOOR_Y.S1 - FLOOR_Y.B1) / (DEPTH_DEFAULT.B1 - DEPTH_DEFAULT.S1);
+      var yOfDepth = (d) => FLOOR_Y.B1 + (DEPTH_DEFAULT.B1 - d) * Y_PER_M;
+      function zoneDepth(zone, floor) {
+        const z = zone && ZONES[zone], dm = z && z.depthM;
+        const d = dm == null ? null : typeof dm === "number" ? dm : dm[floor];
+        return d ?? DEPTH_DEFAULT[floor] ?? DEPTH_DEFAULT.B1;
+      }
+      var yOfZone = (zone, floor) => yOfDepth(zoneDepth(zone, floor));
       var FLOOR_LABEL = { S1: "\u6D45\u5C64", B1: "\u4E2D\u67A2\u5C64", B2: "\u6DF1\u5C64" };
       var fl = (f) => FLOOR_LABEL[f] || `${f}F`;
       var UNIT_M = 2;
@@ -35140,7 +35150,7 @@
         { floor: "B1", zone: "daimaru", pts: [[717.4, 983.4], [752.1, 1041.3], [845.7, 984], [852.6, 978], [856.7, 970], [856.2, 960.8], [828, 913.1], [806.4, 926.8], [807.2, 928.2]] },
         { floor: "B1", zone: "hankyu_dept", pts: [[955.3, 895.1], [962.3, 915], [971.3, 925.2], [988.2, 922.9], [988.5, 924.5], [1025, 923], [1025.6, 936.7], [1040.8, 934.2], [1049.9, 927.6], [1052.8, 922.2], [1053.3, 919.3], [1046.2, 918.3], [1050, 887.6], [1057.8, 888.4], [1060.1, 871], [1020.6, 870.9], [1019.9, 776.5], [1016, 770.6], [1009.8, 768.7], [951.3, 806.4]] },
         { floor: "B1", zone: "hanshin_dept", pts: [[971.5, 1045.8], [984.8, 1068.5], [986.2, 1068], [1012.2, 1114.3], [1014.4, 1113.5], [1016.3, 1120.1], [1023.6, 1117.8], [1024.3, 1119.5], [1060.2, 1110], [1058.3, 1102.1], [1061.8, 1101.2], [1054.2, 1074.5], [1047.4, 1062.9], [982.6, 1007], [964.9, 999.4], [955, 997], [944.4, 997.2], [934.9, 998.1], [925.2, 1001.8], [853.8, 1045.7], [884.9, 1097.3]] },
-        { floor: "B1", zone: "avanza", pts: [[744.5, 1530.9], [823.2, 1542.6], [831.8, 1485.4], [833.9, 1483.1], [832.2, 1482.8], [833, 1477.7], [828, 1482.2], [754.3, 1471.1], [756, 1474.2], [750.8, 1468.7], [741.2, 1532.8]], covers: [["j_avz_s", "j_avz"], ["j_avz_c", "j_avz"], ["j_avz_n", "j_avz"]] },
+        { floor: "B1", zone: "avanza", pts: [[744.4, 1530.4], [823.2, 1542.6], [831.8, 1485.4], [833.9, 1483.1], [832.2, 1482.8], [833, 1477.7], [828, 1482.2], [754.3, 1471.1], [756, 1474.2], [750.8, 1468.7], [741.2, 1532.8]], covers: [["j_avz_c", "j_avz"], ["j_avz_n", "j_avz"]] },
         { floor: "B1", zone: "dojima_flat", pts: [[659.3, 1539.7], [659.4, 1529.6], [679, 1529.2], [677.7, 1488], [696.6, 1474.5], [634.7, 1475.6], [636.7, 1539.8]] },
         { floor: "B1", zone: "kanden", pts: [[696.7, 1394.7], [698.5, 1371.1], [687.3, 1357.8], [665.2, 1355.6], [639.5, 1366.8], [641.4, 1380.1], [643.5, 1379.6], [647.6, 1402.3]] },
         { floor: "B1", zone: "diamor", pts: [[709.3, 1257], [723.3, 1257.6], [724.2, 1234.6], [853.1, 1234.2], [833.4, 1251.8], [847, 1251.7], [861.7, 1238.6], [860.1, 1344.7], [857.6, 1344.5], [856.3, 1358.4], [876.6, 1360], [877.5, 1346.1], [874.1, 1345.8], [875.7, 1241], [884.9, 1251.8], [896.6, 1251.7], [880.7, 1233.1], [965.1, 1232.7], [1008, 1369.5], [1021.4, 1365.3], [979.8, 1232.7], [1029.3, 1232.9], [1029.3, 1218.9], [975.3, 1218.7], [938.5, 1151], [940, 1149], [935.7, 1145.7], [933.1, 1140.9], [930.8, 1142.1], [894.8, 1115], [895.4, 1112.6], [889.9, 1111.4], [953.3, 1073.8], [958.2, 1073.6], [979.6, 1060.4], [982.3, 1066.2], [982.2, 1064.3], [971.4, 1046], [881.6, 1100], [882.3, 1093.3], [873.3, 1078.4], [869.9, 1078], [868.1, 1094.5], [854.2, 1071], [857.6, 1052.4], [853.6, 1045.7], [859.6, 1041.8], [866.6, 1003.1], [850.9, 1000.2], [841.7, 1050.3], [822.9, 1019.4], [810.9, 1026.8], [838, 1071], [836.8, 1077.4], [842.3, 1078.4], [857.8, 1105.1], [808.5, 1111.9], [809.7, 1120.1], [815.1, 1129.2], [858.8, 1123.2], [863.9, 1127], [862, 1218.1], [724.9, 1218.6], [725.5, 1203.3], [711.5, 1202.7]], holes: [[[877.5, 1147.4], [880.3, 1147.3], [883.6, 1153.7], [896, 1147.3], [886, 1127.8], [891.3, 1129.9], [910.9, 1144.7], [928, 1161.3], [958.6, 1218.7], [876.9, 1219.1]]], covers: [["hanshin", "j_diamor_n"], ["j_diamor_s", "ekimae1_b2"], ["j_diamor_s", "ekimae2_b2"], ["enkei", "j_hilton_e"], ["j_fashion_w", "j_diamor_s"], ["diamor_01", "j_sone_c"], ["diamor_03", "diamor_00"], ["diamor_03", "diamor_05"], ["diamor_03", "j_diamor_s"], ["diamor_03", "j_market_ne"], ["diamor_04", "diamor_03"], ["j_diamor_e", "j_fashion_e"], ["j_diamor_e", "j_variety"], ["j_diamor_s", "j_diamor_e"], ["j_diamor_s", "j_sone_c"], ["j_sone_c", "diamor_02"], ["j_variety", "diamor_04"], ["sonechika_06", "j_diamor_e"], ["diamor_03", "enkei"], ["enkei", "j_diamor_n"]] },
@@ -35155,7 +35165,7 @@
         { floor: "B1", zone: "umechika", pts: [[809.7, 1029.4], [811.7, 1028.3], [810.8, 1026.7], [822.8, 1019.3], [824, 1021], [849.6, 1006.3], [850.8, 1e3], [866.7, 1003], [864.9, 1013.2], [924.3, 1002.1], [938.7, 997.5], [913.2, 949.8], [900.1, 950.2], [899.2, 928.2], [901.6, 927.9], [898.6, 922.3], [901.5, 920.6], [838.9, 922.8], [840.8, 934.1], [856.4, 960.7], [856.8, 970], [852.7, 978.1], [847.9, 982.7], [850.5, 991.5], [816.7, 1011.4], [812.6, 1004.6], [802.4, 1010.9], [806.4, 1017.4], [803.7, 1019]] },
         { floor: "B1", zone: "umechika", pts: [[762.4, 945.9], [766.5, 953.1], [777, 946.6], [772.9, 939.5], [840, 898.9], [839.4, 898], [851.9, 892.2], [846.9, 881.3], [822.3, 892.6], [813, 876.6], [802.6, 882.7], [804.1, 885.2], [780.8, 899.5], [772.8, 886.8], [749.3, 901.6], [736.3, 881.1], [726.2, 887.5], [738.4, 906.7], [721.7, 910.5], [723.9, 920.3], [744.1, 915.7], [747.1, 920.4], [736.3, 927], [742.7, 937.2], [751.1, 932], [751.9, 935.9], [735.8, 945.6], [742.6, 958]], holes: [[[763.7, 924.2], [810.1, 895.5], [812.1, 899], [765.8, 927.4]]] },
         { floor: "B1", zone: "osaka_sta", pts: [[684.8, 1035.1], [695.9, 1028.2], [683, 1007.5], [680.8, 996.3], [742.9, 958.4], [734.2, 943], [742.9, 937.7], [736.1, 926.6], [715.4, 938.5], [732.7, 918.4], [723.9, 920.4], [721.7, 911.3], [707.1, 928.2], [694.6, 907.5], [683.5, 914.2], [696.6, 935.8], [703.5, 932.4], [635.2, 1011.5], [639.5, 1015.2], [622.1, 1036.5], [627.1, 1044.6], [651.8, 1014.3], [669, 1003.6], [670.7, 1012.3]], holes: [[[708.7, 961.3], [683.4, 976.6], [683, 976.1], [708.8, 946.2]]], covers: [["jr_osaka", "daimaru"], ["daimaru", "j_c1"], ["daimaru", "kitte"]] },
-        { floor: "B1", zone: "dotica", pts: [[679, 1522.6], [696.4, 1530.9], [695.1, 1534.5], [695.5, 1545.2], [696.7, 1545.3], [710.2, 1637.3], [722, 1635.6], [709.6, 1544.8], [751, 1533.9], [750.6, 1531.9], [744.6, 1531], [741.2, 1532.9], [741.3, 1531], [712.8, 1538.4], [709.1, 1537.9], [709.8, 1509.5], [744.9, 1503.9], [745.6, 1498.8], [710.1, 1504.1], [711.3, 1485.5], [748.1, 1485.5], [749.2, 1478.5], [711.7, 1478.5], [719, 1339], [717.3, 1338.9], [717.5, 1334.7], [708.5, 1334.3], [708.3, 1338.4], [707, 1338.3], [705.3, 1369.5], [698.5, 1372.6], [698.1, 1378.2], [705, 1375.1], [696.8, 1523.3], [684.5, 1517.4], [678.8, 1516.5]], covers: [["j_sone_w", "dojima"], ["dotica_01", "avz_s0"], ["avz_s0", "avz_s1"], ["avz_s1", "j_avz_s"], ["dotica_avz_n", "j_avz_n"], ["dotica_avz_c", "avz_c_s"], ["avz_c_s", "avz_c_mid"], ["avz_c_mid", "j_avz_c"], ["dotica_c83", "dotica_df_s0"], ["dotica_df_s0", "dotica_df_s1"], ["dotica_df_s1", "dojima_flat"], ["dotica_02", "kanden_b2"], ["dotica_02", "dojima"], ["dojima", "dotica_avz_n"], ["dotica_avz_n", "dotica_avz_c"], ["dotica_avz_c", "dotica_c83"], ["dotica_c83", "dotica_01"], ["dotica_01", "avanza"], ["avanza", "dotica_03"]] },
+        { floor: "B1", zone: "dotica", pts: [[696.7, 1545.3], [710.2, 1637.3], [722, 1635.6], [709.5, 1543], [715.3, 1543.7], [715.5, 1542.3], [751, 1533.9], [750.4, 1531.4], [744.4, 1530.5], [741.3, 1533], [741.3, 1531], [715.8, 1537], [716.2, 1538.7], [709.1, 1537.9], [719, 1339], [717.3, 1338.9], [717.5, 1334.7], [708.5, 1334.3], [708.3, 1338.4], [707, 1338.3], [705.3, 1369.5], [698.5, 1372.6], [698.1, 1378.2], [705, 1375.1], [696.8, 1523.3], [690.3, 1522.5], [689.6, 1528.4], [696.5, 1529.3], [696.2, 1534.4], [695.1, 1534.5], [695.5, 1545.2]], covers: [["j_sone_w", "dojima"], ["dotica_01", "avz_s0"], ["avz_s1", "j_avz_s"], ["dotica_avz_c", "avz_c_s"], ["dotica_c83", "dotica_df_s0"], ["dotica_df_s1", "dojima_flat"], ["dotica_02", "kanden_b2"], ["dotica_02", "dojima"], ["dojima", "dotica_avz_n"], ["dotica_avz_n", "dotica_avz_c"], ["dotica_avz_c", "dotica_c83"], ["dotica_c83", "dotica_01"], ["dotica_01", "avanza"], ["avanza", "dotica_03"]] },
         { floor: "B1", zone: "ekimae", pts: [[1023.8, 1217.5], [1024.2, 1218.8], [1029.5, 1218.9], [1028.4, 1233.1], [1033.8, 1250.9], [998.1, 1251.3], [989.7, 1263.6], [1013.1, 1336.8], [1024.1, 1344.7], [1088.7, 1344.9], [1105.2, 1344.8], [1113, 1336.6], [1124.8, 1343.2], [1127.6, 1345.6], [1127.6, 1350.2], [1130.1, 1350.2], [1136.4, 1340.6], [1115.3, 1325.8], [1108.1, 1303.4], [1105.6, 1304.2], [1090.4, 1259], [1081.2, 1250.5], [1042.1, 1250.9], [1032.1, 1217.5], [1070.8, 1217.5], [1078.9, 1208.2], [1055.8, 1139.2], [1042.6, 1135], [956.1, 1159.3], [951.1, 1171.6], [972.2, 1212.2], [975.8, 1214.2], [973.7, 1217.1], [977.3, 1218.6]], covers: [["j_diamor_e", "ekimae4_b2"], ["j_fashion_w", "ekimae1"], ["j_fashion_e", "ekimae4"], ["ekimae1_b2", "j_sone_w"], ["ekimae1_b2", "j_sone_c"], ["ekimae3_b2", "sonechika"], ["ekimae1_b2", "ekimae2_b2"], ["ekimae2_b2", "ekimae3_b2"], ["ekimae3_b2", "ekimae4_b2"], ["kitashinchi", "ekimae2_b2"], ["kitashinchi", "ekimae1_b2"]] },
         { floor: "B1", zone: "ekimae", pts: [[964.3, 1250.8], [883.3, 1251.3], [875, 1261.2], [874.5, 1331.4], [881.9, 1339.6], [942.3, 1344.6], [989.8, 1344.1], [997.4, 1333.1], [973.2, 1259]] },
         { floor: "B1", zone: "ekimae", pts: [[853.2, 1251.1], [740.5, 1252], [727.5, 1264.5], [725.4, 1310.6], [735.7, 1321.3], [712.9, 1334.3], [717.6, 1334.6], [717.5, 1338.8], [719.1, 1340], [741.4, 1327.2], [840, 1334.7], [857, 1349.1], [857.5, 1344.4], [860, 1344.5], [860, 1341.2], [852.2, 1334.5], [859.8, 1327.5], [861.2, 1260.3]] },
@@ -35345,7 +35355,38 @@
       })();
       for (const n of NODES) [n.x, n.z] = M2W([n.mx, n.my]);
       var nodeById = Object.fromEntries(NODES.map((n) => [n.id, n]));
-      var posOf = (n) => new Vector3(n.x, FLOOR_Y[n.floor], n.z);
+      var NODE_DEPTH = {
+        // ドーチカ(6m)⇔堂島ふらっと(2.89m): 階段23段 (2026-09-03)
+        dotica_c83: 6,
+        dotica_df_s0: 6,
+        dotica_df_s1: 2.89,
+        dojima_flat: 2.89,
+        // ドーチカ(6m)⇔アバンザ(2.4m): 中=7段→10m→17段(1段15cm)、南=10段(1.5m)→館内の南側通路→(曲線階段)→2.4m (2026-09-03)
+        dotica_avz_c: 6,
+        avz_c_s: 6,
+        avz_c_mid: 4.95,
+        j_avz_c: 2.4,
+        avz_s0: 6,
+        avz_s1: 4.5,
+        j_avz_s: 4.5,
+        j_avz: 2.4,
+        dotica_avz_n: 6,
+        j_avz_n: 2.4
+        // 北の接続は未記録(仮)
+      };
+      {
+        const zoneGuess = {};
+        for (const [a, b, , z] of EDGES) if (z) {
+          zoneGuess[a] ||= z;
+          zoneGuess[b] ||= z;
+        }
+        for (const n of NODES) {
+          n.depthM = NODE_DEPTH[n.id] ?? zoneDepth(n.zone || zoneGuess[n.id], n.floor);
+          n.y = yOfDepth(n.depthM);
+        }
+      }
+      var posOf = (n) => new Vector3(n.x, n.y, n.z);
+      var hdist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
       var NAMED = NODES.filter((n) => n.type !== "junction");
       var app = document.getElementById("app");
       var scene = new Scene();
@@ -35894,7 +35935,7 @@
             }
           }
           lab.visible = !!target;
-          if (target) lab.position.y = FLOOR_Y[target] + 14;
+          if (target) lab.position.y = yOfZone(id, target) + 14;
         }
       }
       updateZoneLabels();
@@ -35922,7 +35963,7 @@
           }
           const pin = new Mesh(pinGeo, pinMat);
           pin.rotation.x = Math.PI;
-          pin.position.set(x, FLOOR_Y[lm.floor] + 7, z);
+          pin.position.set(x, yOfZone(lm.zone, lm.floor) + 7, z);
           pin.userData.landmarkId = lm.id;
           pin.renderOrder = 5;
           const div = document.createElement("div");
@@ -36199,7 +36240,7 @@
         mesh.userData.zone = fp.zone;
         mesh.userData.floor = fp.floor;
         mesh.rotation.x = -Math.PI / 2;
-        mesh.position.y = FLOOR_Y[fp.floor] - 1.5;
+        mesh.position.y = yOfZone(fp.zone, fp.floor) - 1.5;
         floorGroups[fp.floor].add(mesh);
       }
       var VERT_COLORS = { ev: 10477823, esc: 16761405, stairs: 12898013 };
@@ -36329,8 +36370,8 @@
       for (const v of VERTICALS) {
         const bIsStation = nodeById[v.b].type === "station";
         const [x, z] = M2W([v.mx, v.my]);
-        const yB1 = Math.max(FLOOR_Y[nodeById[v.a].floor], FLOOR_Y[nodeById[v.b].floor]);
-        const yB2 = Math.min(FLOOR_Y[nodeById[v.a].floor], FLOOR_Y[nodeById[v.b].floor]);
+        const yB1 = Math.max(nodeById[v.a].y, nodeById[v.b].y);
+        const yB2 = Math.min(nodeById[v.a].y, nodeById[v.b].y);
         if (SHOW_STATION_INTERIOR) {
           const pb2 = posOf(nodeById[v.b]);
           const len = Math.hypot(pb2.x - x, pb2.z - z);
@@ -36407,7 +36448,7 @@
         const [x, z] = M2W([pl.mx, pl.my]);
         const geo = pl.kind === "disc" ? new CylinderGeometry(pl.r, pl.r, 3.4, 36) : new BoxGeometry(pl.w, 3.4, pl.d);
         const mesh = new Mesh(geo, zoneMats[pl.zone] || plazaMat);
-        mesh.position.set(x, FLOOR_Y[pl.floor] - 0.08, z);
+        mesh.position.set(x, yOfZone(pl.zone, pl.floor) - 0.08, z);
         floorGroups[pl.floor].add(mesh);
       }
       var nodeMeshes = [];
@@ -36473,7 +36514,7 @@
           roughness: 0.35
         });
         const mesh = new Mesh(mergedDotGeo, mergedDotMats[md.zone]);
-        mesh.position.set(x, FLOOR_Y[md.floor] + 1.7, z);
+        mesh.position.set(x, yOfZone(md.zone, md.floor) + 1.7, z);
         const detailKey = detailKeyOfArea(md.area, md.zone);
         if (detailKey) {
           mesh.userData.zone = md.zone;
@@ -36599,7 +36640,7 @@
             p2 = g2w(key, lm.rect[1]);
           } else {
             parent = floorGroups[lm.floor];
-            y = FLOOR_Y[lm.floor] + 1.6;
+            y = yOfZone(lm.zone, lm.floor) + 1.6;
             top = GROUND_Y;
             p1 = M2W(lm.rect[0]);
             p2 = M2W(lm.rect[1]);
@@ -36768,12 +36809,12 @@
       var adj = {};
       for (const n of NODES) adj[n.id] = [];
       for (const [ia, ib] of EDGES) {
-        const w = posOf(nodeById[ia]).distanceTo(posOf(nodeById[ib])) * UNIT_M;
+        const w = hdist(nodeById[ia], nodeById[ib]) * UNIT_M;
         adj[ia].push({ to: ib, w });
         adj[ib].push({ to: ia, w });
       }
       for (const [ia, ib] of HALL_EDGES) {
-        const w = posOf(nodeById[ia]).distanceTo(posOf(nodeById[ib])) * UNIT_M;
+        const w = hdist(nodeById[ia], nodeById[ib]) * UNIT_M;
         adj[ia].push({ to: ib, w });
         adj[ib].push({ to: ia, w });
       }
@@ -37064,8 +37105,8 @@
             if (prevN.floor !== n.floor) {
               const vp = vertPosByPair[pairKey(prevN.id, n.id)];
               if (vp) {
-                pts.push(new Vector3(vp.x, FLOOR_Y[prevN.floor] + 7, vp.z));
-                pts.push(new Vector3(vp.x, FLOOR_Y[n.floor] + 7, vp.z));
+                pts.push(new Vector3(vp.x, prevN.y + 7, vp.z));
+                pts.push(new Vector3(vp.x, n.y + 7, vp.z));
               }
             }
           }
@@ -37188,7 +37229,7 @@
         for (let i = 1; i < path.length; i++) {
           const n = pathNodes[i], prevN = pathNodes[i - 1];
           if (prevN.floor === n.floor) {
-            const dm = posOf(prevN).distanceTo(posOf(n)) * UNIT_M;
+            const dm = hdist(prevN, n) * UNIT_M;
             leg += dm;
             walked += dm;
             legSegs.push([prevN, n]);
@@ -37208,7 +37249,7 @@
             const vp = vertPosByPair[key];
             const anchor = vp ? nearestShopTo(vp.x, vp.z, prevN.floor) : null;
             const anchorTxt = anchor ? `\u300C${shortShopName(anchor.name)}\u300D\u306E\u6A2A\u306E` : "";
-            const dirWord = FLOOR_Y[n.floor] < FLOOR_Y[prevN.floor] ? "\u4E0B\u308A\u308B" : "\u4E0A\u304C\u308B";
+            const dirWord = n.y < prevN.y ? "\u4E0B\u308A\u308B" : "\u4E0A\u304C\u308B";
             const vname = vertNameByPair[key];
             pushStep(`<div class="step stairs">${VERT_ICON[type]} ${anchorTxt}${VERT_LABEL[type]}\u3067 ${fl(n.floor)}\u3078${dirWord}${evNote}${photoTag(vname ? "v:" + vname : anchor ? anchor.id : "")}</div>`, n);
             continue;
@@ -37556,6 +37597,8 @@
           ZONES,
           w2m: ([x, z]) => [x / 0.5 + 800, z / 0.5 + 1100],
           // M2W の逆
+          yOf: yOfZone,
+          // 施設×階の床の高さ(高低差モデル)。マーカーを床に合わせる
           // 詳細地図(ガイド座標系)にも記録できるように、施設の登録表・出入りの関数・座標変換を渡す
           detail: {
             maps: DETAIL_MAPS,

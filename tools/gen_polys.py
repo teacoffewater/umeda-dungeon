@@ -43,6 +43,19 @@ for m in re.finditer(r"\['(\w+)',\s*'(\w+)',\s*([\d.]+)(?:,\s*'(\w+)')?\]", em.g
         print('!! unknown node', a, b, file=sys.stderr); continue
     # (a, b, 幅, ゾーン, aのフロア, bのフロア)。フロアまたぎエッジ(fa≠fb)は昇降接続なので床帯を作らない
     edges.append((a, b, w, zone or '_neutral', nodes[a][2], nodes[b][2]))
+# 同一層内の階段・坂(main.js の NODE_DEPTH で両端の深さが違うエッジ)は床帯を作らない。
+# main.js 側が両端の高さを結ぶ斜めの箱(addCorridor)で描く(covers にも入れない)
+NODE_DEPTH = {}
+_m = re.search(r"const NODE_DEPTH = \{(.*?)\n\};", src, re.S)
+if _m:
+    NODE_DEPTH = {k: float(v) for k, v in re.findall(r"(\w+):\s*([\d.]+)", _m.group(1))}
+def _sloped(a, b):
+    da, db = NODE_DEPTH.get(a), NODE_DEPTH.get(b)
+    return da is not None and db is not None and abs(da - db) > 0.3
+_n0 = len(edges)
+edges = [e for e in edges if not _sloped(e[0], e[1])]
+if _n0 != len(edges):
+    print(f'高低差のあるエッジ {_n0 - len(edges)} 本は床帯にしない(斜めの箱で描く)', file=sys.stderr)
 
 # --- OSM地下通路中心線: 最寄りの自エッジからゾーン/フロアを継承 ---
 osm = json.load(open(os.path.join(DATA, 'osm_umeda_underground.json')))

@@ -31,7 +31,8 @@ export const TYPES = {
 const FLOOR_SIGNS = ['B2F', 'B1F', '1F', '2F'];
 const FLOOR_ORDER = ['S1', 'B1', 'B2']; // タップ面の既定は表示中の最上位
 
-export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail }) {
+export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail, yOf }) {
+  const floorY = (zone, floor) => (yOf ? yOf(zone, floor) : FLOOR_Y[floor]) ?? FLOOR_Y.B1; // 施設×階の床の高さ(高低差モデル)
   const $ = id => document.getElementById(id);
   const bar = $('survey');
   if (!bar) throw new Error('#survey がありません');
@@ -328,7 +329,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail })
       if (!D || !D.group) return null; // 施設が無くなっていたら描かない(記録は残す)
       return { group: D.group, y: D.y, toWorld: px => detail.g2w(rec.detail, px) };
     }
-    return { group: floorGroups[rec.floor] || floorGroups.B1, y: FLOOR_Y[rec.floor] ?? FLOOR_Y.B1, toWorld: m2w };
+    return { group: floorGroups[rec.floor] || floorGroups.B1, y: floorY(rec.zone, rec.floor), toWorld: m2w };
   }
   function addMarker(rec) {
     const t = TYPES[rec.type] || TYPES.memo;
@@ -370,7 +371,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail })
   }
   function tempMarker(hit, color) {
     const m = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 5, 10), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.6 }));
-    const y = hit.y ?? FLOOR_Y[hit.floor], g = hit.group || floorGroups[hit.floor]; // 詳細地図なら専用グループに置く
+    const y = hit.y ?? floorY(hit.zone, hit.floor), g = hit.group || floorGroups[hit.floor]; // 詳細地図なら専用グループに置く
     m.position.set(hit.world.x, y + 2.5, hit.world.z);
     g.add(m); return m;
   }
