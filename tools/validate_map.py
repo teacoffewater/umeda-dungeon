@@ -69,7 +69,10 @@ def bp(*ids): return unary_union([bgeo[i] for i in ids])
 FAC = {'sanban': bp(*byname['大阪梅田']), 'links': bp(*byname['ヨドバシ梅田タワー']),
        'grandfront': bp(178942581), 'lucua': bp(162183788), 'hilton': bp(162158150, 162158151),
        'herbis': bp(162158152, 162158418), 'kitte': bp(1146510724), 'ema': bp(162158020), 'daimaru': bp(161450829),
-       'hankyu_dept': bp(588689735), 'hanshin_dept': bp(502411898), 'avanza': bp(178958655), 'dojima_flat': bp(162185349), 'kanden': bp(162380618),
+       'hankyu_dept': bp(588689735), 'hanshin_dept': bp(502411898),
+       # 堂島アバンザはビル外形+西側の地下広場(ドーチカとの間。tools/data/dotica_board.json の avanza_ext)
+       'avanza': unary_union([bp(178958655), Polygon(json.load(open(os.path.join(ROOT, 'tools', 'data', 'dotica_board.json')))['avanza_ext'])]),
+       'dojima_flat': bp(162185349), 'kanden': bp(162380618),
        'ekimae': bp(70561756, 70561758, 135624699, 135624700),
        'hep': bp(161451126, 174789734), 'osbld': bp(162157817)}  # HEP FIVE+NAVIO / OSビル(2026-08-23)
 for fl, zone, poly in finals:

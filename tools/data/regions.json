@@ -1,59 +1,60 @@
 {
-  "_doc": "区域ごとのOSM取り込み設定。polygon は osm_regions.json の way/relation id(複数なら結合)。floor は内部フロア、width は幅の既定(m)。name_hint は OSM の name で区域に含める通路",
-  "whity": {
-    "polygon": [
-      1304559276
-    ],
-    "floor": "B1",
-    "width": 14,
-    "buffer": 3
-  },
-  "diamor": {
-    "polygon": [
-      1304559275
-    ],
-    "floor": "B1",
-    "width": 14,
-    "buffer": 3,
-    "ways": [
-      1010195564,
-      1010195563
-    ],
-    "_note": "ways: カジュアルストリート等、区画ポリゴン外へ南に伸びる通路(第1・第2ビル間、第2・第3ビル間)。現地調査 2026-08-23 で確認"
-  },
-  "dotica": {
-    "polygon": [
-      1304559274
-    ],
-    "floor": "B1",
-    "width": 12,
-    "buffer": 3
-  },
-  "nishi_umeda": {
-    "polygon": [],
-    "ways": [
-      1318982038,
-      1323837456
-    ],
-    "floor": "B1",
-    "width": 13,
-    "buffer": 25
-  },
-  "sonechika": {
-    "polygon": [],
-    "ways": [
-      1010195557
-    ],
-    "floor": "B1",
-    "width": 9,
-    "buffer": 25
-  },
-  "umechika": {
-    "polygon": [],
-    "from_edges": true,
-    "floor": "B1",
-    "width": 12,
-    "buffer": 20,
-    "_note": "梅田地下道はOSMにモール区画が無いので、旧グラフの同ゾーンのエッジ±20mを区域にする"
-  }
+ "_doc": "区域ごとのOSM取り込み設定。polygon は osm_regions.json の way/relation id(複数なら結合)。floor は内部フロア、width は幅の既定(m)。name_hint は OSM の name で区域に含める通路",
+ "whity": {
+  "polygon": [
+   1304559276
+  ],
+  "floor": "B1",
+  "width": 14,
+  "buffer": 3
+ },
+ "diamor": {
+  "polygon": [
+   1304559275
+  ],
+  "floor": "B1",
+  "width": 14,
+  "buffer": 3,
+  "ways": [
+   1010195564,
+   1010195563
+  ],
+  "_note": "ways: カジュアルストリート等、区画ポリゴン外へ南に伸びる通路(第1・第2ビル間、第2・第3ビル間)。現地調査 2026-08-23 で確認"
+ },
+ "dotica": {
+  "polygon": [
+   1304559274
+  ],
+  "floor": "B1",
+  "width": 12,
+  "buffer": 3,
+  "note": "廃止: 2026-09-03 から広域のドーチカは現地の地下近辺案内板(tools/extract_dotica_board.py → tools/data/dotica_board.json)で起こしている。import_region で再取り込みしないこと"
+ },
+ "nishi_umeda": {
+  "polygon": [],
+  "ways": [
+   1318982038,
+   1323837456
+  ],
+  "floor": "B1",
+  "width": 13,
+  "buffer": 25
+ },
+ "sonechika": {
+  "polygon": [],
+  "ways": [
+   1010195557
+  ],
+  "floor": "B1",
+  "width": 9,
+  "buffer": 25
+ },
+ "umechika": {
+  "polygon": [],
+  "from_edges": true,
+  "floor": "B1",
+  "width": 12,
+  "buffer": 20,
+  "_note": "梅田地下道はOSMにモール区画が無いので、旧グラフの同ゾーンのエッジ±20mを区域にする"
+ }
 }

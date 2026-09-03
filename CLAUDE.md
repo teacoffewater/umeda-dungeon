@@ -67,6 +67,15 @@ tools/data/floorguides/whity_2016_labeled.pdf   ← 2016年公式フロアガイ
   → tools/gen_detail_whity.py   → detail_whity.js
 ```
 
+ドーチカ（ドージマ地下センター）の**広域**の形は OSM 中心線ではなく、現地の「地下近辺案内」板から起こしている（`tools/data/regions.json` の dotica は廃止。`import_region.py dotica` を再実行しないこと）:
+
+```
+tools/data/floorguides/dotica_vicinity_board_2026-09-03.jpg   ← 南端(C93)の地下近辺案内板(現地撮影)
+  → tools/extract_dotica_board.py   板の建物外形を OSM ビル外形に ICP で当てて metric-v1 へ
+  → tools/data/dotica_board.json    floor(本線+枝の床) / avanza_ext(通路東のアバンザ地下広場) / nodes(通路の軸上のノード)
+  → tools/gen_polys.py が floor / avanza_ext を床にする。nodes は main.js の NODES に手で写してある
+```
+
 ## 座標系は2つある（最重要）
 
 「広域」と「詳細」は**別の座標系**で、意図的に位置合わせしていない。これを混ぜると壊れる。
