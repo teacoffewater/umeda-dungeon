@@ -53,7 +53,9 @@ def polys(mask, min_area, er):
     # 番号の白丸が穴になるので外周だけを採る(穴があると contains/距離判定が番号の位置で外れる)
     return [Polygon(g.exterior).buffer(er, join_style=2) for g in geoms if g.area >= min_area]
 
-gp = polys(green, 60, 2)
+# 右下のサンクンガーデン(吹き抜け。ドーチカからの階段と店の入口の間)の木2本(緑の丸、面積600〜800px²)は区画ではないので落とす。
+# 実在の区画は最小でも3500px²。吹き抜け自体は歩ける床のまま(landmarks.js の atrium で範囲を持つ)
+gp = polys(green, 1500, 2)
 print('緑の区画候補', len(gp), sorted(round(g.area) for g in gp))
 others = [(g, '空き') for g in polys(gray, 40, 2)] + [(g, '広場') for g in polys(yellow, 60, 2)] + \
          [(g, 'トイレ') for g in polys(blue, 30, 1)] + [(g, 'トイレ') for g in polys(red, 30, 1)]
