@@ -24,6 +24,7 @@ export const TYPES = {
   exit:     { label: '出口番号',    color: 0xffffff, exit: true },
   shop:     { label: '店',          color: 0xffa8cd },
   landmark: { label: '目印',        color: 0xffe066 },
+  atrium:   { label: '吹き抜け',    color: 0x9fe3ff, two: true, rect: true, tap1: '吹き抜けの角をタップ', tap2: '対角の角をタップ' }, // 地下だが地上が見える空間。表示と案内文の目印用(通路にはしない)
   toilet:   { label: 'トイレ',      color: 0x6ec6ff }, // 看板・柱・オブジェなど。写真は別送(撮影時刻と記録時刻で対応付ける)
   memo:     { label: 'メモ',        color: 0xc8a2ff },
 };
@@ -348,8 +349,11 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m, detail })
     if (rec.px2) {
       mk(rec.px2, false);
       const [x1, z1] = toWorld(rec.px), [x2, z2] = toWorld(rec.px2);
-      const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x1, y + 2.5, z1), new THREE.Vector3(x2, y + 2.5, z2)]);
-      const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: t.color }));
+      // 面もの(吹き抜け)は2点を対角とする矩形の枠、線もの(壁・通路・階段・坂)は2点を結ぶ線
+      const pts = t.rect
+        ? [[x1, z1], [x2, z1], [x2, z2], [x1, z2], [x1, z1]].map(([x, z]) => new THREE.Vector3(x, y + 2.5, z))
+        : [new THREE.Vector3(x1, y + 2.5, z1), new THREE.Vector3(x2, y + 2.5, z2)];
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: t.color }));
       g.add(line); meshes.push(line);
     }
     markers.set(rec.id, { meshes, labels });

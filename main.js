@@ -1394,9 +1394,15 @@ const landmarkById = {};
   const pinGeo = new THREE.ConeGeometry(2.2, 6, 6);
   const pinMat = new THREE.MeshBasicMaterial({ color: 0xffd23f });
   for (const lm of LANDMARKS) {
+    landmarkById[lm.id] = lm;
+    if (lm.kind === 'atrium') { // 吹き抜け: 範囲の中心を目印の位置にする。描画は drawAtriums(詳細地図の専用グループを作った後)
+      if (lm.frame) continue; // 詳細地図(ガイド座標)のものは広域の目印にしない
+      lm.mx = (lm.rect[0][0] + lm.rect[1][0]) / 2; lm.my = (lm.rect[0][1] + lm.rect[1][1]) / 2;
+      [lm.x, lm.z] = M2W([lm.mx, lm.my]);
+      continue;
+    }
     const [x, z] = M2W([lm.mx, lm.my]);
     lm.x = x; lm.z = z;
-    landmarkById[lm.id] = lm;
     if (lm.vert) { lm.x = x; lm.z = z; continue; } // 地上への昇降設備は VERTICALS と同じ立体で描く(下の drawVertical)
     const pin = new THREE.Mesh(pinGeo, pinMat);
     pin.rotation.x = Math.PI; // 先端を下に
@@ -1488,6 +1494,7 @@ function enterDetail(zoneId) {
   const D = DETAIL[zoneId];
   buildDetailLabels(zoneId);
   for (const d of D.labels) d.lab.visible = true;
+  for (const lab of D.extraLabels || []) lab.visible = true; // 吹き抜けなど、店以外のラベル
   document.getElementById('detail-bar').hidden = false;
   document.getElementById('detail-bar-name').textContent = (DETAIL_MAPS[zoneId].name || ZONES[DETAIL_MAPS[zoneId].zone || zoneId].name) + ' 詳細地図';
   // 詳細地図=ガイド座標系の別画面。広域(実座標)のものは丸ごと隠して専用エリアへ飛ぶ
@@ -1534,6 +1541,7 @@ function exitDetail() {
   D.group.visible = false;
   routeGroup.visible = true;
   for (const d of D.labels) d.lab.visible = false;
+  for (const lab of D.extraLabels || []) lab.visible = false;
   syncRouteShopLabels(); // 詳細用(区画)のラベルを消し、広域用のラベルを戻す
   for (const o of detailHidden) o.visible = true;
   detailHidden.length = 0;
@@ -2049,6 +2057,43 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
     detailGroup.add(mesh);
     for (const n of blockShops[i]) D.blockByShop[n.id] = mesh;
   });
+}
+
+// 吹き抜け(LANDMARKS の kind:'atrium'): 地下だが地上が見える空間。床の範囲(半透明の板)と、そこから地上まで抜ける
+// 半透明の柱で描く。表示と案内文の目印にだけ使い、通路(ルート)にはしない。
+// frame:'guide:<施設ID>' のものは詳細地図の専用グループに置く(詳細地図を開いたときだけ見える)
+{
+  const colMat = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide });
+  const plateMat = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.4, depthWrite: false });
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0xbfefff, transparent: true, opacity: 0.6 });
+  for (const lm of LANDMARKS) {
+    if (lm.kind !== 'atrium' || !lm.rect) continue;
+    let parent, y, top, p1, p2;
+    if (lm.frame) {
+      const key = lm.frame.slice('guide:'.length), D = DETAIL[key];
+      if (!D || !D.group) continue;
+      parent = D.group; y = D.y + 1.6; top = D.y + 12; // 詳細地図は地上を描かないので、区画より少し高い程度に抑える
+      p1 = g2w(key, lm.rect[0]); p2 = g2w(key, lm.rect[1]);
+    } else {
+      parent = floorGroups[lm.floor]; y = FLOOR_Y[lm.floor] + 1.6; top = GROUND_Y;
+      p1 = M2W(lm.rect[0]); p2 = M2W(lm.rect[1]);
+    }
+    const w = Math.abs(p2[0] - p1[0]), d = Math.abs(p2[1] - p1[1]), cx = (p1[0] + p2[0]) / 2, cz = (p1[1] + p2[1]) / 2;
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(w, 0.6, d), plateMat);
+    plate.position.set(cx, y, cz); plate.renderOrder = 4;
+    plate.userData.landmarkId = lm.id;
+    const col = new THREE.Mesh(new THREE.BoxGeometry(w, top - y, d), colMat);
+    col.position.set(cx, (top + y) / 2, cz); col.renderOrder = 3;
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(col.geometry), edgeMat);
+    edges.position.copy(col.position);
+    const div = document.createElement('div');
+    div.className = 'landmark-label atrium-label';
+    div.textContent = '☀ ' + lm.name;
+    const lab = new CSS2DObject(div); lab.position.set(0, 6, 0); plate.add(lab);
+    parent.add(plate); parent.add(col); parent.add(edges);
+    if (!lm.frame) { landmarkMeshes.push(plate); floorLabelObjs[lm.floor].push(lab); } // 広域: タップでメモ、階トグルでラベル連動
+    else { lab.visible = false; const D = DETAIL[lm.frame.slice('guide:'.length)]; (D.extraLabels ||= []).push(lab); } // 詳細: 開いている間だけ表示(enterDetail/exitDetail)
+  }
 }
 
 // 詳細地図内の経路探索: 歩行可能グリッド(床−区画、tools/gen_detail_*.py 生成)上のA*。

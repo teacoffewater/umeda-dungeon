@@ -33547,8 +33547,8 @@
       if (rec.px2) {
         mk(rec.px2, false);
         const [x1, z1] = toWorld(rec.px), [x2, z2] = toWorld(rec.px2);
-        const geo = new BufferGeometry().setFromPoints([new Vector3(x1, y + 2.5, z1), new Vector3(x2, y + 2.5, z2)]);
-        const line = new Line(geo, new LineBasicMaterial({ color: t.color }));
+        const pts = t.rect ? [[x1, z1], [x2, z1], [x2, z2], [x1, z2], [x1, z1]].map(([x, z]) => new Vector3(x, y + 2.5, z)) : [new Vector3(x1, y + 2.5, z1), new Vector3(x2, y + 2.5, z2)];
+        const line = new Line(new BufferGeometry().setFromPoints(pts), new LineBasicMaterial({ color: t.color }));
         g2.add(line);
         meshes.push(line);
       }
@@ -33718,6 +33718,8 @@
         exit: { label: "\u51FA\u53E3\u756A\u53F7", color: 16777215, exit: true },
         shop: { label: "\u5E97", color: 16754893 },
         landmark: { label: "\u76EE\u5370", color: 16769126 },
+        atrium: { label: "\u5439\u304D\u629C\u3051", color: 10478591, two: true, rect: true, tap1: "\u5439\u304D\u629C\u3051\u306E\u89D2\u3092\u30BF\u30C3\u30D7", tap2: "\u5BFE\u89D2\u306E\u89D2\u3092\u30BF\u30C3\u30D7" },
+        // 地下だが地上が見える空間。表示と案内文の目印用(通路にはしない)
         toilet: { label: "\u30C8\u30A4\u30EC", color: 7259903 },
         // 看板・柱・オブジェなど。写真は別送(撮影時刻と記録時刻で対応付ける)
         memo: { label: "\u30E1\u30E2", color: 13148927 }
@@ -33900,6 +33902,12 @@
           photo: "photos/yellow_object.jpg",
           note: "\u51FA\u53E36-1(\u5DE6)\u30686-2(\u53F3)\u306EY\u5B57\u8DEF\u306E\u80A1\u306B\u3042\u308B\u9EC4\u8272\u3044\u5186\u5F62\u306E\u91D1\u5C5E\u30AA\u30D6\u30B8\u30A7(KALEIDOSCOPE)\u3002\u30BF\u30C3\u30D7\u4F4D\u7F6E(346,1357)\u306F\u5199\u771F\u306B\u3088\u308A\u5206\u5C90\u70B9\u3078\u88DC\u6B63"
         },
+        // --- 吹き抜け(堂島アバンザのサンクンガーデン2つ)。館内案内板(2026-09-03)から。広域の位置は建物外形からの概略、
+        //     詳細地図の位置は案内板の縮尺。現地の調査モード「吹き抜け」で置き換える ---
+        { id: "atr_avanza_n", name: "\u5317\u30B5\u30F3\u30AF\u30F3\u30AC\u30FC\u30C7\u30F3(\u5439\u304D\u629C\u3051)", kind: "atrium", floor: "B1", zone: "avanza", rect: [[758, 1478], [784, 1489]], note: "\u5802\u5CF6\u30A2\u30D0\u30F3\u30B6\u5317\u5074\u306E\u5439\u304D\u629C\u3051\u3002\u30C9\u30FC\u30C1\u30AB\u304B\u3089\u5317\u306E\u968E\u6BB5\u3092\u4E0A\u304C\u3063\u305F\u901A\u8DEF\u306E\u5148" },
+        { id: "atr_avanza_s", name: "\u5357\u30B5\u30F3\u30AF\u30F3\u30AC\u30FC\u30C7\u30F3(\u5439\u304D\u629C\u3051)", kind: "atrium", floor: "B1", zone: "avanza", rect: [[758, 1516], [780, 1532]], note: "\u5802\u5CF6\u30A2\u30D0\u30F3\u30B6\u5357\u5074\u306E\u5439\u304D\u629C\u3051\u3002OUTBACK\u306E\u897F\u3001\u66F2\u7DDA\u968E\u6BB5\u306E\u6240" },
+        { id: "atr_avanza_n_g", name: "\u5317\u30B5\u30F3\u30AF\u30F3\u30AC\u30FC\u30C7\u30F3", kind: "atrium", floor: "B1", zone: "avanza", frame: "guide:avanza", rect: [[18, 1], [42, 10]] },
+        { id: "atr_avanza_s_g", name: "\u5357\u30B5\u30F3\u30AF\u30F3\u30AC\u30FC\u30C7\u30F3", kind: "atrium", floor: "B1", zone: "avanza", frame: "guide:avanza", rect: [[18, 42], [36, 54]] },
         { id: "lm_esc_6_1", name: "\u30A8\u30B9\u30AB\u30EC\u30FC\u30BF\u30FC(\u21921F\u3001\u4E0A\u308A\u5C02\u7528)", floor: "B1", mx: 224.4, my: 1434.1, zone: "nishi_umeda", vert: "esc", to: "\u21921F", dir: [-7.6, 10.2], note: "\u51FA\u53E36-1\u3001\u5730\u4E0B\u5074\u304B\u3089\u898B\u3066\u53F3\u5074\u3002\u4E0A\u308A\u5C02\u7528(\u73FE\u5730\u78BA\u8A8D 2026-08-23)" }
       ];
       PHOTOS = {
@@ -35830,10 +35838,17 @@
         const pinGeo = new ConeGeometry(2.2, 6, 6);
         const pinMat = new MeshBasicMaterial({ color: 16765503 });
         for (const lm of LANDMARKS) {
+          landmarkById[lm.id] = lm;
+          if (lm.kind === "atrium") {
+            if (lm.frame) continue;
+            lm.mx = (lm.rect[0][0] + lm.rect[1][0]) / 2;
+            lm.my = (lm.rect[0][1] + lm.rect[1][1]) / 2;
+            [lm.x, lm.z] = M2W([lm.mx, lm.my]);
+            continue;
+          }
           const [x, z] = M2W([lm.mx, lm.my]);
           lm.x = x;
           lm.z = z;
-          landmarkById[lm.id] = lm;
           if (lm.vert) {
             lm.x = x;
             lm.z = z;
@@ -35934,6 +35949,7 @@
         const D = DETAIL[zoneId];
         buildDetailLabels(zoneId);
         for (const d of D.labels) d.lab.visible = true;
+        for (const lab of D.extraLabels || []) lab.visible = true;
         document.getElementById("detail-bar").hidden = false;
         document.getElementById("detail-bar-name").textContent = (DETAIL_MAPS[zoneId].name || ZONES[DETAIL_MAPS[zoneId].zone || zoneId].name) + " \u8A73\u7D30\u5730\u56F3";
         hideForDetail(floorGroups.S1);
@@ -36001,6 +36017,7 @@
         D.group.visible = false;
         routeGroup.visible = true;
         for (const d of D.labels) d.lab.visible = false;
+        for (const lab of D.extraLabels || []) lab.visible = false;
         syncRouteShopLabels();
         for (const o of detailHidden) o.visible = true;
         detailHidden.length = 0;
@@ -36498,6 +36515,57 @@
           detailGroup.add(mesh);
           for (const n of blockShops[i]) D.blockByShop[n.id] = mesh;
         });
+      }
+      {
+        const colMat = new MeshBasicMaterial({ color: 10478591, transparent: true, opacity: 0.16, depthWrite: false, side: DoubleSide });
+        const plateMat = new MeshBasicMaterial({ color: 10478591, transparent: true, opacity: 0.4, depthWrite: false });
+        const edgeMat = new LineBasicMaterial({ color: 12578815, transparent: true, opacity: 0.6 });
+        for (const lm of LANDMARKS) {
+          if (lm.kind !== "atrium" || !lm.rect) continue;
+          let parent, y, top, p1, p2;
+          if (lm.frame) {
+            const key = lm.frame.slice("guide:".length), D = DETAIL[key];
+            if (!D || !D.group) continue;
+            parent = D.group;
+            y = D.y + 1.6;
+            top = D.y + 12;
+            p1 = g2w(key, lm.rect[0]);
+            p2 = g2w(key, lm.rect[1]);
+          } else {
+            parent = floorGroups[lm.floor];
+            y = FLOOR_Y[lm.floor] + 1.6;
+            top = GROUND_Y;
+            p1 = M2W(lm.rect[0]);
+            p2 = M2W(lm.rect[1]);
+          }
+          const w = Math.abs(p2[0] - p1[0]), d = Math.abs(p2[1] - p1[1]), cx = (p1[0] + p2[0]) / 2, cz = (p1[1] + p2[1]) / 2;
+          const plate = new Mesh(new BoxGeometry(w, 0.6, d), plateMat);
+          plate.position.set(cx, y, cz);
+          plate.renderOrder = 4;
+          plate.userData.landmarkId = lm.id;
+          const col = new Mesh(new BoxGeometry(w, top - y, d), colMat);
+          col.position.set(cx, (top + y) / 2, cz);
+          col.renderOrder = 3;
+          const edges = new LineSegments(new EdgesGeometry(col.geometry), edgeMat);
+          edges.position.copy(col.position);
+          const div = document.createElement("div");
+          div.className = "landmark-label atrium-label";
+          div.textContent = "\u2600 " + lm.name;
+          const lab = new CSS2DObject(div);
+          lab.position.set(0, 6, 0);
+          plate.add(lab);
+          parent.add(plate);
+          parent.add(col);
+          parent.add(edges);
+          if (!lm.frame) {
+            landmarkMeshes.push(plate);
+            floorLabelObjs[lm.floor].push(lab);
+          } else {
+            lab.visible = false;
+            const D = DETAIL[lm.frame.slice("guide:".length)];
+            (D.extraLabels ||= []).push(lab);
+          }
+        }
       }
       function makeDetailNav(WALK) {
         const { x0, y0, cell, w, h, bits } = WALK;
