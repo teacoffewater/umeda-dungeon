@@ -30,7 +30,7 @@ INTRUSION_WHITELIST = {('whity', 'sanban'), ('whity', 'hankyu_dept'), ('diamor',
                        ('umechika', 'hankyu_dept'),  # 御堂筋コンコース(阪急百の西壁沿い・実在)
                        ('osaka_sta', 'daimaru'), ('umechika', 'daimaru'),  # 大丸前コンコース(壁沿い・実在)
                        ('nishi_umeda', 'herbis'),  # 四つ橋筋沿い(ハービスENT東壁・実在)
-                       ('dotica', 'avanza'), ('dotica', 'dojima_flat'), ('dotica', 'kanden'), ('sonechika', 'ekimae'),
+                       ('dotica', 'avanza'), ('dotica', 'dojima_flat'), ('dotica', 'kanden'), ('dotica', 'kiyo'), ('sonechika', 'ekimae'),
                        ('sanban', 'links')}  # 最後はOSMビル外形同士の重複(11m四方)由来
 
 # --- 床ポリゴン ---
@@ -72,7 +72,7 @@ FAC = {'sanban': bp(*byname['大阪梅田']), 'links': bp(*byname['ヨドバシ�
        'hankyu_dept': bp(588689735), 'hanshin_dept': bp(502411898),
        # 堂島アバンザはビル外形+西側の地下広場(ドーチカとの間。tools/data/dotica_board.json の avanza_ext)
        'avanza': unary_union([bp(178958655), Polygon(json.load(open(os.path.join(ROOT, 'tools', 'data', 'dotica_board.json')))['avanza_ext'])]),
-       'dojima_flat': bp(162185349), 'kanden': bp(162380618),
+       'dojima_flat': bp(162185349), 'kanden': bp(162380618), 'kiyo': bp(221966330),
        'ekimae': bp(70561756, 70561758, 135624699, 135624700),
        'hep': bp(161451126, 174789734), 'osbld': bp(162157817)}  # HEP FIVE+NAVIO / OSビル(2026-08-23)
 for fl, zone, poly in finals:

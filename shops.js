@@ -35,6 +35,8 @@ export const SHOP_AREAS = {
   // 関電不動産西梅田ビル地下街: B1F(=浅層S1、詳細地図は仮配置)と B2F(=中枢層B1、ドーチカC61直結)。どちらも集約ドット=詳細地図の入口
   kanden_b1: { floor: 'S1', zone: 'kanden', near: ['kanden_b1'], rect: [669, 1379, 30, 24], merged: true },
   kanden_b2: { floor: 'B1', zone: 'kanden', near: ['kanden_b2'], rect: [669, 1379, 30, 24], merged: true },
+  // 紀陽ビル B1F(ドーチカ南端直結。館内図が無いので詳細地図は仮配置)。集約ドット=詳細地図の入口
+  kiyo_b1: { floor: 'B1', zone: 'kiyo', near: ['kiyo_b1'], rect: [681, 1614, 26, 24], merged: true },
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
   diamor_fashion: { floor: 'B1', zone: 'diamor', edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_diamor_e'], ['j_diamor_e', 'j_fashion_e']] },        // 西→東
   diamor_market: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'j_market_ne']] }, // 広場→北東
@@ -574,6 +576,9 @@ export const SHOPS_SCRAPED = [
   g('とんこう', 'kanden_b2', '北'),            // 弁当・肉まん。区画3
   g('割烹 小澤', 'kanden_b2', '南'),           // 美味しい庵。区画2
   g('堂島喫茶 SUI', 'kanden_b2', '中央'),      // kohscoffee since 1972。B2案内板に区画名なし(無記名区画のどれか)
+  // ==== 紀陽ビル B1F(ドーチカ南端から入る。現地の見聞 2026-09-03: 入って左=福永診療所、右=堂島デンタルクリニック。実位置は detail_kiyo_b1.js(仮配置)) ====
+  g('福永診療所', 'kiyo_b1', '南'),
+  g('堂島デンタルクリニック', 'kiyo_b1', '北'),
   // ==== 堂島ふらっと（近鉄堂島ビルB1F、ドーチカC83直結。現地の案内板 2026-09-03。番号=案内板の区画番号。実位置は detail_dojima_flat.js） ====
   g('ケア21グループ 研修センター 研修室A・B・C', 'dojima_flat', '西'), // 1(2区画)
   g('NAVI CLINIC', 'dojima_flat', '西'),                              // 2
