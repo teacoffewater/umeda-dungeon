@@ -35277,6 +35277,7 @@
       }
       var G2W = ([gx, gy]) => [gx * 0.5 + 1600, gy * 0.5];
       var detailMode = null;
+      var detailAnchors = [];
       var detailShopIds = [];
       var detailShopLabels = [];
       for (const n of NODES) {
@@ -35369,7 +35370,8 @@
           fromTgt: controls.target.clone(),
           toTgt: new Vector3(c.x, FLOOR_Y.B1, c.z),
           start: performance.now(),
-          dur: 900
+          dur: 900,
+          hard: true
         };
       }
       function exitDetail() {
@@ -35401,7 +35403,8 @@
             fromTgt: controls.target.clone(),
             toTgt: detailSaved.camTgt,
             start: performance.now(),
-            dur: 700
+            dur: 700,
+            hard: true
           };
         }
         document.getElementById("detail-bar").hidden = true;
@@ -35778,6 +35781,7 @@
           const [x, z] = G2W([gx, gy]);
           if (i === 0) shape.moveTo(x, -z);
           else shape.lineTo(x, -z);
+          if (i % 4 === 0) detailAnchors.push(x, z);
         });
         for (const h of f.holes || []) {
           const path = new Path();
@@ -35852,6 +35856,7 @@
           mesh.position.y = FLOOR_Y.B1 + 1.5;
           const [cgx, cgy] = centroid(b);
           mesh.userData.center = G2W([cgx, cgy]);
+          detailAnchors.push(mesh.userData.center[0], mesh.userData.center[1]);
           if (occ) {
             mesh.userData.nodeId = blockShops[i][0].id;
             nodeMeshes.push(mesh);
@@ -36062,6 +36067,14 @@
       var markers = [];
       var startIcon = null;
       var camAnim = null;
+      function finishCamAnim() {
+        if (!camAnim) return;
+        camera.position.copy(camAnim.toPos);
+        controls.target.copy(camAnim.toTgt);
+        const done = camAnim.onDone;
+        camAnim = null;
+        done?.();
+      }
       var routeStepUs = [];
       var walkU = 0;
       var walkAnim = null;
@@ -36779,7 +36792,10 @@
         activePtrs.add(e.pointerId);
         ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
         if (activePtrs.size > 1) multiTouch = true;
-        camAnim = null;
+        if (camAnim) {
+          if (camAnim.hard) finishCamAnim();
+          else camAnim = null;
+        }
         if (document.body.classList.contains("picker-editing")) {
           document.activeElement?.blur?.();
         }
@@ -36830,10 +36846,28 @@
           const e = 1 - Math.pow(1 - p, 3);
           camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
           controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
-          if (p >= 1) {
-            const done = camAnim.onDone;
-            camAnim = null;
-            done?.();
+          if (p >= 1) finishCamAnim();
+        } else if (detailMode && detailAnchors.length) {
+          const dist = camera.position.distanceTo(controls.target);
+          const halfH = dist * Math.tan(camera.fov * Math.PI / 360);
+          const lim = Math.max(15, Math.min(halfH, halfH * camera.aspect) * 0.5);
+          let bd = Infinity, bx = 0, bz = 0;
+          for (let i = 0; i < detailAnchors.length; i += 2) {
+            const dx = controls.target.x - detailAnchors[i], dz = controls.target.z - detailAnchors[i + 1];
+            const d = dx * dx + dz * dz;
+            if (d < bd) {
+              bd = d;
+              bx = detailAnchors[i];
+              bz = detailAnchors[i + 1];
+            }
+          }
+          const near = Math.sqrt(bd);
+          if (near > lim) {
+            const k = lim / near;
+            const tx = bx + (controls.target.x - bx) * k, tz = bz + (controls.target.z - bz) * k;
+            camera.position.x += tx - controls.target.x;
+            camera.position.z += tz - controls.target.z;
+            controls.target.set(tx, controls.target.y, tz);
           }
         }
         if (routeCurve && markers.length) {

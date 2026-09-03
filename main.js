@@ -1381,6 +1381,7 @@ const G2W = ([gx, gy]) => [gx * 0.5 + 1600, gy * 0.5];
 // いまはホワイティのみ(詳細データがある施設だけ入れる)
 // ---------------------------------------------------------------------------
 var detailMode = null; // (前方のイベントハンドラから参照するため var)
+const detailAnchors = []; // 詳細地図の実体がある位置([x,z,x,z,...] 床の外形点+区画の重心)。パンで見失わないための基準
 const detailShopIds = []; // 実位置を持つホワイティ店(詳細モードで名前を出す)
 const detailShopLabels = [];
 for (const n of NODES) {
@@ -1449,7 +1450,7 @@ function enterDetail(zoneId) {
   controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI / 3; // 傾きは60°まで(現在の角度より広いので跳ねない)
   controls.minDistance = 40;
   camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(c.x, FLOOR_Y.B1 + r * 1.7, c.z + 0.1),
-              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, FLOOR_Y.B1, c.z), start: performance.now(), dur: 900 };
+              fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, FLOOR_Y.B1, c.z), start: performance.now(), dur: 900, hard: true };
 }
 function exitDetail() {
   if (!detailMode) return;
@@ -1476,7 +1477,7 @@ function exitDetail() {
   // 広域のカメラ位置に戻る
   if (detailSaved.camPos) {
     camAnim = { fromPos: camera.position.clone(), toPos: detailSaved.camPos,
-                fromTgt: controls.target.clone(), toTgt: detailSaved.camTgt, start: performance.now(), dur: 700 };
+                fromTgt: controls.target.clone(), toTgt: detailSaved.camTgt, start: performance.now(), dur: 700, hard: true };
   }
   document.getElementById('detail-bar').hidden = true;
 }
@@ -1886,6 +1887,7 @@ for (const f of WHITY_FLOOR) {
   f.pts.forEach(([gx, gy], i) => {
     const [x, z] = G2W([gx, gy]);
     if (i === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z);
+    if (i % 4 === 0) detailAnchors.push(x, z); // パン制限の基準点(外形を間引いて採る)
   });
   for (const h of f.holes || []) {
     const path = new THREE.Path();
@@ -1953,6 +1955,7 @@ const blockMeshByShopId = {};
     mesh.position.y = FLOOR_Y.B1 + 1.5; // 床スラブの上に乗せる
     const [cgx, cgy] = centroid(b);
     mesh.userData.center = G2W([cgx, cgy]); // ラベルの置き場所(区画の重心)
+    detailAnchors.push(mesh.userData.center[0], mesh.userData.center[1]);
     if (occ) { mesh.userData.nodeId = blockShops[i][0].id; nodeMeshes.push(mesh); }
     detailGroup.add(mesh);
     for (const n of blockShops[i]) blockMeshByShopId[n.id] = mesh;
@@ -2159,7 +2162,16 @@ scene.add(routeGroup);
 let routeCurve = null;
 let markers = []; // ルート上を等間隔で流れる進行方向インジケータ(白球×4)
 let startIcon = null;
-let camAnim = null; // ルート実行時のカメラ移動アニメーション
+let camAnim = null; // ルート実行時のカメラ移動アニメーション({ hard: true } は途中で止められない移動)
+// 進行中のカメラ移動を最終地点で即座に完了させる(中断できない移動を打ち切る代わりに使う)
+function finishCamAnim() {
+  if (!camAnim) return;
+  camera.position.copy(camAnim.toPos);
+  controls.target.copy(camAnim.toTgt);
+  const done = camAnim.onDone;
+  camAnim = null;
+  done?.();
+}
 // 案内文タップ → 赤い人がその地点までルート沿いに歩くアニメーション
 let routeStepUs = [];  // 案内行ごとのカーブ上パラメータu(0〜1)
 let walkU = 0;         // 赤い人の現在位置(u)
@@ -2941,7 +2953,13 @@ renderer.domElement.addEventListener('pointerdown', e => {
   activePtrs.add(e.pointerId);
   ptrPos.set(e.pointerId, [e.clientX, e.clientY]);
   if (activePtrs.size > 1) multiTouch = true;
-  camAnim = null; // 手動操作が始まったら自動カメラ移動は中断
+  // 手動操作が始まったら自動カメラ移動は中断。ただし広域⇔詳細の移動(hard)は
+  // 座標系をまたいで遠くへ飛ぶので、途中で止めると何もない空間に取り残される(地図が真っ暗になる)。
+  // その場合は中断せず行き先へ即着地させる
+  if (camAnim) {
+    if (camAnim.hard) finishCamAnim();
+    else camAnim = null;
+  }
   // 地図に触れたら入力モードを終了（キーボードも閉じる）
   if (document.body.classList.contains('picker-editing')) {
     document.activeElement?.blur?.();
@@ -2998,7 +3016,28 @@ function animate() {
     const e = 1 - Math.pow(1 - p, 3);
     camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
     controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
-    if (p >= 1) { const done = camAnim.onDone; camAnim = null; done?.(); }
+    if (p >= 1) finishCamAnim();
+  } else if (detailMode && detailAnchors.length) {
+    // 詳細地図は広域から離れた専用エリアにあり、周りには何も無い。パンで外へ出ると画面が真っ暗になるので、
+    // 注視点を地図の実体(床・区画)の近くに留める。外接ボックスではだめ(V字のくぼみは地図が無い)
+    // 引き代は「いま見えている範囲」の半分(寄っているときほど厳しく = 常に画面内に地図が残る)
+    const dist = camera.position.distanceTo(controls.target);
+    const halfH = dist * Math.tan(camera.fov * Math.PI / 360);
+    const lim = Math.max(15, Math.min(halfH, halfH * camera.aspect) * 0.5);
+    let bd = Infinity, bx = 0, bz = 0;
+    for (let i = 0; i < detailAnchors.length; i += 2) {
+      const dx = controls.target.x - detailAnchors[i], dz = controls.target.z - detailAnchors[i + 1];
+      const d = dx * dx + dz * dz;
+      if (d < bd) { bd = d; bx = detailAnchors[i]; bz = detailAnchors[i + 1]; }
+    }
+    const near = Math.sqrt(bd);
+    if (near > lim) { // 最寄りの地図要素から離れすぎ → 引き戻す(カメラも同量動かし視点の向きは変えない)
+      const k = lim / near;
+      const tx = bx + (controls.target.x - bx) * k, tz = bz + (controls.target.z - bz) * k;
+      camera.position.x += tx - controls.target.x;
+      camera.position.z += tz - controls.target.z;
+      controls.target.set(tx, controls.target.y, tz);
+    }
   }
   if (routeCurve && markers.length) {
     markers.forEach((m, i) => {
