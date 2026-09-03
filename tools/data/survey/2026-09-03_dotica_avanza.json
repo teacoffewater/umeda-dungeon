@@ -2,7 +2,7 @@
  "version": 1,
  "frame": "metric-v1",
  "exported": "2026-09-03T08:29:29.108Z",
- "_applied": "2026-09-03: (1) 壁「この通路は場所が違う」→ 案内板の比率で置いていたアバンザ中の接続(y≈1527: dotica_avz_m→j_avz_m)を撤去。(2) 階段10段(dh=15 は1段15cmと解釈、1.5m)→ 南の接続 dotica_01→avz_s0→avz_s1→j_avz_s→j_avz(旧 avanza→j_avz を置換)。(3) 通路+階段(7段↑・10m・17段↑、1段15cm=3.6m)→ 中の接続 dotica_avz_c→avz_c_s→avz_c_mid→j_avz_c→j_avz。ZONES.avanza.depthM=2.4。北の接続(dotica_avz_n、y≈1482)は未記録のまま仮値 / 2026-09-03 夜: 広域のドーチカを地下近辺案内板(tools/data/dotica_board.json)で起こし直したのに合わせ、中の階段を板の C80 の通路(y≈1511〜1516)、南の階段を C84 の通路(y≈1537)に置き直した。通路の東の桃色部分(7段上がった広場〜17段上がった面)は avanza ゾーンの床にした",
+ "_applied": "2026-09-03: (1) 壁「この通路は場所が違う」→ 案内板の比率で置いていたアバンザ中の接続(y≈1527: dotica_avz_m→j_avz_m)を撤去。(2) 階段10段(dh=15 は1段15cmと解釈、1.5m)→ 南の接続 dotica_01→avz_s0→avz_s1→j_avz_s→j_avz(旧 avanza→j_avz を置換)。(3) 通路+階段(7段↑・10m・17段↑、1段15cm=3.6m)→ 中の接続 dotica_avz_c→avz_c_s→avz_c_mid→j_avz_c→j_avz。ZONES.avanza.depthM=2.4。北の接続(dotica_avz_n、y≈1482)は未記録のまま仮値 / 2026-09-03 夜: 広域のドーチカを地下近辺案内板(tools/data/dotica_board.json)で起こし直したのに合わせ、中の階段を板の C80 の通路(y≈1516)、南の階段を C84 の通路(y≈1544)に置き直した。通路の東の桃色部分(7段上がった広場〜17段上がった面)は avanza ゾーンの床にした",
  "records": [
   {
    "id": "rmtl9ce7l",

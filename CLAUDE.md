@@ -73,7 +73,7 @@ tools/data/floorguides/whity_2016_labeled.pdf   ← 2016年公式フロアガイ
 tools/data/floorguides/dotica_vicinity_board_2026-09-03.jpg   ← 南端(C93)の地下近辺案内板(現地撮影)
   → tools/extract_dotica_board.py   板の建物外形を OSM ビル外形に ICP で当てて metric-v1 へ
   → tools/data/dotica_board.json    floor(本線+枝の床) / avanza_ext(通路東のアバンザ地下広場) / nodes(通路の軸上のノード)
-  → tools/gen_polys.py が floor / avanza_ext を床にする。nodes は main.js の NODES に手で写してある
+  → tools/gen_polys.py が floor / avanza_ext を床にする。nodes は `--apply` で main.js の NODES に書き込む(集約ドットの rect は手で)
 ```
 
 ## 座標系は2つある（最重要）

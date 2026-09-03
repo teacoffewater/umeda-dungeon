@@ -45,8 +45,8 @@ export const SHOP_AREAS = {
   // ドーチカ: 詳細地図(detail_dotica.js)を持つので、広域では北・中・南の3点の集約ドット(=詳細地図の入口)。rect は通路上(幅10m)
   // 集約ドットは本線の軸上(地下近辺案内板 2026-09-03)
   dotica_n: { floor: 'B1', zone: 'dotica', near: ['dotica_c61'],    rect: [708.4, 1385, 10, 40], merged: true }, // 北(西梅田側〜コクミンドラッグ堂島店)
-  dotica_c: { floor: 'B1', zone: 'dotica', near: ['dotica_avz_n'],  rect: [701.2, 1479, 10, 40], merged: true }, // 中(BIG VISION〜ドトール)
-  dotica_s: { floor: 'B1', zone: 'dotica', near: ['avanza'],        rect: [706, 1576, 10, 40], merged: true },   // 南(おたからや〜南端)
+  dotica_c: { floor: 'B1', zone: 'dotica', near: ['dotica_avz_n'],  rect: [701.7, 1479, 10, 40], merged: true }, // 中(BIG VISION〜ドトール)
+  dotica_s: { floor: 'B1', zone: 'dotica', near: ['avanza'],        rect: [706.5, 1576, 10, 40], merged: true }, // 南(おたからや〜南端)
   // ekimo梅田（御堂筋線コンコース沿い・中改札→南改札）
   ekimo: { floor: 'B1', zone: 'umechika', near: ['j_metro'], edges: [['j_metro', 'umechika_15'], ['umechika_15', 'umechika_11']] },
   // 大阪駅前第1〜4ビル（ホール型: 3×3グリッド）

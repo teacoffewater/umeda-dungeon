@@ -33,12 +33,12 @@ mx, mn = a.max(-1), a.min(-1); v = mx; s = np.where(mx > 0, (mx - mn) / np.maxim
 d = np.maximum(mx - mn, 1e-6)
 h = np.where(mx == R, ((G - B) / d) % 6, np.where(mx == G, (B - R) / d + 2, (R - G) / d + 4)) * 60
 ys, xs = np.mgrid[0:a.shape[0], 0:a.shape[1]]
-roi = (xs > 470) & (xs < 1160) & (ys > 5) & (ys < 1000)  # 板の中(枠・映り込みを除く)
+roi = (xs > 470) & (xs < 1250) & (ys > 0) & (ys < 960)  # 板の中(枠・映り込みを除く)
 pink = (h > 5) & (h < 24) & (s > 0.26) & (s < 0.48) & (v > 165) & roi     # ドーチカ区画
 white = (s < 0.2) & (v > 205) & roi                                         # 通路
-blue = (h > 200) & (h < 232) & (s > 0.16) & (s < 0.4) & (v > 135) & (v < 205) & roi   # 地下接続ビル(濃い青)
-lblue = (h > 200) & (h < 232) & (s > 0.08) & (s <= 0.16) & (v > 170) & (v < 205) & roi  # 水色(ホテル・プラザ)
-gray = (h > 5) & (h < 35) & (s > 0.06) & (s < 0.2) & (v > 100) & (v < 140) & roi & (xs > 790) & (ys > 790)  # 堂島グランドビル
+blue = (h > 200) & (h < 232) & (s > 0.16) & (s < 0.4) & (v > 110) & (v < 205) & roi   # 地下接続ビル(濃い青。映り込みで暗い所も拾う)
+lblue = (h > 200) & (h < 232) & (s > 0.08) & (s <= 0.2) & (v > 175) & (v < 215) & roi  # 水色(ホテル・プラザ)
+gray = (h > 5) & (h < 36) & (s > 0.03) & (s < 0.13) & (v > 115) & (v < 158) & roi & (xs > 760) & (ys > 780)  # 堂島グランドビル(背景は h≈44 v≈166)
 teal = (h > 160) & (h < 200) & (s > 0.3) & (v < 130) & roi                  # 出口の階段記号
 
 
@@ -78,13 +78,13 @@ bld = json.load(open(os.path.join(ROOT, 'tools/data/osm_buildings.json')))
 osm = {e['id']: Polygon([ll2m(p['lat'], p['lon']) for p in e['geometry']]).buffer(0)
        for e in bld['elements'] if e['type'] == 'way' and e.get('geometry')}
 MATCH = [  # (名前, 板の成分(mask, 重心px), OSM way id)
-    ('近鉄堂島ビル', nearest(BL, 550, 513), 162185349),
-    ('堂島アバンザ', nearest(BL, 994, 510), 178958655),
-    ('紀陽ビル', nearest(BL, 622, 903), 221966330),
-    ('西梅田MID(関電不動産西梅田)', unary_union([nearest(BL, 591, 48), nearest(BL, 565, 116)]).convex_hull, 162380618),
-    ('堂島グランドビル', nearest(GR, 900, 880) if GR else None, 162381435),
-    ('堂島プラザビル', nearest(LB, 1000, 750) if LB else None, 178996327),
-    ('ホテルエルセラーン', nearest(LB, 830, 720) if LB else None, 178996353),
+    ('近鉄堂島ビル', nearest(BL, 564, 518), 162185349),
+    ('堂島アバンザ', nearest(BL, 969, 525), 178958655),
+    ('紀陽ビル', nearest(BL, 632, 870), 221966330),
+    ('西梅田MID(関電不動産西梅田)', nearest(BL, 602, 133), 162380618),
+    ('堂島グランドビル', nearest(GR, 880, 860) if GR else None, 162381435),
+    ('堂島プラザビル', nearest(LB, 980, 740) if LB else None, 178996327),
+    ('ホテルエルセラーン', nearest(LB, 800, 720) if LB else None, 178996353),
 ]
 MATCH = [m for m in MATCH if m[1] is not None]
 for n, g, oid in MATCH:
@@ -109,19 +109,17 @@ def residuals(H):
     r = []
     for pts, ring in samples:
         q = apply_H(H, pts)
-        r.extend(min(ring.distance(Point(x, y)), 12.0) for x, y in q)  # 12m で頭打ち(板の簡略化に引きずられない)
+        r.extend(min(ring.distance(Point(x, y)), 15.0) for x, y in q)  # 15m で頭打ち(板の簡略化に引きずられない)
     return np.array(r)
 
 
-# 初期値: 出口(階段記号 teal の重心 ↔ OSM 出入口)のアフィン
-EXITS = {'C61': ((639, 116), (693.6, 1388.6)), 'C69': ((656, 294), (692.8, 1431.6)), 'C72': ((771, 368), (723.7, 1462.2)),
-         'C80': ((752, 566), (719.1, 1514.7)), 'C92': ((775, 842), (729.9, 1615.9)), 'C93': ((688, 915), (701.4, 1623.6))}
-A = []; b = []
-for (x, y), (px, py) in EXITS.values():
-    A += [[x, y, 1, 0, 0, 0], [0, 0, 0, x, y, 1]]; b += [px, py]
-p, *_ = np.linalg.lstsq(np.array(A, float), np.array(b, float), rcond=None)
-H = np.array([[p[0], p[1], p[2]], [p[3], p[4], p[5]], [0, 0, 1]])
-params = np.array([H[0, 0], H[0, 1], H[0, 2], H[1, 0], H[1, 1], H[1, 2], 0.0, 0.0])
+# 初期値: 縮尺は板のスケールバー(150m ≈ 450px @1400幅 → 0.333 m/px、縦横同じ)、平行移動は出口(階段記号 teal の重心 ↔ OSM 出入口)の平均。
+# 出口だけでアフィンを解くと OSM の出入口(地上の位置)のずれで横の縮尺が 0.26 に化け、ICP がそこから抜けない
+EXITS = {'C61': ((655, 167), (693.6, 1388.6)), 'C69': ((668, 327), (692.8, 1431.6)), 'C72': ((771, 395), (723.7, 1462.2)),
+         'C80': ((752, 571), (719.1, 1514.7)), 'C92': ((771, 820), (729.9, 1615.9))}
+S0 = 0.333
+tx = np.mean([px - S0 * x for (x, y), (px, py) in EXITS.values()]); ty = np.mean([py - S0 * y for (x, y), (px, py) in EXITS.values()])
+params = np.array([S0, 0.0, tx, 0.0, S0, ty, 0.0, 0.0])
 
 
 def H_of(q):
@@ -163,16 +161,17 @@ for oid, g in osm.items():
         dr.line(pts, fill=(255, 255, 0), width=2)
 for n, g, oid in MATCH:
     dr.polygon([tuple(c) for c in g.simplify(1).exterior.coords], outline=(0, 0, 255), width=2)
-dbg.crop((450, 0, 1180, 1000)).save(OUT + 'dotica_board_fit.png')
+dbg.crop((450, 0, 1150, 950)).save(OUT + 'dotica_board_fit.png')
 json.dump({'H': H.tolist(), 'DW': DW}, open(OUT + 'dotica_board_H.json', 'w'))
 print('wrote dotica_board_fit.png')
 
 # ===================== 床(桃+白)と通路の軸 =====================
 def m_of(pts):
     return apply_H(H, np.array(pts, float))
-floor_mask = (pink | white) & (xs > 520) & (ys > 8)
-floor_mask &= ~((xs < 640) & (ys < 45))     # 板の上端の C57 への通路(地上出口専用・板の外で切れている)
-floor_mask &= ~((xs > 695) & (xs < 765) & (ys > 640) & (ys < 800) & (s < 0.3))  # 通路の東に接する薄い桃(ホテルエルセラーンの地階?)は床にしない
+floor_mask = (pink | white) & (xs > 540) & (ys > 76)  # y<76 は北新地駅(JR東西線)の面と出口11-5の通路=ドーチカではない(そねちか側の帯でつなぐ)
+floor_mask &= ~((xs < 702) & (ys < 115))    # C57 への通路(MIDビル北側。地上出口専用なので入れない)
+floor_mask &= ~((xs > 760) & (ys < 90))     # 出口 11-5 への通路(北新地駅側)
+floor_mask &= ~((xs > 703) & (xs < 756) & (ys > 662) & (ys < 800) & (s < 0.3))  # 通路の東に接する薄い桃(ホテルエルセラーンの地階?)は床にしない
 floor_mask = erode(dilate(floor_mask, 4), 4)  # 通路上の文字・記号(現在地・トイレ)で割れた床をつなぐ
 FL = sorted(comps(floor_mask, 300, 2), key=lambda g: -g.area)
 print('床の成分', [(round(g.centroid.x), round(g.centroid.y), round(g.area)) for g in FL[:8]])
@@ -181,8 +180,8 @@ floor_m = Polygon(m_of(list(floor_px.exterior.coords)))
 print('床 面積 %.0f m2, 頂点 %d' % (floor_m.area, len(floor_px.exterior.coords)))
 
 # 本線の軸: 白(通路)を上から追跡(前の行の x ±22px の中の白の中央値。文字で切れた行は飛ばす)
-axis = []; cur = 700.0
-for y in range(12, 945, 3):
+axis = []; cur = 725.0
+for y in range(78, 900, 3):
     row = white[y] & (np.abs(xs[y] - cur) < 22)
     xx = np.nonzero(row)[0]
     if len(xx) < 5:
@@ -196,7 +195,7 @@ for x, y in axis[::10]:
 # 通路の東(C72の通路〜C84の通路の間)の桃色: ドーチカ本線の区画帯(x≦748px)より東は堂島アバンザの地下広場
 # (7段上がった先の広場と、そこから17段上がった 2.4m 深の面=アバンザ B1F の面。サンクンガーデンがある)。
 # 板ではドーチカと同じ桃色だが高さが違うので、広域では avanza ゾーンの床(ビル外形の西への拡張)として持つ
-EAST = box(748, 395, 905, 618)
+EAST = box(751, 418, 905, 628)
 # 広場側は C80 の階段記号(teal)などで欠けるので、広めのクロージングで埋めてから切る(ドーチカ側との境 x=748px は共有)
 ext_px = Polygon(floor_px.exterior).buffer(6, join_style=2).buffer(-6, join_style=2).intersection(EAST)
 if isinstance(ext_px, MultiPolygon):
@@ -213,28 +212,28 @@ def axis_at(py):
     xs_ = [x for x, y in axis if abs(y - py) <= 6]
     return (float(np.mean(xs_)), float(py))
 NODE_PX = {
-    'dotica_02': axis_at(60),     # 北端(曽根崎地下歩道との境)
-    'dotica_c61': axis_at(118),   # C61 の通路(西→関電不動産西梅田ビル B2F)の分岐
-    'kanden_b2': (612, 118),      # 関電不動産西梅田ビル B2F(通路を入った所)
-    'dojima': axis_at(330),       # ドーチカ中央(館ノード)
-    'dotica_avz_n': axis_at(380), # C72 の通路(東→アバンザ北)の分岐
-    'avz_n_s': (836, 380),        # 北: 階段の下(通路の東端手前)
-    'j_avz_n': (880, 382),        # 北: 階段の上(アバンザ北サンクンガーデン通路)
-    'dotica_avz_c': axis_at(553), # C80 の通路(東→アバンザ中)の分岐
-    'avz_c_s': (740, 553),        # 中: 7段の階段の下(区画帯の東縁)
-    'avz_c_mid': (760, 560),      # 中: 広場(7段の上〜曲線階段の下)
-    'j_avz_c': (770, 528),        # 中: 曲線階段(17段)の上
+    'dotica_02': axis_at(82),     # 北端(北新地駅・曽根崎地下歩道との境)
+    'dotica_c61': axis_at(170),   # C61 の通路(西→関電不動産西梅田ビル B2F)の分岐
+    'kanden_b2': (625, 170),      # 関電不動産西梅田ビル B2F(通路を入った所)
+    'dojima': axis_at(340),       # ドーチカ中央(館ノード)
+    'dotica_avz_n': axis_at(400), # C72 の通路(東→アバンザ北)の分岐
+    'avz_n_s': (838, 400),        # 北: 階段の下(通路の東端手前)
+    'j_avz_n': (878, 412),        # 北: 階段の上(アバンザ北サンクンガーデン通路。地下広場の北端)
+    'dotica_avz_c': axis_at(560), # C80 の通路(東→アバンザ中)の分岐
+    'avz_c_s': (745, 560),        # 中: 7段の階段の下(区画帯の東縁)
+    'avz_c_mid': (768, 568),      # 中: 広場(7段の上〜曲線階段の下)
+    'j_avz_c': (775, 535),        # 中: 曲線階段(17段)の上
     'dotica_c83': axis_at(612),   # C83 の通路(西→堂島ふらっと)の分岐
-    'dotica_df_s0': (560, 612),   # 階段(23段)の下
-    'dotica_df_s1': (540, 612),   # 階段の上
-    'dojima_flat': (520, 612),    # 堂島ふらっと(近鉄堂島ビルB1F)
-    'dotica_01': axis_at(640),    # C84 の通路(東→アバンザ南)の分岐
-    'avz_s0': (745, 640),         # 南: 10段の階段の下(区画帯の東縁)
-    'avz_s1': (765, 633),         # 南: 10段の上
-    'j_avz_s': (868, 600),        # 南: アバンザ館内の南側通路の入口(ビルの南西角)
-    'avanza': axis_at(665),       # 堂島アバンザ前(館ノード)
-    'dotica_c92': axis_at(842),   # C92 の所の折れ
-    'dotica_03': axis_at(898),    # 南端(C93 の手前。板の通路はここまで)
+    'dotica_df_s0': (582, 612),   # 階段(23段)の下
+    'dotica_df_s1': (560, 612),   # 階段の上
+    'dojima_flat': (540, 612),    # 堂島ふらっと(近鉄堂島ビルB1F)
+    'dotica_01': axis_at(646),    # C84 の通路(東→アバンザ南)の分岐
+    'avz_s0': (752, 645),         # 南: 10段の階段の下(区画帯の東縁)
+    'avz_s1': (772, 638),         # 南: 10段の上
+    'j_avz_s': (862, 605),        # 南: アバンザ館内の南側通路の入口(ビルの南西角)
+    'avanza': axis_at(672),       # 堂島アバンザ前(館ノード)
+    'dotica_c92': axis_at(815),   # C92 の所の折れ
+    'dotica_03': axis_at(858),    # 南端(現在地の所。C93 の手前)
 }
 NODE_M = {k: [round(float(c), 1) for c in m_of([v])[0]] for k, v in NODE_PX.items()}
 for k, v in NODE_M.items():
@@ -283,3 +282,17 @@ for k, (x, y) in exits_m.items():
 for k, (x, y) in NODE_M.items():
     p = mp(x, y); dr.ellipse([p[0] - 3, p[1] - 3, p[0] + 3, p[1] + 3], fill=(200, 0, 200)); dr.text((p[0] + 4, p[1] + 2), k, fill=(150, 0, 150))
 cv.save(OUT + 'dotica_board_metric.png'); print('wrote dotica_board_metric.png')
+
+# ===================== --apply: main.js のノード座標を書き換える =====================
+if '--apply' in sys.argv:
+    mp_ = os.path.join(ROOT, 'main.js'); ms = open(mp_).read(); n_ = 0
+    for k, (x, y) in list(NODE_M.items()) + [('kanden_b1', NODE_M['kanden_b2'])]:
+        pat = re.compile(r"((?:J|P)\('%s',\s*(?:'[^']*',\s*'(?:S1|B1|B2)',\s*)?)(-?[\d.]+),\s*(-?[\d.]+)" % k)
+        ms, c = pat.subn(lambda m: '%s%g, %g' % (m.group(1), x, y), ms); n_ += c
+        if c != 1: print('!! main.js のノード', k, 'が', c, '件')
+    open(mp_, 'w').write(ms); print('main.js のノード座標を書き換え:', n_)
+    # 集約ドット(shops.js の rect)用: 本線の軸の x を metric y ごとに
+    ax_m = m_of(axis)
+    for my_ in (1385, 1479, 1576):
+        near = [x for x, y in ax_m if abs(y - my_) < 3]
+        print('  軸 y=%d: x=%.1f' % (my_, np.mean(near)))
