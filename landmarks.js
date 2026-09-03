@@ -31,10 +31,10 @@ export const LANDMARKS = [
   //     広域の位置は階段の上(656,1533。地下近辺案内板 2026-09-03)の西〜南西に案内板の比率で置いた概略。詳細地図の位置は案内板の縮尺 ---
   { id: 'atr_dojima_flat', name: '堂島ふらっとの吹き抜け', kind: 'atrium', floor: 'B1', zone: 'dojima_flat', rect: [[642, 1527], [654, 1538]], note: 'ドーチカからの階段を上がった先のサンクンガーデン。ここを抜けて館内へ' },
   { id: 'atr_dojima_flat_g', name: 'サンクンガーデン', kind: 'atrium', floor: 'B1', zone: 'dojima_flat', frame: 'guide:dojima_flat', rect: [[26, 51], [42, 58]] },
-  // --- 吹き抜け(堂島アバンザのサンクンガーデン2つ)。館内案内板(2026-09-03)から。広域の位置はビルとドーチカの間の地下広場
-  //     (地下近辺案内板 2026-09-03 の桃色部分)の北端・南端に置いた概略、詳細地図の位置は案内板の縮尺。現地の調査モード「吹き抜け」で置き換える ---
-  { id: 'atr_avanza_n', name: '北サンクンガーデン(吹き抜け)', kind: 'atrium', floor: 'B1', zone: 'avanza', rect: [[732, 1472], [750, 1486]], note: '堂島アバンザ北側の吹き抜け。ドーチカから北の階段を上がった通路の先' },
-  { id: 'atr_avanza_s', name: '南サンクンガーデン(吹き抜け)', kind: 'atrium', floor: 'B1', zone: 'avanza', rect: [[730, 1510], [748, 1528]], note: '堂島アバンザ南側の吹き抜け。OUTBACKの西、曲線階段の所' },
+  // --- 吹き抜け(堂島アバンザのサンクンガーデン2つ)。南=ドーチカ C80 の通路から7段下がった広場(地下近辺案内板 2026-09-03 の白い広場。
+  //     東縁が曲線階段17段)、北=C72 の通路の東端の階段の先(概略)。詳細地図の位置は館内案内板の縮尺。現地の調査モード「吹き抜け」で置き換える ---
+  { id: 'atr_avanza_n', name: '北サンクンガーデン(吹き抜け)', kind: 'atrium', floor: 'B1', zone: 'avanza', rect: [[745, 1470], [760, 1484]], note: '堂島アバンザ北側の吹き抜け。ドーチカから北の階段を上がった通路の先' },
+  { id: 'atr_avanza_s', name: '南サンクンガーデン(吹き抜け)', kind: 'atrium', floor: 'B1', zone: 'avanza', rect: [[722, 1504], [748, 1535]], note: '堂島アバンザ南側の吹き抜け(C80 の広場)。OUTBACKの西、曲線階段の所' },
   { id: 'atr_avanza_n_g', name: '北サンクンガーデン', kind: 'atrium', floor: 'B1', zone: 'avanza', frame: 'guide:avanza', rect: [[18, 1], [42, 10]] },
   { id: 'atr_avanza_s_g', name: '南サンクンガーデン', kind: 'atrium', floor: 'B1', zone: 'avanza', frame: 'guide:avanza', rect: [[18, 42], [36, 54]] },
   { id: 'lm_esc_6_1', name: 'エスカレーター(→1F、上り専用)', floor: 'B1', mx: 224.4, my: 1434.1, zone: 'nishi_umeda', vert: 'esc', to: '→1F', dir: [-7.60, 10.20], note: '出口6-1、地下側から見て右側。上り専用(現地確認 2026-08-23)' },

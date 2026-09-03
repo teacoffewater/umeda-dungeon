@@ -202,11 +202,10 @@ diamor_band = _edge_band(lambda a, b, w, z, fl: z == 'diamor' and not any(
 dotica_band = _edge_band(lambda a, b, w, z, fl: z == 'dotica')         # C-84のアバンザ接続を含む
 
 # --- ドーチカ(ドージマ地下センター): 現地の地下近辺案内板を OSM ビル外形に当てて起こした床(tools/extract_dotica_board.py) ---
-# floor = 本線(区画+通路)と枝(C61/C72/C80/C83/C84 の通路)。avanza_ext = 通路の東の桃色部分(7段上がった広場と
-# 17段上がったアバンザ B1F の面)。高さがドーチカと違うので avanza ゾーンの床(ビル外形の西への拡張)として扱う
+# floor = 本線(区画+通路)と枝(C61/C72/C80/C83/C84 の通路)、C80 の広場(南サンクンガーデン)と C84 の通路。
+# 通路の東の桃色部分(アバンザ B1F の高さのデッキ)は歩けない面なので床にしない。アバンザへは3本の通路の帯(自エッジ)でつなぐ
 _db = json.load(open(os.path.join(DATA, 'dotica_board.json')))
 DOTICA_FLOOR = Polygon(_db['floor']).buffer(0)
-AVANZA_EXT = Polygon(_db['avanza_ext']).buffer(0)
 
 FACILITY_BLD = {
     'sanban': bpoly(*byname['大阪梅田']),
@@ -220,7 +219,7 @@ FACILITY_BLD = {
     'daimaru': bpoly(161450829),
     'hankyu_dept': bpoly(588689735),
     'hanshin_dept': bpoly(502411898),
-    'avanza': unary_union([bpoly(178958655), AVANZA_EXT]),  # 堂島アバンザ + 西側の地下広場(ドーチカとの間。案内板 2026-09-03)
+    'avanza': bpoly(178958655),
     'dojima_flat': bpoly(162185349),      # 近鉄堂島ビル(B1F 堂島ふらっと、ドーチカC83直結)
     'kanden': bpoly(162380618),           # 関電不動産西梅田ビル(B1F/B2F 地下街、ドーチカC61直結)
     'kiyo': bpoly(221966330),             # 紀陽ビル(B1F、ドーチカ南端直結)
@@ -290,7 +289,7 @@ BUILDING_PLATES = [
     ('B1', 'ema', plate(162158020)),                 # イーマ(B1がディアモール マーケットST東端と直結)
     ('S1', 'links', plate(*byname['ヨドバシ梅田タワー'])),       # リンクス梅田B1F=浅層
     ('B1', 'links', plate(*byname['ヨドバシ梅田タワー'])),       # リンクス梅田B2F=中枢層(館内EV/ESCのみで接続)
-    ('B1', 'avanza', unary_union([plate(178958655), AVANZA_EXT.buffer(3.5, join_style=2)])),  # 堂島アバンザ + 西側の地下広場(ドーチカ直結)
+    ('B1', 'avanza', plate(178958655)),              # 堂島アバンザ(ドーチカ直結。3本の通路は dotica の帯)
     ('B1', 'dojima_flat', plate(162185349)),         # 近鉄堂島ビルB1F「堂島ふらっと」(ドーチカC83直結)
     ('S1', 'kanden', plate(162380618)), ('B1', 'kanden', plate(162380618)),  # 関電不動産西梅田ビル地下街 B1F=浅層 / B2F=中枢層(ドーチカC61直結)
     ('B1', 'kiyo', plate(221966330)),                # 紀陽ビル B1F(ドーチカ南端直結)

@@ -16,6 +16,11 @@
   /* z-index:5 で独自のスタッキングコンテキストを作る。CSS2DRendererがラベル個々に
      巨大なz-indexを振っても、この層(5)より上のUIパネル(10+)を突き抜けない */
   #labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 5; }
+  /* 詳細地図の店名ラベルの引き出し線(ラベルを区画からずらしたときに結ぶ)。ラベル層の直下 */
+  #leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+  /* 詳細地図の店名・接続ラベル: CSS2D の位置は大きさ0の外枠に付け、中の span を画面px でずらす(CSS2DRenderer は外枠の transform を毎フレーム上書きするため) */
+  .detail-anchor { width: 0; height: 0; }
+  .detail-anchor > span { position: absolute; left: 0; top: 0; display: inline-block; }
   .node-label {
     color: #cfd8e3; font-size: 11px; padding: 2px 7px; border-radius: 10px;
     background: rgba(13, 18, 28, 0.75); border: 1px solid rgba(120, 150, 190, 0.35);
@@ -306,6 +311,7 @@
 </head>
 <body>
 <div id="app">
+  <svg id="leaders"></svg>
   <div id="labels"></div>
 
   <div id="panel">
@@ -398,6 +404,6 @@
   </div>
 </div>
 
-<script defer src="./app.js?v=82"></script>
+<script defer src="./app.js?v=83"></script>
 </body>
 </html>

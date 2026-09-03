@@ -192,20 +192,22 @@ print('軸サンプル', len(axis))
 for x, y in axis[::10]:
     print('   y=%d x=%.0f  → metric (%.1f, %.1f)' % (y, x, *m_of([(x, y)])[0]))
 
-# 通路の東(C72の通路〜C84の通路の間)の桃色: ドーチカ本線の区画帯(x≦748px)より東は堂島アバンザの地下広場
-# (7段上がった先の広場と、そこから17段上がった 2.4m 深の面=アバンザ B1F の面。サンクンガーデンがある)。
-# 板ではドーチカと同じ桃色だが高さが違うので、広域では avanza ゾーンの床(ビル外形の西への拡張)として持つ
-EAST = box(751, 418, 905, 628)
-# 広場側は C80 の階段記号(teal)などで欠けるので、広めのクロージングで埋めてから切る(ドーチカ側との境 x=748px は共有)
-ext_px = Polygon(floor_px.exterior).buffer(6, join_style=2).buffer(-6, join_style=2).intersection(EAST)
-if isinstance(ext_px, MultiPolygon):
-    ext_px = max(ext_px.geoms, key=lambda g: g.area)
-ext_m = Polygon(m_of(list(ext_px.exterior.coords)))
-dot_px = Polygon(floor_px.exterior).difference(EAST)
+# 通路の東(C72の通路〜C84の通路の間): 板の桃色は「歩けない面」(アバンザ B1F の高さのデッキ・サンクンガーデンの縁)、
+# 白が通路。ドーチカ⇔アバンザの接続はこの白い3本(C72 の通路 / C80 の広場=南サンクンガーデン(7段下がった所)と
+# その東縁の曲線階段(17段) / C84 の通路)。桃色部分は床にせず、白い部分だけを床に残す(桃色は建物外形にも入れない)
+EAST = box(751, 418, 905, 640)
+pink_east = unary_union([g for g in comps(pink & (xs > 751) & (ys > 418) & (ys < 640), 200, 2)])
+white_east = unary_union([g for g in comps(erode(dilate(white & (xs > 745) & (ys > 500) & (ys < 700), 4), 4), 300, 2)])
+dot_px = Polygon(floor_px.exterior).difference(pink_east.buffer(1.5, join_style=2)).union(white_east)
+dot_px = dot_px.buffer(2, join_style=2).buffer(-2, join_style=2)
 if isinstance(dot_px, MultiPolygon):
     dot_px = max(dot_px.geoms, key=lambda g: g.area)
+dot_px = Polygon(dot_px.exterior).simplify(1.0)
 dot_m = Polygon(m_of(list(dot_px.exterior.coords)))
-print('ドーチカ床 %.0f m2 / アバンザ地下広場 %.0f m2' % (dot_m.area, ext_m.area))
+ext_m = Polygon()  # 以前の「アバンザ地下広場」は廃止(桃色=歩けない面)
+plaza_px = max(white_east.geoms, key=lambda g: g.area) if isinstance(white_east, MultiPolygon) else white_east
+plaza_m = Polygon(m_of(list(plaza_px.exterior.coords)))
+print('ドーチカ床 %.0f m2 / C80 の広場(南サンクンガーデン) %.0f m2 bounds %s' % (dot_m.area, plaza_m.area, [round(v, 1) for v in plaza_m.bounds]))
 
 # 歩行グラフのノード(板px→metric)。本線は白い通路の軸(axis)上、枝は板の通路の位置
 def axis_at(py):
@@ -217,25 +219,30 @@ NODE_PX = {
     'kanden_b2': (625, 170),      # 関電不動産西梅田ビル B2F(通路を入った所)
     'dojima': axis_at(340),       # ドーチカ中央(館ノード)
     'dotica_avz_n': axis_at(400), # C72 の通路(東→アバンザ北)の分岐
-    'avz_n_s': (838, 400),        # 北: 階段の下(通路の東端手前)
+    'avz_n_s': (838, 400),        # 北: 階段の下(C72 の通路の東端手前)
     'j_avz_n': (878, 412),        # 北: 階段の上(アバンザ北サンクンガーデン通路。地下広場の北端)
-    'dotica_avz_c': axis_at(560), # C80 の通路(東→アバンザ中)の分岐
-    'avz_c_s': (745, 560),        # 中: 7段の階段の下(区画帯の東縁)
-    'avz_c_mid': (768, 568),      # 中: 広場(7段の上〜曲線階段の下)
-    'j_avz_c': (775, 535),        # 中: 曲線階段(17段)の上
+    'dotica_avz_c': axis_at(550), # C80 の通路(東→アバンザ中)の分岐
+    'avz_c_s': (722, 550),        # 中: 7段の階段(区画帯を抜ける直線階段)の下
+    'avz_c_mid': (790, 560),      # 中: 広場(南サンクンガーデン。7段の上〜曲線階段の下)
+    'j_avz_c': (836, 565),        # 中: 広場の東縁の曲線階段(17段)の上
+    'avz_c_in': (858, 565),       # 中: アバンザの西壁(館内案内板の中の階段 M の位置)
     'dotica_c83': axis_at(612),   # C83 の通路(西→堂島ふらっと)の分岐
     'dotica_df_s0': (582, 612),   # 階段(23段)の下
     'dotica_df_s1': (560, 612),   # 階段の上
     'dojima_flat': (540, 612),    # 堂島ふらっと(近鉄堂島ビルB1F)
     'dotica_01': axis_at(646),    # C84 の通路(東→アバンザ南)の分岐
-    'avz_s0': (752, 645),         # 南: 10段の階段の下(区画帯の東縁)
-    'avz_s1': (772, 638),         # 南: 10段の上
-    'j_avz_s': (862, 605),        # 南: アバンザ館内の南側通路の入口(ビルの南西角)
+    'avz_s0': (722, 645),         # 南: 10段の階段(区画帯を抜ける)の下
+    'avz_s1': (745, 645),         # 南: 10段の上
+    'avz_s_mid': (830, 640),      # 南: C84 の通路の折れ(車椅子EVの東)
+    'j_avz_s': (860, 605),        # 南: アバンザ館内の南側通路の入口(ビルの南西角)
     'avanza': axis_at(672),       # 堂島アバンザ前(館ノード)
     'dotica_c92': axis_at(815),   # C92 の所の折れ
     'dotica_03': axis_at(858),    # 南端(現在地の所。C93 の手前)
 }
 NODE_M = {k: [round(float(c), 1) for c in m_of([v])[0]] for k, v in NODE_PX.items()}
+# 板のアバンザ西壁は OSM 外形より約10m東にずれている(板の残差)。館内へ入る点は広域のビル外形(OSM)の壁に合わせる
+NODE_M['j_avz_c'] = [744, 1519]   # 中: 曲線階段の上(広場の東縁)
+NODE_M['avz_c_in'] = [749, 1519]  # 中: アバンザ西壁(OSM 外形)
 for k, v in NODE_M.items():
     print('  %-14s %s' % (k, v))
 
@@ -246,7 +253,7 @@ for k, ((x, y), _) in EXITS.items():
 def ring(g):
     return [[round(float(x), 1), round(float(y), 1)] for x, y in g.exterior.coords[:-1]]
 json.dump({'source': 'ドーチカ南端(C93・紀陽ビル前)の地下近辺案内板 2026-09-03 現地撮影。板の建物外形を OSM に ICP で当てたホモグラフィで metric-v1 に変換',
-           'H': H.tolist(), 'DW': DW, 'floor': ring(dot_m), 'avanza_ext': ring(ext_m), 'nodes': NODE_M, 'exits': exits_m},
+           'H': H.tolist(), 'DW': DW, 'floor': ring(dot_m), 'plaza_c80': ring(plaza_m), 'nodes': NODE_M, 'exits': exits_m},
           open(os.path.join(ROOT, 'tools/data/dotica_board.json'), 'w'), ensure_ascii=False, indent=1)
 floor_m = dot_m
 # metric 空間の確認図: 床 / OSM ビル / 旧ノード・エッジ
@@ -258,7 +265,7 @@ for gx in range(600, 860, 20):
 for gy in range(1340, 1660, 20):
     dr.line([mp(600, gy), mp(860, gy)], fill=(210, 210, 210)); dr.text((2, mp(600, gy)[1] + 2), str(gy), fill=(120, 120, 120))
 dr.polygon([mp(x, y) for x, y in floor_m.exterior.coords], fill=(250, 200, 190), outline=(200, 60, 60))
-dr.polygon([mp(x, y) for x, y in ext_m.exterior.coords], fill=(225, 220, 170), outline=(150, 140, 60))
+dr.polygon([mp(x, y) for x, y in plaza_m.exterior.coords], fill=(225, 220, 170), outline=(150, 140, 60))
 for oid, g in osm.items():
     pts = [mp(x, y) for x, y in g.exterior.coords]
     if all(0 < x < cv.size[0] and 0 < y < cv.size[1] for x, y in pts):

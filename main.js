@@ -165,8 +165,8 @@ const NODES = [
   J('sanban_n2_w', 938, 565), J('sanban_s2_w', 938, 580),
   J('sanban_n2_e', 988, 556), J('sanban_s2_e', 988, 571),
   J('j_avz',       760.7, 1513.8),   // 堂島アバンザ館内(ドーチカC-84直結)
-  // ドーチカ⇔アバンザは3ヶ所(いずれも階段)で接続。北=C72 の通路の東端、中=C80 の通路→広場→曲線階段、南=C84 の通路(車椅子EV隣)。
-  // 通路の東(C72〜C84 の間)は 7段上がった広場と 17段上がったアバンザ B1F の面(サンクンガーデン)= avanza ゾーンの床(板の桃色部分)
+  // ドーチカ⇔アバンザは3ヶ所(いずれも階段)で接続。北=C72 の通路の東端、中=C80 の通路→広場(南サンクンガーデン)→曲線階段、南=C84 の通路(車椅子EV隣)。
+  // 通路の東(C72〜C84 の間)の板の桃色部分は歩けない面(アバンザ B1F の高さのデッキ)。床にするのは板の白い通路だけ
   // 位置は地下近辺案内板(2026-09-03)。段数は現地の2点タップ(tools/data/survey/2026-09-03_dotica_avanza.json)。北の段数は未記録
   J('dotica_avz_n', 703.6, 1463.8),  // 北: ドーチカ本線の C72 の通路の分岐点
   J('avz_n_s',      749.8, 1464.2),  // 北: 階段の下(C72 の通路の東端手前)
@@ -174,13 +174,15 @@ const NODES = [
   J('dotica_c83',   698.8, 1533.1),  // ドーチカ本線の C83(堂島ふらっとへの通路)の分岐点
   // 中: 通路の東側から7段上がる→10m平坦(広場)→17段(曲線階段)上がる→アバンザ。合計3.6m上り(1段15cm)
   // 南: 東へ10段(1.5m)上がる→館内の南側通路へ
-  J('dotica_avz_c', 701.8, 1516.1),  // 中: ドーチカ本線の C80 の通路の分岐点
-  J('avz_c_s',      718.3, 1516.3),  // 中: 7段の階段の下(区画帯の東縁)
-  J('avz_c_mid',    726, 1518.9),  // 中: 広場(7段の上〜17段の下)
-  J('j_avz_c',      728.4, 1508.2),    // 中: 曲線階段(17段)の上(アバンザ B1F の面)
-  J('avz_s0',       720.4, 1544.1),  // 南: 10段の階段の下(ドーチカ側)
-  J('avz_s1',       727.1, 1541.8),    // 南: 10段の階段の上
-  J('j_avz_s',      757.3, 1531.3),  // 南: アバンザ館内の南側通路の入口(ビルの南西角)
+  J('dotica_avz_c', 700.2, 1512.8),  // 中: ドーチカ本線の C80 の通路の分岐点
+  J('avz_c_s',      710.7, 1512.9),  // 中: 7段の階段の下(区画帯の東縁)
+  J('avz_c_mid',    733.3, 1516.4),  // 中: 広場(7段の上〜17段の下)
+  J('j_avz_c',      744, 1519),    // 中: 曲線階段(17段)の上(アバンザ B1F の面)
+  J('avz_c_in',     749, 1519),      // 中: アバンザの西壁(館内案内板の階段 M の位置)。ここから館内
+  J('avz_s0',       710.4, 1544),  // 南: 10段の階段の下(ドーチカ側)
+  J('avz_s1',       718.1, 1544),    // 南: 10段の階段の上
+  J('avz_s_mid',    746.5, 1542.7),      // 南: C84 の通路の折れ(車椅子EVの東)
+  J('j_avz_s',      756.6, 1531.3),  // 南: アバンザ館内の南側通路の入口(ビルの南西角)
   J('j_hankyu_b2', 990.2, 869.3, 'B2'),   // 阪急百貨店B2(生鮮・惣菜フロア)
   J('j_daimaru_b2', 787.9, 989.7, 'B2'),  // 大丸B2(食品フロア)
   J('j_hilton_e', 818.7, 1119.6),        // ヒルトンE東壁(ディアモール⇔西梅田の境目)
@@ -405,10 +407,11 @@ const EDGES = [
   ['j_nishi_x', 'j_sone_w', 10, 'nishi_umeda'],
   ['j_sone_w', 'dotica_02', 9, 'dotica'],
   // 南(C-84): ドーチカ通路→10段(1.5m)上がる→館内の南側通路→j_avz(現地 2026-09-03)
-  ['dotica_01', 'avz_s0', 5, 'dotica'], ['avz_s0', 'avz_s1', 5, 'dotica'], ['avz_s1', 'j_avz_s', 5, 'dotica'], ['j_avz_s', 'j_avz', 6, 'avanza'],
+  ['dotica_01', 'avz_s0', 5, 'dotica'], ['avz_s0', 'avz_s1', 5, 'dotica'], ['avz_s1', 'avz_s_mid', 5, 'dotica'], ['avz_s_mid', 'j_avz_s', 5, 'dotica'], ['j_avz_s', 'j_avz', 6, 'avanza'],
   ['dotica_avz_n', 'avz_n_s', 6, 'dotica'], ['avz_n_s', 'j_avz_n', 6, 'dotica'], // 北: C72 の通路→東端の階段→北サンクンガーデン通路
-  // 中: ドーチカ通路→7段上がる→10m→17段上がる→アバンザ→j_avz(現地 2026-09-03。案内板から置いた y≈1527 の通路は「場所が違う」記録で撤去)
-  ['dotica_avz_c', 'avz_c_s', 5, 'dotica'], ['avz_c_s', 'avz_c_mid', 5, 'dotica'], ['avz_c_mid', 'j_avz_c', 5, 'dotica'], ['j_avz_c', 'j_avz', 6, 'avanza'],
+  // 中: ドーチカ通路→区画帯を抜ける直線階段(7段)→広場(南サンクンガーデン)→広場の東縁の曲線階段(17段)→デッキ→アバンザの西壁(館内階段 M)→j_avz
+  //     (段数は現地 2026-09-03、形は地下近辺案内板。案内板から置いた y≈1527 の通路は「場所が違う」記録で撤去)
+  ['dotica_avz_c', 'avz_c_s', 5, 'dotica'], ['avz_c_s', 'avz_c_mid', 5, 'dotica'], ['avz_c_mid', 'j_avz_c', 5, 'dotica'], ['j_avz_c', 'avz_c_in', 5, 'dotica'], ['avz_c_in', 'j_avz', 6, 'avanza'],
   ['dotica_c83', 'dotica_df_s0', 6, 'dotica'], // C83: ドーチカ通路→階段の下(現地の2点タップ 2026-09-03)
   ['dotica_df_s0', 'dotica_df_s1', 6, 'dotica'], // 階段(23段、≈3.9m上り)。右(北側)に上下2本のESC
   ['dotica_df_s1', 'dojima_flat', 6, 'dotica'],  // 階段の上→近鉄堂島ビルB1F「堂島ふらっと」
@@ -718,7 +721,7 @@ const FLOOR_POLYS = [
   { floor: 'B1', zone: 'daimaru', pts: [[717.4, 983.4], [752.1, 1041.3], [845.7, 984.0], [852.6, 978.0], [856.7, 970.0], [856.2, 960.8], [828.0, 913.1], [806.4, 926.8], [807.2, 928.2]] },
   { floor: 'B1', zone: 'hankyu_dept', pts: [[955.3, 895.1], [962.3, 915.0], [971.3, 925.2], [988.2, 922.9], [988.5, 924.5], [1025.0, 923.0], [1025.6, 936.7], [1040.8, 934.2], [1049.9, 927.6], [1052.8, 922.2], [1053.3, 919.3], [1046.2, 918.3], [1050.0, 887.6], [1057.8, 888.4], [1060.1, 871.0], [1020.6, 870.9], [1019.9, 776.5], [1016.0, 770.6], [1009.8, 768.7], [951.3, 806.4]] },
   { floor: 'B1', zone: 'hanshin_dept', pts: [[971.5, 1045.8], [984.8, 1068.5], [986.2, 1068.0], [1012.2, 1114.3], [1014.4, 1113.5], [1016.3, 1120.1], [1023.6, 1117.8], [1024.3, 1119.5], [1060.2, 1110.0], [1058.3, 1102.1], [1061.8, 1101.2], [1054.2, 1074.5], [1047.4, 1062.9], [982.6, 1007.0], [964.9, 999.4], [955.0, 997.0], [944.4, 997.2], [934.9, 998.1], [925.2, 1001.8], [853.8, 1045.7], [884.9, 1097.3]] },
-  { floor: 'B1', zone: 'avanza', pts: [[729.2, 1537.3], [742.8, 1542.2], [754.6, 1542.3], [756.4, 1534.2], [760.1, 1532.7], [823.2, 1542.6], [831.8, 1485.4], [833.9, 1483.1], [832.2, 1482.8], [833.0, 1477.7], [828.0, 1482.2], [770.6, 1473.5], [771.2, 1466.7], [717.2, 1466.3], [716.8, 1516.4], [719.1, 1527.3], [722.7, 1532.0], [722.7, 1535.4], [729.3, 1535.5]], covers: [['j_avz_s', 'j_avz'], ['j_avz_c', 'j_avz'], ['j_avz_n', 'j_avz']] },
+  { floor: 'B1', zone: 'avanza', pts: [[752.2, 1532.5], [823.2, 1542.6], [831.8, 1485.4], [833.9, 1483.1], [832.2, 1482.8], [833.0, 1477.7], [828.0, 1482.2], [754.3, 1471.1], [756.0, 1474.2], [750.8, 1468.7], [741.2, 1532.8], [744.4, 1530.4]], covers: [['j_avz_s', 'j_avz'], ['avz_c_in', 'j_avz'], ['j_avz_n', 'j_avz']] },
   { floor: 'B1', zone: 'dojima_flat', pts: [[659.3, 1539.7], [659.4, 1529.6], [679.0, 1529.2], [677.7, 1488.0], [696.6, 1474.5], [634.7, 1475.6], [636.7, 1539.8]] },
   { floor: 'B1', zone: 'kanden', pts: [[696.7, 1394.7], [698.5, 1371.1], [687.3, 1357.8], [665.2, 1355.6], [639.5, 1366.8], [641.4, 1380.1], [643.5, 1379.6], [647.6, 1402.3]] },
   { floor: 'B1', zone: 'kiyo', pts: [[696.9, 1598.2], [677.6, 1601.4], [676.4, 1594.3], [661.0, 1596.9], [667.2, 1633.4], [701.8, 1627.6]] },
@@ -734,7 +737,7 @@ const FLOOR_POLYS = [
   { floor: 'B1', zone: 'umechika', pts: [[809.7, 1029.4], [811.7, 1028.3], [810.8, 1026.7], [822.8, 1019.3], [824.0, 1021.0], [849.6, 1006.3], [850.8, 1000.0], [866.7, 1003.0], [864.9, 1013.2], [924.3, 1002.1], [938.7, 997.5], [913.2, 949.8], [900.1, 950.2], [899.2, 928.2], [901.6, 927.9], [898.6, 922.3], [901.5, 920.6], [838.9, 922.8], [840.8, 934.1], [856.4, 960.7], [856.8, 970.0], [852.7, 978.1], [847.9, 982.7], [850.5, 991.5], [816.7, 1011.4], [812.6, 1004.6], [802.4, 1010.9], [806.4, 1017.4], [803.7, 1019.0]] },
   { floor: 'B1', zone: 'umechika', pts: [[762.4, 945.9], [766.5, 953.1], [777.0, 946.6], [772.9, 939.5], [840.0, 898.9], [839.4, 898.0], [851.9, 892.2], [846.9, 881.3], [822.3, 892.6], [813.0, 876.6], [802.6, 882.7], [804.1, 885.2], [780.8, 899.5], [772.8, 886.8], [749.3, 901.6], [736.3, 881.1], [726.2, 887.5], [738.4, 906.7], [721.7, 910.5], [723.9, 920.3], [744.1, 915.7], [747.1, 920.4], [736.3, 927.0], [742.7, 937.2], [751.1, 932.0], [751.9, 935.9], [735.8, 945.6], [742.6, 958.0]], holes: [[[763.7, 924.2], [810.1, 895.5], [812.1, 899.0], [765.8, 927.4]]] },
   { floor: 'B1', zone: 'osaka_sta', pts: [[684.8, 1035.1], [695.9, 1028.2], [683.0, 1007.5], [680.8, 996.3], [742.9, 958.4], [734.2, 943.0], [742.9, 937.7], [736.1, 926.6], [715.4, 938.5], [732.7, 918.4], [723.9, 920.4], [721.7, 911.3], [707.1, 928.2], [694.6, 907.5], [683.5, 914.2], [696.6, 935.8], [703.5, 932.4], [635.2, 1011.5], [639.5, 1015.2], [622.1, 1036.5], [627.1, 1044.6], [651.8, 1014.3], [669.0, 1003.6], [670.7, 1012.3]], holes: [[[708.7, 961.3], [683.4, 976.6], [683.0, 976.1], [708.8, 946.2]]], covers: [['jr_osaka', 'daimaru'], ['daimaru', 'j_c1'], ['daimaru', 'kitte']] },
-  { floor: 'B1', zone: 'dotica', pts: [[660.0, 1539.6], [678.3, 1535.9], [687.2, 1536.0], [695.3, 1597.1], [697.0, 1598.1], [700.3, 1617.8], [706.9, 1621.7], [708.5, 1618.9], [723.8, 1616.9], [717.5, 1576.7], [714.3, 1575.4], [709.7, 1549.4], [713.4, 1549.2], [713.4, 1546.6], [722.9, 1546.6], [738.9, 1540.4], [734.9, 1540.3], [730.3, 1538.0], [720.0, 1541.6], [712.8, 1540.7], [711.7, 1518.7], [717.4, 1518.8], [717.1, 1466.2], [766.9, 1466.2], [752.8, 1461.2], [736.5, 1458.1], [732.2, 1458.1], [731.8, 1461.0], [715.1, 1460.9], [721.4, 1389.8], [721.1, 1387.5], [718.8, 1386.9], [718.5, 1381.6], [716.3, 1379.7], [717.1, 1373.6], [718.9, 1373.4], [719.9, 1369.2], [722.6, 1368.5], [723.0, 1358.0], [719.3, 1358.0], [719.8, 1354.5], [717.4, 1354.2], [717.3, 1334.5], [708.3, 1334.5], [708.4, 1352.9], [707.2, 1357.9], [705.3, 1357.9], [705.2, 1370.3], [699.5, 1370.3], [699.4, 1382.4], [697.8, 1382.3], [697.6, 1395.5], [695.6, 1396.8], [693.0, 1427.6], [694.7, 1430.6], [695.2, 1442.1], [691.5, 1442.4], [689.0, 1474.5], [696.7, 1474.5], [688.8, 1480.3], [686.0, 1509.4], [686.2, 1527.1], [679.1, 1527.2], [679.1, 1529.4], [659.5, 1529.8]], covers: [['j_sone_w', 'dotica_02'], ['dotica_01', 'avz_s0'], ['avz_s0', 'avz_s1'], ['avz_s1', 'j_avz_s'], ['dotica_avz_n', 'avz_n_s'], ['avz_n_s', 'j_avz_n'], ['dotica_avz_c', 'avz_c_s'], ['avz_c_s', 'avz_c_mid'], ['avz_c_mid', 'j_avz_c'], ['dotica_c83', 'dotica_df_s0'], ['dotica_df_s0', 'dotica_df_s1'], ['dotica_df_s1', 'dojima_flat'], ['dotica_c61', 'kanden_b2'], ['dotica_03', 'kiyo_b1'], ['dotica_02', 'dotica_c61'], ['dotica_c61', 'dojima'], ['dojima', 'dotica_avz_n'], ['dotica_avz_n', 'dotica_avz_c'], ['dotica_avz_c', 'dotica_c83'], ['dotica_c83', 'dotica_01'], ['dotica_01', 'avanza'], ['avanza', 'dotica_c92'], ['dotica_c92', 'dotica_03']] },
+  { floor: 'B1', zone: 'dotica', pts: [[660.0, 1539.6], [678.3, 1535.9], [687.2, 1536.0], [695.3, 1597.1], [697.0, 1598.1], [700.3, 1617.8], [706.9, 1621.7], [708.5, 1618.9], [723.8, 1616.9], [717.5, 1576.7], [714.3, 1575.4], [709.7, 1549.4], [713.4, 1549.2], [713.4, 1546.7], [720.4, 1546.5], [719.6, 1559.4], [721.3, 1559.4], [722.6, 1556.8], [727.6, 1556.9], [727.6, 1558.8], [734.0, 1559.2], [738.6, 1562.2], [760.3, 1562.4], [760.3, 1560.8], [729.0, 1555.3], [729.0, 1552.0], [726.7, 1551.6], [726.5, 1546.1], [746.7, 1546.2], [749.1, 1545.1], [758.3, 1533.1], [752.7, 1532.3], [745.3, 1540.3], [727.8, 1541.1], [726.5, 1532.0], [732.9, 1532.1], [732.8, 1535.0], [737.8, 1536.7], [742.9, 1536.1], [743.6, 1531.9], [748.3, 1531.1], [744.4, 1530.5], [741.1, 1532.9], [742.0, 1526.5], [731.0, 1518.4], [742.8, 1521.5], [743.5, 1516.3], [731.5, 1513.4], [729.1, 1519.4], [728.1, 1501.9], [724.1, 1501.9], [723.8, 1504.9], [720.2, 1504.8], [720.6, 1469.6], [750.1, 1472.6], [750.8, 1468.5], [755.1, 1472.9], [754.2, 1470.9], [758.0, 1471.5], [758.3, 1469.9], [765.2, 1471.9], [767.5, 1468.2], [766.9, 1466.2], [752.8, 1461.2], [736.5, 1458.1], [732.2, 1458.1], [731.8, 1461.0], [715.1, 1460.9], [721.4, 1389.8], [721.1, 1387.5], [718.8, 1386.9], [718.5, 1381.6], [716.3, 1379.7], [717.1, 1373.6], [718.9, 1373.4], [719.9, 1369.2], [722.6, 1368.5], [723.0, 1358.0], [719.3, 1358.0], [719.8, 1354.5], [717.4, 1354.2], [717.3, 1334.5], [708.3, 1334.5], [708.4, 1352.9], [707.2, 1357.9], [705.3, 1357.9], [705.2, 1370.3], [699.5, 1370.3], [699.4, 1382.4], [697.8, 1382.3], [697.6, 1395.5], [695.6, 1396.8], [693.0, 1427.6], [694.7, 1430.6], [695.2, 1442.1], [691.5, 1442.4], [689.0, 1474.5], [696.7, 1474.5], [688.8, 1480.3], [686.0, 1509.4], [686.2, 1527.1], [679.1, 1527.2], [679.1, 1529.4], [659.5, 1529.8]], holes: [[[711.6, 1516.8], [720.6, 1517.0], [722.6, 1526.1], [726.2, 1527.8], [726.2, 1531.4], [723.5, 1531.7], [722.4, 1540.8], [720.6, 1541.4], [712.8, 1540.7]]], covers: [['j_sone_w', 'dotica_02'], ['dotica_01', 'avz_s0'], ['avz_s0', 'avz_s1'], ['avz_s1', 'avz_s_mid'], ['avz_s_mid', 'j_avz_s'], ['dotica_avz_n', 'avz_n_s'], ['avz_n_s', 'j_avz_n'], ['dotica_avz_c', 'avz_c_s'], ['avz_c_s', 'avz_c_mid'], ['avz_c_mid', 'j_avz_c'], ['j_avz_c', 'avz_c_in'], ['dotica_c83', 'dotica_df_s0'], ['dotica_df_s0', 'dotica_df_s1'], ['dotica_df_s1', 'dojima_flat'], ['dotica_c61', 'kanden_b2'], ['dotica_03', 'kiyo_b1'], ['dotica_02', 'dotica_c61'], ['dotica_c61', 'dojima'], ['dojima', 'dotica_avz_n'], ['dotica_avz_n', 'dotica_avz_c'], ['dotica_avz_c', 'dotica_c83'], ['dotica_c83', 'dotica_01'], ['dotica_01', 'avanza'], ['avanza', 'dotica_c92'], ['dotica_c92', 'dotica_03']] },
   { floor: 'B1', zone: 'ekimae', pts: [[1023.8, 1217.5], [1024.2, 1218.8], [1029.5, 1218.9], [1028.4, 1233.1], [1033.8, 1250.9], [998.1, 1251.3], [989.7, 1263.6], [1013.1, 1336.8], [1024.1, 1344.7], [1088.7, 1344.9], [1105.2, 1344.8], [1113.0, 1336.6], [1124.8, 1343.2], [1127.6, 1345.6], [1127.6, 1350.2], [1130.1, 1350.2], [1136.4, 1340.6], [1115.3, 1325.8], [1108.1, 1303.4], [1105.6, 1304.2], [1090.4, 1259.0], [1081.2, 1250.5], [1042.1, 1250.9], [1032.1, 1217.5], [1070.8, 1217.5], [1078.9, 1208.2], [1055.8, 1139.2], [1042.6, 1135.0], [956.1, 1159.3], [951.1, 1171.6], [972.2, 1212.2], [975.8, 1214.2], [973.7, 1217.1], [977.3, 1218.6]], covers: [['j_diamor_e', 'ekimae4_b2'], ['j_fashion_w', 'ekimae1'], ['j_fashion_e', 'ekimae4'], ['ekimae1_b2', 'j_sone_w'], ['ekimae1_b2', 'j_sone_c'], ['ekimae3_b2', 'sonechika'], ['ekimae1_b2', 'ekimae2_b2'], ['ekimae2_b2', 'ekimae3_b2'], ['ekimae3_b2', 'ekimae4_b2'], ['kitashinchi', 'ekimae2_b2'], ['kitashinchi', 'ekimae1_b2']] },
   { floor: 'B1', zone: 'ekimae', pts: [[964.3, 1250.8], [883.3, 1251.3], [875.0, 1261.2], [874.5, 1331.4], [881.9, 1339.6], [942.3, 1344.6], [989.8, 1344.1], [997.4, 1333.1], [973.2, 1259.0]] },
   { floor: 'B1', zone: 'ekimae', pts: [[853.2, 1251.1], [740.5, 1252.0], [727.5, 1264.5], [725.4, 1310.6], [735.7, 1321.3], [712.9, 1334.3], [717.4, 1334.4], [717.5, 1340.9], [741.4, 1327.2], [840.0, 1334.7], [857.0, 1349.1], [857.5, 1344.4], [860.0, 1344.5], [860.0, 1341.2], [852.2, 1334.5], [859.8, 1327.5], [861.2, 1260.3]] },
@@ -903,7 +906,7 @@ const NODE_DEPTH = {
   // ドーチカ(6m)⇔堂島ふらっと(2.89m): 階段23段 (2026-09-03)
   dotica_c83: 6, dotica_df_s0: 6, dotica_df_s1: 2.89, dojima_flat: 2.89,
   // ドーチカ(6m)⇔アバンザ(2.4m): 中=7段→10m→17段(1段15cm)、南=10段(1.5m)→館内の南側通路→(曲線階段)→2.4m (2026-09-03)
-  dotica_avz_c: 6, avz_c_s: 6, avz_c_mid: 4.95, j_avz_c: 2.4, avz_s0: 6, avz_s1: 4.5, j_avz_s: 4.5, j_avz: 2.4,
+  dotica_avz_c: 6, avz_c_s: 6, avz_c_mid: 4.95, j_avz_c: 2.4, avz_c_in: 2.4, avz_s0: 6, avz_s1: 4.5, avz_s_mid: 4.5, j_avz_s: 4.5, j_avz: 2.4,
   dotica_avz_n: 6, avz_n_s: 6, j_avz_n: 2.4, // 北: C72 の通路は平坦、東端の階段で上がる(段数は未記録)
 };
 {
@@ -1529,9 +1532,14 @@ function buildDetailLabels(zone) {
   for (const id of D.shopIds) {
     const block = D.blockByShop[id];
     if (!block) continue; // ガイド上の区画に対応づいた店だけ(詳細地図はガイドそのもの)
+    // 外枠(大きさ0)を CSS2D の位置にし、中の span を画面px でずらす(重なったら区画からずらして引き出し線で結ぶ)
     const div = document.createElement('div');
-    div.className = 'node-label shop detail-shop';
-    div.textContent = shortShopName(nodeById[id].name);
+    div.className = 'detail-anchor';
+    const span = document.createElement('span');
+    span.className = 'node-label shop detail-shop';
+    span.textContent = shortShopName(nodeById[id].name);
+    span.style.transform = 'translate(-50%, calc(-50% - 16px))';
+    div.appendChild(span);
     const lab = new CSS2DObject(div);
     const n = stacked.get(block) || 0;
     stacked.set(block, n + 1);
@@ -1541,16 +1549,24 @@ function buildDetailLabels(zone) {
     lab.visible = false;
     // 画面上のラベルの幅の見積もり(px): 全角≈10px・半角≈5.5px + 余白。重なり判定(declutterDetailLabels)に使う
     let w = 12;
-    for (const ch of div.textContent) w += ch.charCodeAt(0) < 0x2000 ? 5.5 : 10;
-    D.labels.push({ id, block, lab, w });
+    for (const ch of span.textContent) w += ch.charCodeAt(0) < 0x2000 ? 5.5 : 10;
+    D.labels.push({ id, block, lab, span, w, slot: 0, cur: null });
   }
 }
-// 詳細地図の店名ラベルの間引き(毎フレーム、画面座標で重なり判定)。
-// 店が密な施設(ホワイティ・リンクス)では全部出すと読めないので、画面の中心に近い順に、既に出したラベルと
-// 重ならないものだけ表示する。接続の矢印ラベル・吹き抜けラベル(extraLabels)は常に出し、その場所は先に占有する。
-// 寄れば重ならなくなるので自然に全店が出る(寄る=見たい所、の操作で足りる)
+// 詳細地図の店名ラベルの配置(毎フレーム、画面座標で重なり判定)。
+// 店が密な施設(ホワイティ・リンクス)では区画の真上に全部出すと読めない。ルート上の店→画面中心に近い順に置き、
+// 既に置いたラベルと重なるものは区画の周り(上・下・左・右…)の空いている所へずらして引き出し線(#leaders)で結ぶ。
+// どこにも置けないものだけ消す。接続の「○○へ」・吹き抜けのラベル(extraLabels)は常に出し、その場所は先に占有する。
+// 前回と同じ置き場が空いていればそれを使う(カメラを動かしたときにラベルが跳ね回らないように)
 const _v3 = new THREE.Vector3();
-const DETAIL_LABEL_MAX = 48; // 一度に出す店名ラベルの上限(それ以上は中心から遠い順に落とす)
+const _ray = new THREE.Raycaster(), _ndc = new THREE.Vector2(), _plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), _hit = new THREE.Vector3();
+const DETAIL_LABEL_MAX = 60; // 一度に出す店名ラベルの上限
+const leadersEl = document.getElementById('leaders');
+function labelSlots(w) { // 区画の重心からのラベル中心のずらし候補(px)。0 = 真上(引き出し線なし)
+  const dx = w / 2 + 14;
+  return [[0, -16], [0, -38], [0, 20], [-dx, -16], [dx, -16], [-dx, -40], [dx, -40], [-dx, 10], [dx, 10],
+          [0, -62], [0, 44], [-dx - 22, -16], [dx + 22, -16], [-dx, -64], [dx, -64], [-dx, 34], [dx, 34]];
+}
 function declutterDetailLabels() {
   const D = DETAIL[detailMode];
   if (!D || !D.labels.length) return;
@@ -1558,11 +1574,40 @@ function declutterDetailLabels() {
   const boxes = []; // 占有済み [x0, y0, x1, y1]
   const overlaps = b => boxes.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
   const toScreen = obj => { obj.getWorldPosition(_v3).project(camera); return [(_v3.x + 1) / 2 * W, (1 - _v3.y) / 2 * H, _v3.z]; };
+  const lines = [];
+  // 接続の「○○へ」: 矢印(床の縁)から矢印の向きへ画面上で押し出し、ラベルの箱が地図(床)に一切かからない所に置いて線で結ぶ。
+  // 床に乗っているかは、箱の角・中央を床の面(y=D.y)に落としてガイド座標で判定する
+  const M = DETAIL_MAPS[detailMode];
+  _plane.constant = -D.y;
+  const onFloor = (sx, sy) => {
+    _ndc.set(sx / W * 2 - 1, -(sy / H) * 2 + 1); _ray.setFromCamera(_ndc, camera);
+    if (!_ray.ray.intersectPlane(_plane, _hit)) return false;
+    return inDetailFloor(M, (_hit.x - M.origin[0]) / 0.5, (_hit.z - M.origin[1]) / 0.5);
+  };
+  const boxOnFloor = b => {
+    for (const fx of [0, 0.5, 1]) for (const fy of [0, 0.5, 1]) if (onFloor(b[0] + (b[2] - b[0]) * fx, b[1] + (b[3] - b[1]) * fy)) return true;
+    return false;
+  };
   for (const lab of D.extraLabels || []) {
     if (!lab.visible) continue;
     const [x, y] = toScreen(lab);
-    const w = (lab.element.offsetWidth || 120) + 4, h = 20;
-    boxes.push([x - w / 2, y - h / 2, x + w / 2, y + h / 2]);
+    const el = lab.element.firstElementChild || lab.element;
+    const w = (el.offsetWidth || 120) + 6, h = (el.offsetHeight || 18) + 4;
+    const [ax, ay] = lab.userData.align || [-0.5, -0.5]; // 外枠に対する span の寄せ(-1=左/上へ伸ばす, 0=右/下へ, -0.5=中央)
+    const L = lab.userData.link;
+    if (!L) { boxes.push([x + ax * w, y + ay * h, x + ax * w + w, y + ay * h + h]); continue; } // 吹き抜けなど: その場を占有するだけ
+    const [tx, ty] = toScreen(L.tip); // 矢印の向きの先(10m 先の点)→ 画面上の押し出し方向
+    let sdx = tx - x, sdy = ty - y; const sl = Math.hypot(sdx, sdy) || 1; sdx /= sl; sdy /= sl;
+    let px = x + sdx * 22, py = y + sdy * 22, b = null;
+    for (let i = 0; i < 40; i++) {
+      b = [px + ax * w, py + ay * h, px + ax * w + w, py + ay * h + h];
+      if (!overlaps(b) && !boxOnFloor(b)) break;
+      px += sdx * 10; py += sdy * 10;
+    }
+    boxes.push(b);
+    const key = Math.round(px - x) + ',' + Math.round(py - y);
+    if (lab.userData.cur !== key) { lab.userData.cur = key; el.style.transform = `translate(calc(${ax * 100}% + ${(px - x).toFixed(1)}px), calc(${ay * 100}% + ${(py - y).toFixed(1)}px))`; }
+    lines.push(`M${x.toFixed(1)} ${y.toFixed(1)}L${px.toFixed(1)} ${py.toFixed(1)}`);
   }
   const cand = [];
   for (const d of D.labels) {
@@ -1575,12 +1620,53 @@ function declutterDetailLabels() {
   cand.sort((a, b) => a.pri - b.pri);
   let shown = 0;
   for (const c of cand) {
-    const w = c.d.w, h = 16;
-    const b = [c.x - w / 2 - 3, c.y - 16 - h / 2 - 2, c.x + w / 2 + 3, c.y - 16 + h / 2 + 2]; // .node-label は translateY(-16px)。少し余白を取る
-    const ok = shown < DETAIL_LABEL_MAX && !overlaps(b);
-    c.d.lab.visible = ok;
-    if (ok) { boxes.push(b); shown++; }
+    const d = c.d, w = d.w, h = 16;
+    let placed = null;
+    if (shown < DETAIL_LABEL_MAX) {
+      const slots = labelSlots(w);
+      const order = [d.slot, ...slots.keys()]; // 前回の置き場を先に試す
+      for (const si of order) {
+        const [ox, oy] = slots[si];
+        const cx = c.x + ox, cy = c.y + oy;
+        if (cx - w / 2 < 0 || cx + w / 2 > W || cy - h / 2 < 0 || cy + h / 2 > H) continue; // 画面からはみ出す置き場は使わない
+        const b = [cx - w / 2 - 3, cy - h / 2 - 2, cx + w / 2 + 3, cy + h / 2 + 2];
+        if (!overlaps(b)) { placed = { si, ox, oy, b }; break; }
+      }
+    }
+    d.lab.visible = !!placed;
+    if (!placed) continue;
+    boxes.push(placed.b); shown++;
+    d.slot = placed.si;
+    const key = placed.ox + ',' + placed.oy;
+    if (d.cur !== key) { d.cur = key; d.span.style.transform = `translate(calc(-50% + ${placed.ox}px), calc(-50% + ${placed.oy}px))`; }
+    if (placed.si !== 0) lines.push(`M${c.x.toFixed(1)} ${c.y.toFixed(1)}L${(c.x + placed.ox).toFixed(1)} ${(c.y + placed.oy).toFixed(1)}`);
   }
+  // 引き出し線(区画の重心→ずらしたラベル)。1本の path にまとめて描く
+  let path = leadersEl.firstElementChild;
+  if (!path) {
+    path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('stroke', 'rgba(255, 199, 222, 0.55)'); path.setAttribute('stroke-width', '1'); path.setAttribute('fill', 'none');
+    leadersEl.appendChild(path);
+  }
+  path.setAttribute('d', lines.join(''));
+}
+function clearLeaders() { const p = leadersEl.firstElementChild; if (p) p.setAttribute('d', ''); }
+// ガイド座標の点が床(FLOOR: 外形と穴)の中か
+function inDetailFloor(M, gx, gy) {
+  const pip = (pts) => {
+    let c = false;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const [xi, yi] = pts[i], [xj, yj] = pts[j];
+      if ((yi > gy) !== (yj > gy) && gx < (xj - xi) * (gy - yi) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+  for (const f of M.FLOOR) {
+    if (!pip(f.pts)) continue;
+    if ((f.holes || []).some(hh => pip(hh))) continue;
+    return true;
+  }
+  return false;
 }
 const detailHidden = []; // 詳細モードで隠したオブジェクト(戻すときに復元)
 const detailSaved = {};
@@ -1640,6 +1726,7 @@ function exitDetail() {
   routeGroup.visible = true;
   for (const d of D.labels) d.lab.visible = false;
   for (const lab of D.extraLabels || []) lab.visible = false;
+  clearLeaders();
   syncRouteShopLabels(); // 詳細用(区画)のラベルを消し、広域用のラベルを戻す
   for (const o of detailHidden) o.visible = true;
   detailHidden.length = 0;
@@ -2082,7 +2169,8 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
   // 詳細地図はガイドの形そのままで周りの施設を描かないので、どこから出ればどこへ行けるかをこれで示す
   for (const L of M.links || []) {
     const [x, z] = W(L.g);
-    const [dx, dy] = L.dir || [0, -1];
+    let [dx, dy] = L.dir || [0, -1];
+    const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
     const tri = new THREE.Shape();
     tri.moveTo(0, 3.2); tri.lineTo(-2.0, -1.6); tri.lineTo(0, -0.6); tri.lineTo(2.0, -1.6); tri.closePath(); // 先端が shape の +y
     const geo = new THREE.ExtrudeGeometry(tri, { depth: 0.6, bevelEnabled: false });
@@ -2091,11 +2179,23 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
     mesh.position.set(x, D.y + 2.6, z);
     mesh.rotation.y = Math.atan2(-dx, -dy);
     detailGroup.add(mesh);
+    // ラベルは地図(床)の上に乗せない: 毎フレーム declutterDetailLabels が矢印の向きへ画面上で押し出し、床にかからない所に置いて線で結ぶ
+    const tip = new THREE.Object3D(); // 押し出し方向の基準(矢印の 10m 先)
+    const [tx, tz] = W([L.g[0] + dx * 10, L.g[1] + dy * 10]);
+    tip.position.set(tx, D.y + 3, tz); detailGroup.add(tip);
     const div = document.createElement('div');
-    div.className = 'landmark-label detail-link-label';
-    div.textContent = '➜ ' + L.to;
+    div.className = 'detail-anchor';
+    const span = document.createElement('span');
+    span.className = 'landmark-label detail-link-label';
+    span.textContent = '➜ ' + L.to;
+    // 文字は地図から離れる側へ伸ばす(矢印が右向きなら左端を点に合わせる、など)
+    const ax = dx > 0.3 ? 0 : dx < -0.3 ? -1 : -0.5, ay = dy > 0.3 ? 0 : dy < -0.3 ? -1 : -0.5;
+    span.style.transform = `translate(${ax * 100}%, ${ay * 100}%)`;
+    div.appendChild(span);
     const lab = new CSS2DObject(div);
-    lab.position.set(x, D.y + 5, z);
+    lab.userData.align = [ax, ay];
+    lab.userData.link = { tip };
+    lab.position.set(x, D.y + 3, z); // 矢印の位置。ラベル本体(span)は画面px でずらす
     lab.visible = false;
     detailGroup.add(lab);
     (D.extraLabels ||= []).push(lab); // 詳細地図を開いている間だけ表示(enterDetail/exitDetail)
