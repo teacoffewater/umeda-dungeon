@@ -12,7 +12,7 @@
 import json
 from PIL import Image, ImageDraw
 import numpy as np
-from shapely.geometry import box, Polygon, MultiPolygon
+from shapely.geometry import box, Polygon, MultiPolygon, LineString
 from shapely.ops import unary_union
 import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,11 +53,27 @@ wp = [g.buffer(ER_W, join_style=2) for g in polys(white_e, 120)]
 print('白(通路)成分', len(wp), [round(g.area) for g in sorted(wp, key=lambda g: -g.area)[:8]])
 # 通路: 区画に接している白成分だけ(枠線や凡例の白は落ちる)
 ou = unary_union(op)
-# 通路: 区画に接する白成分 + 大きな白成分(西側のドーチカ通路・南サンクンガーデン)。駐車場側(東)の小片は除く
-walk = [g for g in wp if g.distance(ou) < 6 or (g.area > 2500 and g.centroid.x < 1100*K/S)]
-# ドーチカとの接続部3本(いずれも階段)。案内板の階段記号の位置を手で置く(縮小px)。図面の白でないので色抽出に乗らない
+# 図面の西端を南北に走る白い通路とその南西の枝は**ドージマ地下センター(ドーチカ)**で、アバンザではない
+# (案内板は周辺の公共通路も白で描く)。詳細地図はアバンザ館内だけにするので、重心がこの範囲に入る白成分は捨てる。
+# 範囲は縮小px(tools/_debug の格子画像で読んだ)。白い通路+ベージュ帯+その白い縁取りを含め、館内へ渡る通路(N の東端 x≥322、
+# M の東端 x≥358、S の東端 x≥402)は含めない。白成分は重心判定ではなく**幾何的に差し引く**(南西の枝は館内の南側通路と同じ成分になるため)
+DOTICA = Polygon([(215, 250), (333, 250), (333, 330), (322, 330), (322, 362), (336, 376), (370, 580), (380, 660),
+                  (358, 660), (358, 700), (380, 700), (424, 858), (402, 858), (402, 905), (215, 905)])
+# 通路: 区画に接する白成分 + 館内の広い白成分(サンクンガーデン・南側通路)。ドーチカ側は切り落とし、駐車場側(東)の小片は除く
+walk = []
+for g in wp:
+    g = g.difference(DOTICA)
+    for part in (g.geoms if g.geom_type == 'MultiPolygon' else [g]):
+        if part.is_empty or part.area < 60: continue
+        if part.distance(ou) < 6 or (part.area > 300 and part.centroid.x < 1100*K/S): walk.append(part)
+# ドーチカとの接続部3本(いずれも階段)。案内板の階段記号(斜線帯)の位置を手で置く(縮小px)。図面の白でないので色抽出に乗らない
+#   N: 北サンクンガーデンへの通路の西端(⑬の南西)  M: 南サンクンガーデンへ上がる曲線階段の手前  S: 南側通路の西端(車椅子EVの隣)
+# 西端(x小)がドーチカ側=詳細地図の出入口。詳細地図の床はここで終わり、その先はドーチカ(広域地図)
 from shapely.geometry import box as _box
-STAIRS = {'N': _box(318, 333, 400, 368), 'M': _box(296, 392, 400, 414), 'S': _box(420, 636, 522, 722)}
+STAIRS = {'N': _box(290, 339, 338, 359), 'M': _box(358, 672, 406, 692), 'S': _box(402, 860, 436, 878)}
+# 館内の曲線階段(斜線帯なので白に乗らない): M の階段の先から南サンクンガーデン(③の南の入口)へ上がる。歩けるように帯で足す
+CURVED = LineString([(474, 602), (440, 626), (458, 641), (475, 668), (482, 696), (499, 723), (513, 733)]).buffer(9, cap_style=2)
+walk.append(CURVED)
 walk += list(STAIRS.values())
 print('区画に接する白成分', len(walk), [round(g.area) for g in walk])
 # 番号→成分: 重心位置(元px)で対応付け(目視で確認済み)

@@ -29,7 +29,8 @@
 - [x] 詳細地図の仕組みを複数施設対応に(detail_maps.js / DETAIL_MAPS)。ホワイティの挙動は不変
 - [x] tools/gen_detail.py(施設非依存の詳細データ生成) / tools/trace_linear.py(一本道: 軸+区画表→区画ポリゴン)
 - [ ] ドーチカ詳細: 案内板写真 → tools/data/detail/dotica_spec.json(下書き済み: 53店の順と側だけ) → trace_linear → gen_detail → detail_maps.js に登録(origin は whity と離す)
-- [x] 堂島アバンザ詳細: 地下階の案内板写真 → tools/data/detail/avanza.json → gen_detail(区画9・店9。ドーチカとの接続3本は手で矩形、現地の2点タップで補正待ち)
+- [x] 堂島アバンザ詳細: 地下階の案内板写真 → tools/data/detail/avanza.json → gen_detail(区画13・店9。ドーチカ本線は床から除外済み。接続3本の階段は案内板の位置)
+- [ ] 広域のドーチカ⇔アバンザ接続3本(dotica_avz_n / dotica_avz_m / avanza→j_avz)の位置と段数を現地の2点タップで確定。現状は案内板の比率からの仮値
 - [x] 阪急三番街詳細(並行作業): 北館B1F/B2F・南館B1F/B2F を館×階の4枚に(tools/extract_sanbangai_png.py + 現地案内板の番号→店名表)。集約ドット・館ノードのタップ=詳細地図へ
 - [ ] 三番街: 台北餃子張記(案内板に無い)が未対応。南館B1F/B2F の区画番号→店名の残り確認(ラベルが密なので現地で見比べる)
 - [ ] 広域: 調査JSON(北端の口・幅/広場/壁・出口番号C-60/C-72の確定・階段/ESC/EV・ビル接続部・目印)を規約どおり反映(regions.json→import_region→gen_polys / VERTICALS / landmarks)
