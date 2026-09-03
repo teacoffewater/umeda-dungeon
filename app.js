@@ -35767,9 +35767,13 @@
         });
         const mesh = new Mesh(mergedDotGeo, mergedDotMats[md.zone]);
         mesh.position.set(x, FLOOR_Y[md.floor] + 1.7, z);
-        mesh.userData.nodeId = md.near;
+        if (md.zone === "whity") {
+          mesh.userData.zone = md.zone;
+        } else {
+          mesh.userData.nodeId = md.near;
+          nodeMeshes.push(mesh);
+        }
         floorGroups[md.floor].add(mesh);
-        nodeMeshes.push(mesh);
         shopMeshes.push(mesh);
       }
       var detailGroup = new Group();

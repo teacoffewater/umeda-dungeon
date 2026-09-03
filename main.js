@@ -1857,8 +1857,11 @@ for (const n of NODES) {
   if (!isStation) spotZoneEntries.push({ mat, zone: n.zone });
 }
 
-// merged エリアの代表ドット: 館ごとに1点(個別店ドットの代わり)。クリックで館を選択できる
+// merged エリアの代表ドット: 館ごとに1点(個別店ドットの代わり)
 // 床と同色だと沈むので、明るめの発光で「店群がここにある」ことを示す
+// タップの意味は施設によって変える:
+//   詳細地図がある施設(ホワイティ) → 詳細地図への入口。店を選ぶのは詳細地図の管轄なので広域では端点にしない
+//   それ以外(三番街・イーマ)       → 従来どおり館ノードを選択(詳細地図が無いため広域で選べる必要がある)
 const mergedDotGeo = new THREE.CylinderGeometry(4.6, 4.6, 1.6, 12);
 const mergedDotMats = {};
 for (const md of MERGED_DOTS) {
@@ -1870,9 +1873,13 @@ for (const md of MERGED_DOTS) {
   });
   const mesh = new THREE.Mesh(mergedDotGeo, mergedDotMats[md.zone]);
   mesh.position.set(x, FLOOR_Y[md.floor] + 1.7, z);
-  mesh.userData.nodeId = md.near; // タップ=館ノードを選択
+  if (md.zone === 'whity') {
+    mesh.userData.zone = md.zone; // 床タップと同じ扱い(=詳細地図へ)。館ノードは名前を持たない通路の交差点なので端点にしない
+  } else {
+    mesh.userData.nodeId = md.near; // タップ=館ノードを選択
+    nodeMeshes.push(mesh);
+  }
   floorGroups[md.floor].add(mesh);
-  nodeMeshes.push(mesh);
   shopMeshes.push(mesh); // 「詳細」トグルでは店ドット扱いで一緒に隠す
 }
 
