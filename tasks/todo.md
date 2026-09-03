@@ -24,3 +24,14 @@
 - [ ] 二層構造: 仕様書(広域/詳細/接続地点/案内2段階) → ホワイティ詳細地図(実寸PDFから)
 - [x] ホワイティ詳細地図 v1: 2016公式PDFから出口番号28点で位置合わせ(残差8m)→テナントブロック191個を床に取り込み、名前一致39店を実位置化。ブロック輪郭は寄ったときだけ表示(2026-08-24)
 - [ ] ホワイティ詳細: 現行フロアガイドの入手(2016年版は店の4分の3が入れ替わっている)。全店の実位置化と案内の完全実位置化
+
+## 2026-09-03〜04 ドーチカ集中調査(現地)
+- [x] 詳細地図の仕組みを複数施設対応に(detail_maps.js / DETAIL_MAPS)。ホワイティの挙動は不変
+- [x] tools/gen_detail.py(施設非依存の詳細データ生成) / tools/trace_linear.py(一本道: 軸+区画表→区画ポリゴン)
+- [ ] ドーチカ詳細: 案内板写真 → tools/data/detail/dotica_spec.json(下書き済み: 53店の順と側だけ) → trace_linear → gen_detail → detail_maps.js に登録(origin は whity と離す)
+- [ ] 堂島アバンザ詳細: 地下階の案内板写真 → tools/data/detail/avanza.json(ホール型は多角形を手で) → gen_detail
+- [ ] 広域: 調査JSON(北端の口・幅/広場/壁・出口番号C-60/C-72の確定・階段/ESC/EV・ビル接続部・目印)を規約どおり反映(regions.json→import_region→gen_polys / VERTICALS / landmarks)
+- [ ] 広域のドーチカ店を集約ドット(北・中・南の3点=詳細地図の入口)に(shops.js の dotica を3エリア merged に分割)
+- [ ] 接続ビル(堂島グランドビル・新ダイビル等): OSM外形 → ZONES/床プレート、接続部は調査の「通路あり」から
+- [ ] photos/ の実体3枚が未コミット(landmarks.js が参照、本番404)。写真運用を始める前に決着
+- [ ] 坂・階段の高低差(survey の rise)の受け皿を main.js 側に作る(SLOPES / VERTICALS.rise)。地図表現はシェブロン帯+案内文の案
