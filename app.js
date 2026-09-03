@@ -36188,7 +36188,51 @@
           lab.position.set(cx, 2.2 + n * 3, cz);
           block.add(lab);
           lab.visible = false;
-          D.labels.push({ id, block, lab });
+          let w = 12;
+          for (const ch of div.textContent) w += ch.charCodeAt(0) < 8192 ? 5.5 : 10;
+          D.labels.push({ id, block, lab, w });
+        }
+      }
+      var _v32 = new Vector3();
+      var DETAIL_LABEL_MAX = 48;
+      function declutterDetailLabels() {
+        const D = DETAIL[detailMode];
+        if (!D || !D.labels.length) return;
+        const W = renderer.domElement.clientWidth, H = renderer.domElement.clientHeight;
+        const boxes = [];
+        const overlaps = (b) => boxes.some((o) => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
+        const toScreen = (obj) => {
+          obj.getWorldPosition(_v32).project(camera);
+          return [(_v32.x + 1) / 2 * W, (1 - _v32.y) / 2 * H, _v32.z];
+        };
+        for (const lab of D.extraLabels || []) {
+          if (!lab.visible) continue;
+          const [x, y] = toScreen(lab);
+          const w = (lab.element.offsetWidth || 120) + 4, h = 20;
+          boxes.push([x - w / 2, y - h / 2, x + w / 2, y + h / 2]);
+        }
+        const cand = [];
+        for (const d of D.labels) {
+          const [x, y, z] = toScreen(d.lab);
+          if (z > 1 || x < -60 || x > W + 60 || y < -30 || y > H + 30) {
+            d.lab.visible = false;
+            continue;
+          }
+          const onRoute = labelDivs[d.id] && labelDivs[d.id].classList.contains("on-route");
+          const pri = (onRoute ? -1e6 : 0) + (x - W / 2) ** 2 + (y - H / 2) ** 2;
+          cand.push({ d, x, y, pri });
+        }
+        cand.sort((a, b) => a.pri - b.pri);
+        let shown = 0;
+        for (const c of cand) {
+          const w = c.d.w, h = 16;
+          const b = [c.x - w / 2 - 3, c.y - 16 - h / 2 - 2, c.x + w / 2 + 3, c.y - 16 + h / 2 + 2];
+          const ok = shown < DETAIL_LABEL_MAX && !overlaps(b);
+          c.d.lab.visible = ok;
+          if (ok) {
+            boxes.push(b);
+            shown++;
+          }
         }
       }
       var detailHidden = [];
@@ -37897,6 +37941,7 @@
             controls.target.set(tx, controls.target.y, tz);
           }
         }
+        if (detailMode) declutterDetailLabels();
         if (routeCurve && markers.length) {
           markers.forEach((m, i) => {
             const u = (t * 0.06 + i / markers.length) % 1;

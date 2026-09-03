@@ -1539,7 +1539,47 @@ function buildDetailLabels(zone) {
     lab.position.set(cx, 2.2 + n * 3, cz); // 区画の重心(ジオメトリがワールド座標なのでローカル=ワールド)
     block.add(lab);
     lab.visible = false;
-    D.labels.push({ id, block, lab });
+    // 画面上のラベルの幅の見積もり(px): 全角≈10px・半角≈5.5px + 余白。重なり判定(declutterDetailLabels)に使う
+    let w = 12;
+    for (const ch of div.textContent) w += ch.charCodeAt(0) < 0x2000 ? 5.5 : 10;
+    D.labels.push({ id, block, lab, w });
+  }
+}
+// 詳細地図の店名ラベルの間引き(毎フレーム、画面座標で重なり判定)。
+// 店が密な施設(ホワイティ・リンクス)では全部出すと読めないので、画面の中心に近い順に、既に出したラベルと
+// 重ならないものだけ表示する。接続の矢印ラベル・吹き抜けラベル(extraLabels)は常に出し、その場所は先に占有する。
+// 寄れば重ならなくなるので自然に全店が出る(寄る=見たい所、の操作で足りる)
+const _v3 = new THREE.Vector3();
+const DETAIL_LABEL_MAX = 48; // 一度に出す店名ラベルの上限(それ以上は中心から遠い順に落とす)
+function declutterDetailLabels() {
+  const D = DETAIL[detailMode];
+  if (!D || !D.labels.length) return;
+  const W = renderer.domElement.clientWidth, H = renderer.domElement.clientHeight;
+  const boxes = []; // 占有済み [x0, y0, x1, y1]
+  const overlaps = b => boxes.some(o => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1]);
+  const toScreen = obj => { obj.getWorldPosition(_v3).project(camera); return [(_v3.x + 1) / 2 * W, (1 - _v3.y) / 2 * H, _v3.z]; };
+  for (const lab of D.extraLabels || []) {
+    if (!lab.visible) continue;
+    const [x, y] = toScreen(lab);
+    const w = (lab.element.offsetWidth || 120) + 4, h = 20;
+    boxes.push([x - w / 2, y - h / 2, x + w / 2, y + h / 2]);
+  }
+  const cand = [];
+  for (const d of D.labels) {
+    const [x, y, z] = toScreen(d.lab);
+    if (z > 1 || x < -60 || x > W + 60 || y < -30 || y > H + 30) { d.lab.visible = false; continue; } // 画面外
+    const onRoute = labelDivs[d.id] && labelDivs[d.id].classList.contains('on-route'); // 広域側のラベルに付く印を流用
+    const pri = (onRoute ? -1e6 : 0) + (x - W / 2) ** 2 + (y - H / 2) ** 2; // ルート上の店は最優先、次に画面中心に近い順
+    cand.push({ d, x, y, pri });
+  }
+  cand.sort((a, b) => a.pri - b.pri);
+  let shown = 0;
+  for (const c of cand) {
+    const w = c.d.w, h = 16;
+    const b = [c.x - w / 2 - 3, c.y - 16 - h / 2 - 2, c.x + w / 2 + 3, c.y - 16 + h / 2 + 2]; // .node-label は translateY(-16px)。少し余白を取る
+    const ok = shown < DETAIL_LABEL_MAX && !overlaps(b);
+    c.d.lab.visible = ok;
+    if (ok) { boxes.push(b); shown++; }
   }
 }
 const detailHidden = []; // 詳細モードで隠したオブジェクト(戻すときに復元)
@@ -3290,6 +3330,7 @@ function animate() {
       controls.target.set(tx, controls.target.y, tz);
     }
   }
+  if (detailMode) declutterDetailLabels(); // 詳細地図の店名ラベルは重なるものを間引く(カメラが動くたびに変わる)
   if (routeCurve && markers.length) {
     markers.forEach((m, i) => {
       const u = (t * 0.06 + i / markers.length) % 1;
