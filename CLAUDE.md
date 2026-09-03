@@ -76,6 +76,15 @@ tools/data/floorguides/dotica_vicinity_board_2026-09-03.jpg   ← 南端(C93)の
   → tools/gen_polys.py が floor / avanza_ext を床にする。nodes は `--apply` で main.js の NODES に書き込む(集約ドットの rect は手で)
 ```
 
+ドーチカ以外の**広域の通路の面**は「ひとにやさしい地下街ガイドマップ」（大阪地下街株式会社 2026.4、ベクタPDF）から起こしている（OSM 中心線の帯は使わない）:
+
+```
+tools/data/floorguides/umeda_guide_map_2026-04.pdf   ← ベクタPDF(白=地下街の通路、桃=ホワイティ、水色=ビル)
+  → tools/extract_guide_pdf.py   塗りを色で層に分け、水色のビル外形を OSM に ICP で当てた相似変換 + ビル重心の TPS 補正で metric-v1 へ
+  → tools/data/guide_map.json    corridors / whity / buildings / stairs / slopes
+  → tools/gen_polys.py が通路の面(白+桃)を自グラフの最寄りエッジのゾーン×階に割り当てて床にする(ドーチカの範囲は除く)
+```
+
 ## 座標系は2つある（最重要）
 
 「広域」と「詳細」は**別の座標系**で、意図的に位置合わせしていない。これを混ぜると壊れる。
