@@ -31547,7 +31547,7 @@
         avanza_b1: { floor: "B1", zone: "avanza", near: ["j_avz"], rect: [785.7, 1499.6, 30, 30], merged: true },
         dojima_flat: { floor: "B1", zone: "dojima_flat", near: ["dojima_flat"], rect: [661, 1507, 30, 40], merged: true },
         // 近鉄堂島ビルB1F。詳細地図の入口
-        // 関電不動産西梅田ビル地下街: B1F(=浅層S1、詳細地図なし・館ノード選択)と B2F(=中枢層B1、ドーチカC61直結・詳細地図の入口)
+        // 関電不動産西梅田ビル地下街: B1F(=浅層S1、詳細地図は仮配置)と B2F(=中枢層B1、ドーチカC61直結)。どちらも集約ドット=詳細地図の入口
         kanden_b1: { floor: "S1", zone: "kanden", near: ["kanden_b1"], rect: [669, 1379, 30, 24], merged: true },
         kanden_b2: { floor: "B1", zone: "kanden", near: ["kanden_b2"], rect: [669, 1379, 30, 24], merged: true },
         // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
@@ -34053,6 +34053,18 @@
     }
   });
 
+  // detail_kanden_b1.js
+  var KANDEN_B1_FLOOR, KANDEN_B1_WALK, KANDEN_B1_AREA_ANCHORS, KANDEN_B1_BLOCKS, KANDEN_B1_REAL_POS;
+  var init_detail_kanden_b1 = __esm({
+    "detail_kanden_b1.js"() {
+      KANDEN_B1_FLOOR = [{ "pts": [[0, 0], [0, 39], [52, 39], [52, 0]], "holes": [] }];
+      KANDEN_B1_WALK = { "x0": 0, "y0": 0, "cell": 1.5, "w": 36, "h": 28, "bits": "AAAAgAcAAAB4AAAAgAcAAAB4AAAAgAcAAAB4AAAAgAcAAAB4AAAAgPf///9///////f///9///////f///9///////f///9//////wcAAAB4AAAAgAcAAAB4AAAAgAcAAAB4AAAAgAcAAAB4AAAAgAcAAAB4AAAAAAAAAAAA" };
+      KANDEN_B1_AREA_ANCHORS = { "kanden_b1": [23, 19.5] };
+      KANDEN_B1_BLOCKS = [{ "g": [[0, 0], [0, 14], [11.5, 14], [11.5, 0]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }, { "g": [[11.5, 0], [11.5, 14], [23, 14], [23, 0]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }, { "g": [[23, 0], [23, 14], [34.5, 14], [34.5, 0]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }, { "g": [[34.5, 0], [34.5, 14], [46, 14], [46, 0]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }, { "g": [[0, 25], [0, 39], [11.5, 39], [11.5, 25]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }, { "g": [[11.5, 25], [11.5, 39], [23, 39], [23, 25]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }, { "g": [[23, 25], [23, 39], [34.5, 39], [34.5, 25]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }, { "g": [[34.5, 25], [34.5, 39], [46, 39], [46, 25]], "mall": "kanden(\u4EEE\u914D\u7F6E)" }];
+      KANDEN_B1_REAL_POS = { "\u30EA\u30B5\u30A4\u30AF\u30EB\u30D6\u30C6\u30A3\u30C3\u30AF \u30D5\u30A9\u30FC\u30B7\u30FC\u30BA\u30F3\u30BA": [5.8, 32], "\u643A\u5E2F\u96FB\u8A71 \u30B9\u30E2\u30FC\u30EB\u30A2\u30A4\u30E9\u30F3\u30C9": [17.2, 32], "nail salon Sou": [28.8, 32], "LETO": [40.2, 32], "SSS Kaneko stretch": [5.8, 7], "\u3081\u3093\u51E6 \u934B\u7269 \u5451\u51E6 \u306F\u307E\u6804": [17.2, 7], "Heilee brow": [28.8, 7], "NOVA \u99C5\u524D\u7559\u5B66": [40.2, 7] };
+    }
+  });
+
   // detail_maps.js
   var sanban, DETAIL_MAPS;
   var init_detail_maps = __esm({
@@ -34066,6 +34078,7 @@
       init_detail_dotica();
       init_detail_dojima_flat();
       init_detail_kanden_b2();
+      init_detail_kanden_b1();
       sanban = (m, p, areas, floor, name, origin) => ({
         FLOOR: m[p + "_FLOOR"],
         WALK: m[p + "_WALK"],
@@ -34105,7 +34118,7 @@
         // 堂島ふらっと(近鉄堂島ビルB1F): 現地の案内板から。ドーチカ C83 直結
         dojima_flat: { FLOOR: DOJIMA_FLAT_FLOOR, WALK: DOJIMA_FLAT_WALK, BLOCKS: DOJIMA_FLAT_BLOCKS, REAL_POS: DOJIMA_FLAT_REAL_POS, AREA_ANCHORS: DOJIMA_FLAT_AREA_ANCHORS, origin: [1600, 1e3] },
         // ガイド座標 0〜50 / 0〜58 → world z 1000〜1029
-        // 関電不動産西梅田ビル地下街 B2F(中枢層)。B1F は詳細地図なし(案内板が無い)ので、B1F のドットは館ノード選択のまま
+        // 関電不動産西梅田ビル地下街 B2F(中枢層)と B1F(浅層)。B1F は案内板が無いので仮配置(tools/kanden_b1_provisional.py)
         kanden_b2: {
           FLOOR: KANDEN_B2_FLOOR,
           WALK: KANDEN_B2_WALK,
@@ -34117,8 +34130,21 @@
           floor: "B1",
           name: "\u95A2\u96FB\u4E0D\u52D5\u7523\u897F\u6885\u7530\u30D3\u30EB B2F",
           origin: [1600, 1050]
-        }
+        },
         // ガイド座標 0〜52 / -4〜39 → world z 1048〜1070
+        kanden_b1: {
+          FLOOR: KANDEN_B1_FLOOR,
+          WALK: KANDEN_B1_WALK,
+          BLOCKS: KANDEN_B1_BLOCKS,
+          REAL_POS: KANDEN_B1_REAL_POS,
+          AREA_ANCHORS: KANDEN_B1_AREA_ANCHORS,
+          zone: "kanden",
+          areas: ["kanden_b1"],
+          floor: "S1",
+          name: "\u95A2\u96FB\u4E0D\u52D5\u7523\u897F\u6885\u7530\u30D3\u30EB B1F(\u4EEE\u914D\u7F6E)",
+          origin: [1600, 1100]
+        }
+        // ガイド座標 0〜52 / 0〜39 → world z 1100〜1120
       };
     }
   });

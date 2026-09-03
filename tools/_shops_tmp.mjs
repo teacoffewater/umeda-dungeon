@@ -32,7 +32,7 @@ export const SHOP_AREAS = {
   // 堂島アバンザ B1F(レストラン街)。個別の位置は詳細地図(館内案内板 2026-09-03)の管轄。広域は館で1点集約=詳細地図の入口
   avanza_b1: { floor: 'B1', zone: 'avanza', near: ['j_avz'], rect: [785.7, 1499.6, 30, 30], merged: true },
   dojima_flat: { floor: 'B1', zone: 'dojima_flat', near: ['dojima_flat'], rect: [661, 1507, 30, 40], merged: true }, // 近鉄堂島ビルB1F。詳細地図の入口
-  // 関電不動産西梅田ビル地下街: B1F(=浅層S1、詳細地図なし・館ノード選択)と B2F(=中枢層B1、ドーチカC61直結・詳細地図の入口)
+  // 関電不動産西梅田ビル地下街: B1F(=浅層S1、詳細地図は仮配置)と B2F(=中枢層B1、ドーチカC61直結)。どちらも集約ドット=詳細地図の入口
   kanden_b1: { floor: 'S1', zone: 'kanden', near: ['kanden_b1'], rect: [669, 1379, 30, 24], merged: true },
   kanden_b2: { floor: 'B1', zone: 'kanden', near: ['kanden_b2'], rect: [669, 1379, 30, 24], merged: true },
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
