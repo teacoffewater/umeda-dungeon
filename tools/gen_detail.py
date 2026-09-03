@@ -113,10 +113,11 @@ def main(zone):
     sh = open(os.path.join(ROOT, 'shops.js')).read()
     area_ids = re.findall(r"^\s*(\w+):\s*\{[^}]*zone:\s*'%s'" % re.escape(zone), sh, re.M)
     cur, area_of = [], {}
-    for m in re.finditer(r"s\('([^']+)', '(\w+)'", sh):
-        if m.group(2) in area_ids:
-            cur.append(m.group(1))
-            area_of[m.group(1)] = m.group(2)
+    # 通路型 s('店名', 'エリア', …) とホール型 g('店名', 'エリア', …) の両方。店名は ' でも " でも囲める
+    for m in re.finditer(r"""[sg]\((['"])(.+?)\1, '(\w+)'""", sh):
+        if m.group(3) in area_ids:
+            cur.append(m.group(2))
+            area_of[m.group(2)] = m.group(3)
     for m in re.finditer(r"\{\s*name:\s*'([^']+)'[^}]*zone:\s*'%s'" % re.escape(zone), sh):  # SHOPS_MANUAL
         cur.append(m.group(1))
         area_of[m.group(1)] = zone

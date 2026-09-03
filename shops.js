@@ -27,6 +27,8 @@ export const SHOP_AREAS = {
   whity_pocket: { floor: 'B1', zone: 'whity', near: ['j_whity_x'], rect: [1100.5, 946.5, 24, 24], merged: true }, // ポケットパーク
   whity_mikke:  { floor: 'B1', zone: 'whity', near: ['whity_14'],  rect: [991.4, 962.3, 24, 24], merged: true },  // mikke
   whity_faruru: { floor: 'B1', zone: 'whity', near: ['whity_32'],  rect: [1066.7, 909.3, 24, 24], merged: true }, // FARURU
+  // 堂島アバンザ B1F(レストラン街)。個別の位置は詳細地図(館内案内板 2026-09-03)の管轄。広域は館で1点集約=詳細地図の入口
+  avanza_b1: { floor: 'B1', zone: 'avanza', near: ['j_avz'], rect: [785.7, 1499.6, 30, 30], merged: true },
   // ディアモール大阪（公式マップSVG座標で全店の並び・側を確認済み 2026-05版）
   diamor_fashion: { floor: 'B1', zone: 'diamor', edges: [['j_fashion_w', 'j_diamor_s'], ['j_diamor_s', 'j_diamor_e'], ['j_diamor_e', 'j_fashion_e']] },        // 西→東
   diamor_market: { floor: 'B1', zone: 'diamor', edges: [['enkei', 'diamor_03'], ['diamor_03', 'j_market_ne']] }, // 広場→北東
@@ -102,7 +104,6 @@ export const SHOPS_MANUAL = [
   { name: '阪急うめだ本店 B1F(デパ地下)',     floor: 'B1', mx: 1002.9, my: 850.2, near: 'hankyu_dept',  zone: 'hankyu_dept' },
   { name: '阪急うめだ本店 B2F(生鮮・惣菜)',   floor: 'B2', mx: 987.1, my: 874.8, near: 'j_hankyu_b2', zone: 'hankyu_dept' },
   { name: '阪神梅田本店 B1F(食品館)',         floor: 'B1', mx: 942.7, my: 1043.9, near: 'hanshin',      zone: 'hanshin_dept' },
-  { name: '堂島アバンザ B1F(レストラン街)',   floor: 'B1', mx: 785.7, my: 1499.6, near: 'j_avz',        zone: 'avanza' },
   { name: '阪神梅田本店 B2F(阪神バル横丁)',   floor: 'B2', mx: 934.0, my: 1049.6, near: 'hanshin_home', zone: 'hanshin_dept' },
   { name: '梅田メンタルクリニック', floor: 'B1', mx: 234.0, my: 1441.3, near: 'exit_6_1', zone: 'nishi_umeda' }, // 出口6-1の横、地下側から見て左側(エスカレーターの反対側。現地確認 2026-08-23)
 ];
@@ -1449,4 +1450,14 @@ export const SHOPS_SCRAPED = [
   g('ワインショップ・エノテカ', 'umekita_cellar', '北西'),
   g('THE CITY BAKERY', 'umekita_cellar', '南西'),
   g('Natural House Aoyama Organicmart', 'umekita_cellar', '西'),
+  // ==== 堂島アバンザ B1F(レストラン街): 館内案内板 2026-09-03 現地撮影。区画番号は詳細地図側(detail_avanza.js)が持つ ====
+  g('OUTBACK STEAKHOUSE', 'avanza_b1', '中央'),          // ①
+  g('しゃぶ禅', 'avanza_b1', '中央'),                     // ② 日本料理
+  g('釣宿酒場マヅメ 梅田本店', 'avanza_b1', '中央'),      // ③ 大衆酒場
+  g('ホリーズカフェ', 'avanza_b1', '中央'),               // ④⑤
+  g("isn't(イズント) 堂島店", 'avanza_b1', '中央'),        // ⑥ オーダースーツ
+  g('がんこ 堂島アバンザ店', 'avanza_b1', '中央'),        // ⑧ 魚美酒進
+  g('セブン-イレブン', 'avanza_b1', '中央'),              // ⑨
+  g('SUBWAY', 'avanza_b1', '中央'),                       // ⑩ サンドイッチ・サラダ
+  g('QBハウス', 'avanza_b1', '中央'),                     // ⑬ ヘアカット専門店
 ];
