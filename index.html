@@ -229,13 +229,19 @@
   }
   #survey button.primary { background: linear-gradient(90deg, #3ec39a, #3a7bd5); color: #0a1530; font-weight: bold; border: none; }
   #survey button.danger { color: #ff8a8a; }
-  #survey input[type=text], #survey textarea {
+  #survey input[type=text], #survey input[type=number], #survey textarea {
     flex: 1; min-width: 120px; padding: 7px 9px; border-radius: 8px; font-size: 13px;
     background: #141b28; color: #dfe7f1; border: 1px solid rgba(120,150,190,0.35);
   }
+  /* 高低差・段数は数値なので幅は狭く。斜度の計算結果はその横に出す */
+  #survey input[type=number] { flex: 0 0 74px; min-width: 0; }
+  #sv-rise-calc { color: #7dffce; font-size: 11px; flex: 1; }
   #survey textarea { width: 100%; height: 120px; font-family: ui-monospace, monospace; font-size: 10px; }
   #sv-form, #sv-exportbox { border-top: 1px dashed rgba(120,150,190,0.3); padding-top: 6px; display: flex; flex-direction: column; gap: 6px; }
   #sv-form[hidden], #sv-exportbox[hidden] { display: none; }
+  /* .sv-row の display:flex が [hidden] のUA既定に勝つため、行を隠すには明示が要る
+     (種別ごとに出し分けている「どこへ」「出口番号」「坂」「高低差」の行がこれ) */
+  .sv-row[hidden] { display: none; }
   #sv-form-title { color: #ffd97a; font-size: 12px; }
   .sv-label {
     color: #0a1530; font-size: 10px; font-weight: bold; padding: 1px 6px; border-radius: 8px;
@@ -368,6 +374,13 @@
       <div class="sv-row" id="sv-to-row"><span class="sv-key">どこへ</span><div class="sv-row" id="sv-to"></div></div>
       <div class="sv-row" id="sv-exit-row"><span class="sv-key">出口番号</span><input type="text" id="sv-exit" placeholder="例: H-25 / 東梅田7" /></div>
       <div class="sv-row" id="sv-slope-row"><span class="sv-key">坂(2点目へ)</span><div class="sv-row" id="sv-slope"></div></div>
+      <div class="sv-row" id="sv-rise-row"><span class="sv-key">高低差</span><div class="sv-row" id="sv-rise"></div></div>
+      <div class="sv-row" id="sv-rise-num-row">
+        <span class="sv-key">実測(任意)</span>
+        <input type="number" id="sv-dh" placeholder="高低差m" inputmode="decimal" step="0.1" min="0" />
+        <input type="number" id="sv-steps" placeholder="段数" inputmode="numeric" step="1" min="0" />
+        <span id="sv-rise-calc"></span>
+      </div>
       <div class="sv-row"><span class="sv-key">メモ</span><input type="text" id="sv-note" placeholder="任意" /></div>
       <div class="sv-row">
         <button id="sv-gps">GPSを付ける</button>
@@ -382,6 +395,6 @@
   </div>
 </div>
 
-<script defer src="./app.js?v=49"></script>
+<script defer src="./app.js?v=52"></script>
 </body>
 </html>

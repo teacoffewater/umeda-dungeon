@@ -8,13 +8,16 @@ const STORAGE_KEY = 'survey_v1';
 const FRAME = 'metric-v1';
 
 // 種別: 2点ものは two=true。to=true は「どこへ」を聞く
+// rise: 高低差を記録する種別(坂・階段)。ざっくりチップ + 実測(高低差m / 段数)の併用。
+// 坂は2点ものなので水平距離が分かり、高低差を入れると斜度が自動で出る
 export const TYPES = {
-  stairs:   { label: '階段',        color: 0x9aa6b8, to: true },
+  // 階段・坂は2点もの。踏み面の水平距離が分かるので、高低差を入れれば斜度が出る
+  stairs:   { label: '階段',        color: 0x9aa6b8, to: true, rise: true, two: true, tap1: '階段の手前をタップ', tap2: '階段の行き先側をタップ' },
   ev:       { label: 'EV',          color: 0x7aa7ff, to: true },
   esc:      { label: 'ESC',         color: 0xffc23d, to: true },
   wall:     { label: '壁・行き止まり', color: 0xff5a5a, two: true },
   corridor: { label: '通路あり',    color: 0x7dffce, two: true },
-  slope:    { label: '坂',          color: 0xffa94d, two: true, slope: true }, // 始まり→終わりの順に2点。上り/下りは2点目に向かって
+  slope:    { label: '坂',          color: 0xffa94d, two: true, slope: true, rise: true, tap1: '坂の始まりをタップ', tap2: '坂の終わりをタップ' }, // 上り/下りは2点目に向かって
   exit:     { label: '出口番号',    color: 0xffffff, exit: true },
   shop:     { label: '店',          color: 0xffa8cd },
   landmark: { label: '目印',        color: 0xffe066 },
@@ -40,8 +43,15 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   const ndc = new THREE.Vector2();
 
   // ---- UI ----
-  const typesEl = $('sv-types'), floorEl = $('sv-floor'), toEl = $('sv-to'), slopeEl = $('sv-slope');
+  const typesEl = $('sv-types'), floorEl = $('sv-floor'), toEl = $('sv-to'), slopeEl = $('sv-slope'), riseEl = $('sv-rise');
   const SLOPE_DIR = { up: '上り', down: '下り' }, SLOPE_GRADE = { gentle: 'ゆるい', normal: 'ふつう', steep: '急' };
+  // 高低差のざっくり分類(現地で目測できる粒度)。実測値は下の数値欄で別に入れる
+  const RISE_BAND = { h1: '〜1m', h2: '1〜2m', h4: '2〜4m', h4p: '4m〜' };
+  const STEP_RISE_M = 0.17; // 蹴上げの目安。段数から高低差を見積もる(公共施設の階段は16〜18cmが標準的)
+  for (const [k, v] of Object.entries(RISE_BAND)) {
+    const c = chip(v, () => { if (draft?.rec.rise) { draft.rec.rise.band = draft.rec.rise.band === k ? null : k; renderChips(); } });
+    c.dataset.rband = k; riseEl.appendChild(c);
+  }
   for (const [k, v] of Object.entries(SLOPE_DIR)) {
     const c = chip(v, () => { if (draft?.rec.slope) { draft.rec.slope.dir = k; renderChips(); } });
     c.dataset.sdir = k; slopeEl.appendChild(c);
@@ -54,7 +64,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const c = chip(t.label, () => {
       // 種別を変えたら、途中だった2点ものの1点目は破棄してやり直し(別種別で保存されるのを防ぐ)
       if (pending) { removeTemp(pending.marker); pending = null; }
-      selType = key; renderChips(); say(t.two ? '1点目をタップ' : '床をタップ');
+      selType = key; renderChips(); say(t.two ? (t.tap1 || '1点目をタップ') : '床をタップ');
     });
     c.dataset.type = key; typesEl.appendChild(c);
   }
@@ -71,6 +81,8 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
   $('sv-clear').addEventListener('click', () => {
     if (records.length && confirm(`${records.length}件の記録を全部消しますか?`)) { records = []; save(); rebuildMarkers(); say('全消去しました'); }
   });
+  $('sv-dh').addEventListener('input', renderRiseCalc);
+  $('sv-steps').addEventListener('input', renderRiseCalc);
   $('sv-save').addEventListener('click', saveDraft);
   $('sv-cancel').addEventListener('click', cancelDraft);
   $('sv-copy').addEventListener('click', copyExport);
@@ -152,7 +164,7 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const t = TYPES[selType];
     if (t.two && !pending) {
       pending = { ...hit, marker: tempMarker(hit, t.color) };
-      say('2点目をタップ');
+      say(t.tap2 || '2点目をタップ');
       return;
     }
     const rec = {
@@ -161,6 +173,9 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
       px: (pending || hit).px, px2: pending ? hit.px : null,
       to: null, exit: null, note: '', gps: null,
       slope: t.slope ? { dir: 'up', grade: 'gentle' } : null, // 既定: 2点目に向かってゆるい上り
+      // 高低差。band=ざっくり / dh=実測(m) / steps=段数。斜度は px・px2 から再計算できる派生値なので持たない
+      // (convert_survey.py が座標フレームを変換するため、計算済みの値を持つと古くなる)
+      rise: t.rise ? { band: null, dh: null, steps: null } : null,
     };
     if (pending) { removeTemp(pending.marker); pending = null; }
     draft = { rec, hit2: hit };
@@ -232,8 +247,13 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     $('sv-to-row').hidden = !t.to;
     $('sv-exit-row').hidden = !t.exit;
     $('sv-slope-row').hidden = !t.slope;
+    $('sv-rise-row').hidden = !t.rise;
+    $('sv-rise-num-row').hidden = !t.rise;
     $('sv-exit').value = '';
     $('sv-note').value = '';
+    $('sv-dh').value = '';
+    $('sv-steps').value = '';
+    renderRiseCalc();
     gpsBtn.disabled = false; gpsBtn.textContent = 'GPSを付ける';
     renderChips();
     if (t.exit) $('sv-exit').focus();
@@ -243,6 +263,11 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
     const rec = draft.rec;
     rec.exit = $('sv-exit').value.trim() || null;
     rec.note = $('sv-note').value.trim();
+    if (rec.rise) {
+      rec.rise.steps = numOr(null, $('sv-steps').value);
+      // 高低差は入力があればそれ、無ければ段数からの見積り(段数だけ数えて先に進めるように)
+      rec.rise.dh = numOr(rec.rise.steps != null ? r1(rec.rise.steps * STEP_RISE_M) : null, $('sv-dh').value);
+    }
     records.push(rec); save();
     addMarker(rec);
     draft = null; $('sv-form').hidden = true;
@@ -335,17 +360,61 @@ export function initSurvey({ camera, floorGroups, FLOOR_Y, ZONES, w2m }) {
       const sl = draft?.rec.slope;
       c.classList.toggle('on', !!sl && (c.dataset.sdir ? c.dataset.sdir === sl.dir : c.dataset.sgrade === sl.grade));
     }
+    for (const c of riseEl.children) c.classList.toggle('on', c.dataset.rband === draft?.rec.rise?.band);
+  }
+  // 入力中の高低差から斜度を出して見せる(保存はしない。px・px2 から再計算できるため)
+  // 坂は2点ものなので水平距離が確定している。階段は1点なので段数→高低差の見積りだけ出す
+  function renderRiseCalc() {
+    const el = $('sv-rise-calc');
+    if (!el) return;
+    const rec = draft?.rec;
+    if (!rec?.rise) { el.textContent = ''; return; }
+    const steps = numOr(null, $('sv-steps').value);
+    const dh = numOr(steps != null ? r1(steps * STEP_RISE_M) : null, $('sv-dh').value);
+    const parts = [];
+    if (steps != null && !$('sv-dh').value.trim()) parts.push(`${steps}段 → 高低差 約${r1(steps * STEP_RISE_M)}m`);
+    const d = horizDist(rec);
+    if (d != null) {
+      parts.push(`水平${r1(d)}m`);
+      if (dh != null && d > 0.5) {
+        const pct = dh / d * 100;
+        parts.push(`斜度 約${r1(pct)}%(${r1(Math.atan2(dh, d) * 180 / Math.PI)}°)`);
+      }
+    }
+    el.textContent = parts.join(' / ');
+  }
+  // 2点ものの水平距離(m)。metric-v1 はメートルなのでそのまま測れる
+  function horizDist(rec) {
+    if (!rec?.px2) return null;
+    return Math.hypot(rec.px2[0] - rec.px[0], rec.px2[1] - rec.px[1]);
+  }
+  function numOr(fallback, v) {
+    const n = parseFloat(String(v ?? '').trim());
+    return Number.isFinite(n) && n >= 0 ? n : fallback;
   }
   function say(msg) { $('sv-msg').textContent = `[${TYPES[selType].label}] ${msg}`; }
   function describe(rec) {
     const t = TYPES[rec.type]?.label || rec.type;
     const sl = rec.slope ? ` ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}` : '';
-    return `${t}${sl}${rec.exit ? ' ' + rec.exit : ''}${rec.to ? '→' + rec.to : ''} (${rec.px.join(',')})`;
+    return `${t}${sl}${riseText(rec)}${rec.exit ? ' ' + rec.exit : ''}${rec.to ? '→' + rec.to : ''} (${rec.px.join(',')})`;
   }
   function shortLabel(rec) {
     const t = TYPES[rec.type]?.label || rec.type;
-    if (rec.slope) return `坂 ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}`;
-    return rec.exit ? `出口 ${rec.exit}` : rec.to ? `${t}→${rec.to}` : rec.note ? `${t}: ${rec.note.slice(0, 10)}` : t;
+    if (rec.slope) return `坂 ${SLOPE_GRADE[rec.slope.grade]}${SLOPE_DIR[rec.slope.dir]}${riseText(rec)}`;
+    return rec.exit ? `出口 ${rec.exit}` : rec.to ? `${t}→${rec.to}${riseText(rec)}`
+      : rec.note ? `${t}: ${rec.note.slice(0, 10)}` : `${t}${riseText(rec)}`;
+  }
+  // 記録一覧・マーカーに出す高低差の要約。斜度は px から再計算する
+  function riseText(rec) {
+    const r = rec.rise;
+    if (!r || (r.dh == null && r.steps == null && !r.band)) return '';
+    const bits = [];
+    if (r.steps != null) bits.push(`${r.steps}段`);
+    if (r.dh != null) bits.push(`${r.dh}m`);
+    else if (r.band) bits.push(RISE_BAND[r.band]);
+    const d = horizDist(rec);
+    if (r.dh != null && d != null && d > 0.5) bits.push(`${r1(r.dh / d * 100)}%`);
+    return ` [${bits.join(' ')}]`;
   }
   function r1(v) { return Math.round(v * 10) / 10; }
 
