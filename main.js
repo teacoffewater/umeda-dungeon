@@ -19,18 +19,19 @@ import { DETAIL_MAPS } from './detail_maps.js'; // 詳細地図を持つ施設�
 const FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
 const GROUND_Y = 112; // 地上レベル。浅層S1=66の上に46の土被りを確保（浅層↔中枢層↔深層は各66で等間隔）
 // 高低差モデル(2026-09-03): 各層の既定の深さ(m)を 浅層3 / 中枢層6 / 深層9 と置き、施設の実測(ZONES.depthM)や
-// 階段・坂の途中の点の実測(NODE_DEPTH)があればそれで上下させる。縦の縮尺は層間隔(3m=66)と同じ 1m=22
+// 階段・坂の途中の点の実測(NODE_DEPTH)があればそれで上下させる。縦の縮尺(層の中の高低差)は 1m=4.4(層間隔 3m=66 の 1/5。
+// 等倍(22)は段差が大きすぎて気持ち悪いとの指摘で 2026-09-03 に下げた)。高さ=その層の高さ+(層の既定の深さ−実測)×縮尺 なので層の高さ自体は変わらない
 const IS_SURVEY = new URLSearchParams(location.search).get('survey') === '1'; // 調査モード(?survey=1)。調査用の表示の出し分けに使う
 const DEPTH_DEFAULT = { S1: 3, B1: 6, B2: 9 };
-const Y_PER_M = (FLOOR_Y.S1 - FLOOR_Y.B1) / (DEPTH_DEFAULT.B1 - DEPTH_DEFAULT.S1); // 22
-const yOfDepth = d => FLOOR_Y.B1 + (DEPTH_DEFAULT.B1 - d) * Y_PER_M;
+const Y_PER_M = (FLOOR_Y.S1 - FLOOR_Y.B1) / (DEPTH_DEFAULT.B1 - DEPTH_DEFAULT.S1) / 5; // 4.4
+const yOfDepth = (d, floor = 'B1') => FLOOR_Y[floor] + (DEPTH_DEFAULT[floor] - d) * Y_PER_M;
 // 施設×階の深さ。ZONES[zone].depthM は数値(全階共通)か {S1:…, B1:…} の階別
 function zoneDepth(zone, floor) {
   const z = zone && ZONES[zone], dm = z && z.depthM;
   const d = dm == null ? null : (typeof dm === 'number' ? dm : dm[floor]);
   return d ?? DEPTH_DEFAULT[floor] ?? DEPTH_DEFAULT.B1;
 }
-const yOfZone = (zone, floor) => yOfDepth(zoneDepth(zone, floor));
+const yOfZone = (zone, floor) => yOfDepth(zoneDepth(zone, floor), floor);
 // フロアの表示名（地下ダンジョンの層区分）。内部キーはそのまま、UI表記だけ層名に置換
 const FLOOR_LABEL = { S1: '浅層', B1: '中枢層', B2: '深層' };
 const fl = f => FLOOR_LABEL[f] || `${f}F`;
@@ -904,7 +905,7 @@ const NODE_DEPTH = {
   for (const [a, b, , z] of EDGES) if (z) { zoneGuess[a] ||= z; zoneGuess[b] ||= z; }
   for (const n of NODES) {
     n.depthM = NODE_DEPTH[n.id] ?? zoneDepth(n.zone || zoneGuess[n.id], n.floor);
-    n.y = yOfDepth(n.depthM);
+    n.y = yOfDepth(n.depthM, n.floor);
   }
 }
 const posOf = n => new THREE.Vector3(n.x, n.y, n.z);

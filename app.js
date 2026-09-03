@@ -34210,14 +34210,14 @@
       var GROUND_Y = 112;
       var IS_SURVEY = new URLSearchParams(location.search).get("survey") === "1";
       var DEPTH_DEFAULT = { S1: 3, B1: 6, B2: 9 };
-      var Y_PER_M = (FLOOR_Y.S1 - FLOOR_Y.B1) / (DEPTH_DEFAULT.B1 - DEPTH_DEFAULT.S1);
-      var yOfDepth = (d) => FLOOR_Y.B1 + (DEPTH_DEFAULT.B1 - d) * Y_PER_M;
+      var Y_PER_M = (FLOOR_Y.S1 - FLOOR_Y.B1) / (DEPTH_DEFAULT.B1 - DEPTH_DEFAULT.S1) / 5;
+      var yOfDepth = (d, floor = "B1") => FLOOR_Y[floor] + (DEPTH_DEFAULT[floor] - d) * Y_PER_M;
       function zoneDepth(zone, floor) {
         const z = zone && ZONES[zone], dm = z && z.depthM;
         const d = dm == null ? null : typeof dm === "number" ? dm : dm[floor];
         return d ?? DEPTH_DEFAULT[floor] ?? DEPTH_DEFAULT.B1;
       }
-      var yOfZone = (zone, floor) => yOfDepth(zoneDepth(zone, floor));
+      var yOfZone = (zone, floor) => yOfDepth(zoneDepth(zone, floor), floor);
       var FLOOR_LABEL = { S1: "\u6D45\u5C64", B1: "\u4E2D\u67A2\u5C64", B2: "\u6DF1\u5C64" };
       var fl = (f) => FLOOR_LABEL[f] || `${f}F`;
       var UNIT_M = 2;
@@ -35386,7 +35386,7 @@
         }
         for (const n of NODES) {
           n.depthM = NODE_DEPTH[n.id] ?? zoneDepth(n.zone || zoneGuess[n.id], n.floor);
-          n.y = yOfDepth(n.depthM);
+          n.y = yOfDepth(n.depthM, n.floor);
         }
       }
       var posOf = (n) => new Vector3(n.x, n.y, n.z);
