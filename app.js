@@ -36425,7 +36425,7 @@
         controls.mouseButtons.RIGHT = MOUSE.ROTATE;
         controls.screenSpacePanning = false;
         controls.minPolarAngle = 0;
-        controls.maxPolarAngle = Math.PI / 3;
+        controls.maxPolarAngle = 0;
         controls.minDistance = 40;
         camAnim = {
           fromPos: camera.position.clone(),

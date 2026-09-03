@@ -1697,8 +1697,8 @@ function enterDetail(zoneId) {
   const r = Math.max(45, box.getBoundingSphere(new THREE.Sphere()).radius); // 小さい施設(アバンザ・三番街の1フロア)でも画面に収まる程度に寄る
   detailSaved.camPos = camera.position.clone();
   detailSaved.camTgt = controls.target.clone();
-  // Google Maps 風の操作: 1本指=パン、2本指=ズーム+ひねり回転(+上下で傾き)、左ドラッグ=パン、右ドラッグ=回転。
-  // 初期視点は真俯瞰(固定はしない)。傾きは60°まで
+  // Google Maps 風の操作: 1本指=パン、2本指=ズーム+ひねり回転、左ドラッグ=パン、右ドラッグ=回転(方位のみ)。
+  // 視点は真俯瞰に固定(傾けない)。回転は鉛直軸まわり(地図をくるっと回す)だけ
   detailSaved.enableRotate = controls.enableRotate;
   detailSaved.maxPolar = controls.maxPolarAngle;
   detailSaved.minDistance = controls.minDistance;
@@ -1713,7 +1713,7 @@ function enterDetail(zoneId) {
   controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
   controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
   controls.screenSpacePanning = false; // パンは床面に沿って動かす(地図らしい移動)
-  controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI / 3; // 傾きは60°まで(現在の角度より広いので跳ねない)
+  controls.minPolarAngle = 0; controls.maxPolarAngle = 0; // 真俯瞰に固定(傾けない)。回転は鉛直軸まわり(方位)だけ
   controls.minDistance = 40;
   camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(c.x, D.y + r * 1.7, c.z + 0.1),
               fromTgt: controls.target.clone(), toTgt: new THREE.Vector3(c.x, D.y, c.z), start: performance.now(), dur: 900, hard: true };
