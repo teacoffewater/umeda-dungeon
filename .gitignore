@@ -5,3 +5,6 @@ node_modules/
 rebuild/
 tools/_debug/
 tools/_detail_whity_tmp.mjs
+
+# Python のバイトコードキャッシュ(検証スクリプト実行で生成される)
+__pycache__/
