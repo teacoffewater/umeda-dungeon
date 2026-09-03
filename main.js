@@ -20,6 +20,7 @@ const FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
 const GROUND_Y = 112; // 地上レベル。浅層S1=66の上に46の土被りを確保（浅層↔中枢層↔深層は各66で等間隔）
 // 高低差モデル(2026-09-03): 各層の既定の深さ(m)を 浅層3 / 中枢層6 / 深層9 と置き、施設の実測(ZONES.depthM)や
 // 階段・坂の途中の点の実測(NODE_DEPTH)があればそれで上下させる。縦の縮尺は層間隔(3m=66)と同じ 1m=22
+const IS_SURVEY = new URLSearchParams(location.search).get('survey') === '1'; // 調査モード(?survey=1)。調査用の表示の出し分けに使う
 const DEPTH_DEFAULT = { S1: 3, B1: 6, B2: 9 };
 const Y_PER_M = (FLOOR_Y.S1 - FLOOR_Y.B1) / (DEPTH_DEFAULT.B1 - DEPTH_DEFAULT.S1); // 22
 const yOfDepth = d => FLOOR_Y.B1 + (DEPTH_DEFAULT.B1 - d) * Y_PER_M;
@@ -1453,6 +1454,7 @@ const landmarkById = {};
     const [x, z] = M2W([lm.mx, lm.my]);
     lm.x = x; lm.z = z;
     if (lm.vert) { lm.x = x; lm.z = z; continue; } // 地上への昇降設備は VERTICALS と同じ立体で描く(下の drawVertical)
+    if (lm.pin === 'survey' && !IS_SURVEY) continue; // 現地調査JSONから起こした目印は本番では描かない(案内文には使う)
     const pin = new THREE.Mesh(pinGeo, pinMat);
     pin.rotation.x = Math.PI; // 先端を下に
     pin.position.set(x, yOfZone(lm.zone, lm.floor) + 7, z);
@@ -2112,7 +2114,7 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
 // 調査モード(?survey=1)でだけ、床の範囲(半透明の板)と地上まで抜ける半透明の柱で描き、記録済みの吹き抜けを現地で見比べられるようにする。
 // 案内文の目印(曲がり角の「○○の所で右へ」)にはモードに関係なく使う。通路(ルート)にはしない。
 // frame:'guide:<施設ID>' のものは詳細地図の専用グループに置く(詳細地図を開いたときだけ見える)
-if (new URLSearchParams(location.search).get('survey') === '1') {
+if (IS_SURVEY) {
   const colMat = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide });
   const plateMat = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.4, depthWrite: false });
   const edgeMat = new THREE.LineBasicMaterial({ color: 0xbfefff, transparent: true, opacity: 0.6 });

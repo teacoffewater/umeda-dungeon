@@ -3,6 +3,7 @@
 // LANDMARKS: マップに金色の目印として表示し、案内文でも曲がり角の目印に使う。
 //   { id, name, floor, mx, my, zone?, photo?, note?,
 //     vert?: 'ev'|'esc'|'stairs', to?: '→1F', dir?: [dx, dz](上り方向・world座標) }
+//   pin: 'survey' を付けると本番ではピンもラベルも描かない(調査モード ?survey=1 でだけ描く)。案内文の目印としては使う。現地調査JSONから起こした点に付ける
 //   vert を付けると地上(GROUND_Y)への昇降設備として VERTICALS と同じ立体(EVシャフト/ESCの帯と手すり/階段)で描く
 //   kind: 'atrium'(吹き抜け=地下だが地上が見える空間)は rect: [[mx,my],[mx2,my2]](対角2点)で範囲を持つ。
 //     本番(通常モード)では描かず、調査モード(?survey=1)でだけ床から地上まで抜ける半透明の柱で描く。
@@ -18,12 +19,12 @@ export const LANDMARKS = [
   { id: 'lm_yellow_obj', name: '黄色い円形のオブジェ', floor: 'B1', mx: 236.5, my: 1420.0, zone: 'nishi_umeda',
     photo: 'photos/yellow_object.jpg', note: '出口6-1(左)と6-2(右)のY字路の股にある黄色い円形の金属オブジェ(KALEIDOSCOPE)。タップ位置(346,1357)は写真により分岐点へ補正' },
   // --- ドーチカ⇔堂島ふらっと(近鉄堂島ビルB1F)の接続。現地の2点タップ 2026-09-03 (tools/data/survey/2026-09-03_dotica_dojima_flat.json) ---
-  { id: 'lm_dotica_df_stairs', name: '堂島ふらっとへの階段・ESC', floor: 'B1', mx: 692.9, my: 1525.8, zone: 'dotica',
+  { id: 'lm_dotica_df_stairs', pin: 'survey', name: '堂島ふらっとへの階段・ESC', floor: 'B1', mx: 692.9, my: 1525.8, zone: 'dotica',
     note: 'ドーチカ C83。ドーチカから見て左が階段(23段、約3.9m上り)、右に上り下り2本のエスカレーター。上がった先が近鉄堂島ビルB1F「堂島ふらっと」' },
   // --- ドーチカ⇔堂島アバンザの接続。現地の2点タップ 2026-09-03 (tools/data/survey/2026-09-03_dotica_avanza.json)。1段15cm ---
-  { id: 'lm_dotica_avz_c', name: 'アバンザへの階段(7段→10m→17段)', floor: 'B1', mx: 707.7, my: 1507, zone: 'dotica',
+  { id: 'lm_dotica_avz_c', pin: 'survey', name: 'アバンザへの階段(7段→10m→17段)', floor: 'B1', mx: 707.7, my: 1507, zone: 'dotica',
     note: 'ドーチカからアバンザへ。7段上がって10m平坦、さらに17段上がる(合計3.6m)。アバンザ側から見ると17段下りて10m進み7段下りる' },
-  { id: 'lm_dotica_avz_s', name: 'アバンザ南口の階段(10段)', floor: 'B1', mx: 713.1, my: 1540.9, zone: 'dotica',
+  { id: 'lm_dotica_avz_s', pin: 'survey', name: 'アバンザ南口の階段(10段)', floor: 'B1', mx: 713.1, my: 1540.9, zone: 'dotica',
     note: 'ドーチカ南側からアバンザの南側通路へ上がる10段(約1.5m)' },
   // --- 堂島ふらっとのサンクンガーデン(吹き抜け): ドーチカからの階段を上がった所と店の入口の間。案内板(2026-09-03)の右下、木2本と地上への曲線階段がある区画。
   //     広域の位置は現地記録の階段(681,1520)の西〜南西に案内板の比率で置いた概略。詳細地図の位置は案内板の縮尺 ---

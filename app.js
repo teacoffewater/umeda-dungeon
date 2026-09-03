@@ -33906,6 +33906,7 @@
         // --- ドーチカ⇔堂島ふらっと(近鉄堂島ビルB1F)の接続。現地の2点タップ 2026-09-03 (tools/data/survey/2026-09-03_dotica_dojima_flat.json) ---
         {
           id: "lm_dotica_df_stairs",
+          pin: "survey",
           name: "\u5802\u5CF6\u3075\u3089\u3063\u3068\u3078\u306E\u968E\u6BB5\u30FBESC",
           floor: "B1",
           mx: 692.9,
@@ -33916,6 +33917,7 @@
         // --- ドーチカ⇔堂島アバンザの接続。現地の2点タップ 2026-09-03 (tools/data/survey/2026-09-03_dotica_avanza.json)。1段15cm ---
         {
           id: "lm_dotica_avz_c",
+          pin: "survey",
           name: "\u30A2\u30D0\u30F3\u30B6\u3078\u306E\u968E\u6BB5(7\u6BB5\u219210m\u219217\u6BB5)",
           floor: "B1",
           mx: 707.7,
@@ -33925,6 +33927,7 @@
         },
         {
           id: "lm_dotica_avz_s",
+          pin: "survey",
           name: "\u30A2\u30D0\u30F3\u30B6\u5357\u53E3\u306E\u968E\u6BB5(10\u6BB5)",
           floor: "B1",
           mx: 713.1,
@@ -34205,6 +34208,7 @@
       init_detail_maps();
       var FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
       var GROUND_Y = 112;
+      var IS_SURVEY = new URLSearchParams(location.search).get("survey") === "1";
       var DEPTH_DEFAULT = { S1: 3, B1: 6, B2: 9 };
       var Y_PER_M = (FLOOR_Y.S1 - FLOOR_Y.B1) / (DEPTH_DEFAULT.B1 - DEPTH_DEFAULT.S1);
       var yOfDepth = (d) => FLOOR_Y.B1 + (DEPTH_DEFAULT.B1 - d) * Y_PER_M;
@@ -35961,6 +35965,7 @@
             lm.z = z;
             continue;
           }
+          if (lm.pin === "survey" && !IS_SURVEY) continue;
           const pin = new Mesh(pinGeo, pinMat);
           pin.rotation.x = Math.PI;
           pin.position.set(x, yOfZone(lm.zone, lm.floor) + 7, z);
@@ -36623,7 +36628,7 @@
           for (const n of blockShops[i]) D.blockByShop[n.id] = mesh;
         });
       }
-      if (new URLSearchParams(location.search).get("survey") === "1") {
+      if (IS_SURVEY) {
         const colMat = new MeshBasicMaterial({ color: 10478591, transparent: true, opacity: 0.16, depthWrite: false, side: DoubleSide });
         const plateMat = new MeshBasicMaterial({ color: 10478591, transparent: true, opacity: 0.4, depthWrite: false });
         const edgeMat = new LineBasicMaterial({ color: 12578815, transparent: true, opacity: 0.6 });
