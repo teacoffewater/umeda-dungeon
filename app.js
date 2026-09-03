@@ -36516,7 +36516,7 @@
           for (const n of blockShops[i]) D.blockByShop[n.id] = mesh;
         });
       }
-      {
+      if (new URLSearchParams(location.search).get("survey") === "1") {
         const colMat = new MeshBasicMaterial({ color: 10478591, transparent: true, opacity: 0.16, depthWrite: false, side: DoubleSide });
         const plateMat = new MeshBasicMaterial({ color: 10478591, transparent: true, opacity: 0.4, depthWrite: false });
         const edgeMat = new LineBasicMaterial({ color: 12578815, transparent: true, opacity: 0.6 });

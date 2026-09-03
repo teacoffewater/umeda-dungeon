@@ -2059,10 +2059,11 @@ for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
   });
 }
 
-// 吹き抜け(LANDMARKS の kind:'atrium'): 地下だが地上が見える空間。床の範囲(半透明の板)と、そこから地上まで抜ける
-// 半透明の柱で描く。表示と案内文の目印にだけ使い、通路(ルート)にはしない。
+// 吹き抜け(LANDMARKS の kind:'atrium'): 地下だが地上が見える空間。**本番(通常モード)では描かない**。
+// 調査モード(?survey=1)でだけ、床の範囲(半透明の板)と地上まで抜ける半透明の柱で描き、記録済みの吹き抜けを現地で見比べられるようにする。
+// 案内文の目印(曲がり角の「○○の所で右へ」)にはモードに関係なく使う。通路(ルート)にはしない。
 // frame:'guide:<施設ID>' のものは詳細地図の専用グループに置く(詳細地図を開いたときだけ見える)
-{
+if (new URLSearchParams(location.search).get('survey') === '1') {
   const colMat = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide });
   const plateMat = new THREE.MeshBasicMaterial({ color: 0x9fe3ff, transparent: true, opacity: 0.4, depthWrite: false });
   const edgeMat = new THREE.LineBasicMaterial({ color: 0xbfefff, transparent: true, opacity: 0.6 });
