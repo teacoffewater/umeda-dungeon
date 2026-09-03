@@ -35341,6 +35341,7 @@
           }
         }
         routeGroup.visible = false;
+        syncRouteShopLabels();
         detailGroup.visible = true;
         const box = new Box3().expandByObject(detailGroup);
         const c = box.getCenter(new Vector3());
@@ -35380,6 +35381,7 @@
         detailGroup.visible = false;
         routeGroup.visible = true;
         for (const d of detailShopLabels) d.lab.visible = false;
+        syncRouteShopLabels();
         for (const o of detailHidden) o.visible = true;
         detailHidden.length = 0;
         for (const f of ["S1", "B1", "B2"]) {
@@ -36145,11 +36147,15 @@
           mesh.add(label);
           routeShopDecor.push({ mesh, mat: orig, label, isBlock: !!block });
         }
+        syncRouteShopLabels();
+      }
+      function syncRouteShopLabels() {
+        for (const d of routeShopDecor) d.label.visible = d.isBlock === !!detailMode;
       }
       function clearRouteShops() {
         for (const d of routeShopDecor) {
           d.mesh.material = d.mat;
-          d.mesh.visible = d.isBlock ? !!detailMode : detailShown;
+          d.mesh.visible = d.isBlock ? true : detailShown;
           if (!d.isBlock) d.mesh.scale.set(1, 1, 1);
           d.mesh.remove(d.label);
           d.label.element.remove();

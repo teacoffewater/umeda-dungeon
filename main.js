@@ -1424,6 +1424,7 @@ function enterDetail(zoneId) {
   for (const { lab } of zoneLabelObjs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
   for (const lab of groundLabelObjs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
   routeGroup.visible = false; // 広域のルート線は詳細では出さない(詳細はガイド内経路で案内)
+  syncRouteShopLabels(); // 広域のルート経由店ラベル(CSS2D)は親を隠しても残るので個別に消す
   detailGroup.visible = true;
   // ガイド全体が入る範囲
   const box = new THREE.Box3().expandByObject(detailGroup);
@@ -1458,6 +1459,7 @@ function exitDetail() {
   detailGroup.visible = false;
   routeGroup.visible = true;
   for (const d of detailShopLabels) d.lab.visible = false;
+  syncRouteShopLabels(); // 詳細用(区画)のラベルを消し、広域用のラベルを戻す
   for (const o of detailHidden) o.visible = true;
   detailHidden.length = 0;
   // フロアチップでOFFにしていた階は隠したまま(チップの状態に従う)
@@ -2252,11 +2254,17 @@ function decorateRouteShops(shopIds) {
     mesh.add(label);
     routeShopDecor.push({ mesh, mat: orig, label, isBlock: !!block });
   }
+  syncRouteShopLabels();
+}
+// ルート経由店のラベルは広域用(店ドット)と詳細用(区画)の2種類ある。CSS2Dは親グループの
+// visible に連動しないため、いまいる層のものだけを出す(広域のラベルが詳細地図に残るのを防ぐ)
+function syncRouteShopLabels() {
+  for (const d of routeShopDecor) d.label.visible = (d.isBlock === !!detailMode);
 }
 function clearRouteShops() {
   for (const d of routeShopDecor) {
     d.mesh.material = d.mat;
-    d.mesh.visible = d.isBlock ? !!detailMode : detailShown;
+    d.mesh.visible = d.isBlock ? true : detailShown; // 区画は詳細地図の一部で常時可視(detailGroup側で出し分ける)
     if (!d.isBlock) d.mesh.scale.set(1, 1, 1);
     d.mesh.remove(d.label);
     d.label.element.remove();
