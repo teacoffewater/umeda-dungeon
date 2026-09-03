@@ -33719,6 +33719,17 @@
     }
   });
 
+  // detail_maps.js
+  var DETAIL_MAPS;
+  var init_detail_maps = __esm({
+    "detail_maps.js"() {
+      init_detail_whity();
+      DETAIL_MAPS = {
+        whity: { FLOOR: WHITY_FLOOR, WALK: WHITY_WALK, BLOCKS: WHITY_BLOCKS, REAL_POS: WHITY_REAL_POS, AREA_ANCHORS: WHITY_AREA_ANCHORS, origin: [1600, 0] }
+      };
+    }
+  });
+
   // main.js
   var require_main = __commonJS({
     "main.js"() {
@@ -33730,7 +33741,7 @@
       init_BufferGeometryUtils();
       init_ground_data();
       init_landmarks();
-      init_detail_whity();
+      init_detail_maps();
       var FLOOR_Y = { S1: 66, B1: 0, B2: -66 };
       var GROUND_Y = 112;
       var FLOOR_LABEL = { S1: "\u6D45\u5C64", B1: "\u4E2D\u67A2\u5C64", B2: "\u6DF1\u5C64" };
@@ -34811,7 +34822,20 @@
         controls.zoomSpeed = 3;
       }, { capture: true, passive: true });
       controls.maxPolarAngle = Math.PI * 0.49;
-      window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE: three_module_exports, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find((n) => n.type === "shop" && n.zone === "whity")?.name }), dbgNav: (a, b) => detailNav(a, b), dbgReal: (name) => WHITY_REAL_POS[name], dbgWalk: () => WHITY_WALK };
+      window.__dbg = {
+        camera,
+        controls,
+        M2W,
+        FLOOR_Y,
+        THREE: three_module_exports,
+        scene,
+        DETAIL_MAPS,
+        // 開発用: 検証時にカメラ操作・状態確認に使う。z は詳細地図の施設ID(省略時は開いている施設、無ければ whity)
+        dbgDetail: (z = detailMode || "whity") => ({ zone: z, ids: DETAIL[z].shopIds.length, labels: DETAIL[z].labels.length, mode: detailMode, realKeys: Object.keys(DETAIL_MAPS[z].REAL_POS).length, sampleNode: NODES.find((n) => n.type === "shop" && n.zone === z)?.name }),
+        dbgNav: (a, b, z = detailMode || "whity") => DETAIL[z].nav(a, b),
+        dbgReal: (name, z = "whity") => DETAIL_MAPS[z].REAL_POS[name],
+        dbgWalk: (z = "whity") => DETAIL_MAPS[z].WALK
+      };
       scene.add(new AmbientLight(8952251, 0.9));
       var dir = new DirectionalLight(16777215, 1.4);
       dir.position.set(200, 400, 150);
@@ -35344,19 +35368,16 @@
           landmarkMeshes.push(pin);
         }
       }
-      var G2W = ([gx, gy]) => [gx * 0.5 + 1600, gy * 0.5];
+      var g2w = (zone, [gx, gy]) => [gx * 0.5 + DETAIL_MAPS[zone].origin[0], gy * 0.5 + DETAIL_MAPS[zone].origin[1]];
       var detailMode = null;
-      var detailAnchors = [];
-      var detailShopIds = [];
-      var detailShopLabels = [];
-      for (const n of NODES) {
-        if (n.type === "shop" && n.zone === "whity" && WHITY_REAL_POS[n.name]) detailShopIds.push(n.id);
-      }
-      function buildDetailLabels() {
-        if (detailShopLabels.length) return;
+      var DETAIL = {};
+      for (const zone of Object.keys(DETAIL_MAPS)) DETAIL[zone] = { group: null, blockByShop: {}, shopIds: [], labels: [], anchors: [], nav: null };
+      function buildDetailLabels(zone) {
+        const D = DETAIL[zone];
+        if (D.labels.length) return;
         const stacked = /* @__PURE__ */ new Map();
-        for (const id of detailShopIds) {
-          const block = blockMeshByShopId[id];
+        for (const id of D.shopIds) {
+          const block = D.blockByShop[id];
           if (!block) continue;
           const div = document.createElement("div");
           div.className = "node-label shop detail-shop";
@@ -35368,7 +35389,7 @@
           lab.position.set(cx, 2.2 + n * 3, cz);
           block.add(lab);
           lab.visible = false;
-          detailShopLabels.push({ id, block, lab });
+          D.labels.push({ id, block, lab });
         }
       }
       var detailHidden = [];
@@ -35380,10 +35401,12 @@
         }
       }
       function enterDetail(zoneId) {
-        if (detailMode === zoneId || zoneId !== "whity") return;
+        if (detailMode === zoneId || !DETAIL_MAPS[zoneId]) return;
+        if (detailMode) exitDetail();
         detailMode = zoneId;
-        buildDetailLabels();
-        for (const d of detailShopLabels) d.lab.visible = true;
+        const D = DETAIL[zoneId];
+        buildDetailLabels(zoneId);
+        for (const d of D.labels) d.lab.visible = true;
         document.getElementById("detail-bar").hidden = false;
         document.getElementById("detail-bar-name").textContent = ZONES[zoneId].name + " \u8A73\u7D30\u5730\u56F3";
         hideForDetail(floorGroups.S1);
@@ -35411,8 +35434,8 @@
         }
         routeGroup.visible = false;
         syncRouteShopLabels();
-        detailGroup.visible = true;
-        const box = new Box3().expandByObject(detailGroup);
+        D.group.visible = true;
+        const box = new Box3().expandByObject(D.group);
         const c = box.getCenter(new Vector3());
         const r = Math.max(80, box.getBoundingSphere(new Sphere()).radius);
         detailSaved.camPos = camera.position.clone();
@@ -35446,10 +35469,11 @@
       }
       function exitDetail() {
         if (!detailMode) return;
+        const D = DETAIL[detailMode];
         detailMode = null;
-        detailGroup.visible = false;
+        D.group.visible = false;
         routeGroup.visible = true;
-        for (const d of detailShopLabels) d.lab.visible = false;
+        for (const d of D.labels) d.lab.visible = false;
         syncRouteShopLabels();
         for (const o of detailHidden) o.visible = true;
         detailHidden.length = 0;
@@ -35838,7 +35862,7 @@
         });
         const mesh = new Mesh(mergedDotGeo, mergedDotMats[md.zone]);
         mesh.position.set(x, FLOOR_Y[md.floor] + 1.7, z);
-        if (md.zone === "whity") {
+        if (DETAIL_MAPS[md.zone]) {
           mesh.userData.zone = md.zone;
         } else {
           mesh.userData.nodeId = md.near;
@@ -35847,35 +35871,37 @@
         floorGroups[md.floor].add(mesh);
         shopMeshes.push(mesh);
       }
-      var detailGroup = new Group();
-      detailGroup.visible = false;
-      scene.add(detailGroup);
-      for (const f of WHITY_FLOOR) {
-        const shape = new Shape();
-        f.pts.forEach(([gx, gy], i) => {
-          const [x, z] = G2W([gx, gy]);
-          if (i === 0) shape.moveTo(x, -z);
-          else shape.lineTo(x, -z);
-          if (i % 4 === 0) detailAnchors.push(x, z);
-        });
-        for (const h of f.holes || []) {
-          const path = new Path();
-          h.forEach(([gx, gy], i) => {
-            const [x, z] = G2W([gx, gy]);
-            if (i === 0) path.moveTo(x, -z);
-            else path.lineTo(x, -z);
+      for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
+        const D = DETAIL[zone];
+        const W = (g2) => g2w(zone, g2);
+        const detailGroup = new Group();
+        detailGroup.visible = false;
+        scene.add(detailGroup);
+        D.group = detailGroup;
+        for (const f of M.FLOOR) {
+          const shape = new Shape();
+          f.pts.forEach(([gx, gy], i) => {
+            const [x, z] = W([gx, gy]);
+            if (i === 0) shape.moveTo(x, -z);
+            else shape.lineTo(x, -z);
+            if (i % 4 === 0) D.anchors.push(x, z);
           });
-          shape.holes.push(path);
+          for (const h of f.holes || []) {
+            const path = new Path();
+            h.forEach(([gx, gy], i) => {
+              const [x, z] = W([gx, gy]);
+              if (i === 0) path.moveTo(x, -z);
+              else path.lineTo(x, -z);
+            });
+            shape.holes.push(path);
+          }
+          const geo = new ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
+          const mesh = new Mesh(geo, zoneMats[zone] || corridorMat);
+          mesh.rotation.x = -Math.PI / 2;
+          mesh.position.y = FLOOR_Y.B1 - 1.5;
+          detailGroup.add(mesh);
         }
-        const geo = new ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
-        const mesh = new Mesh(geo, zoneMats.whity || corridorMat);
-        mesh.rotation.x = -Math.PI / 2;
-        mesh.position.y = FLOOR_Y.B1 - 1.5;
-        detailGroup.add(mesh);
-      }
-      var blockMeshByShopId = {};
-      {
-        const zc = ZONES.whity.color;
+        const zc = ZONES[zone].color;
         const occMat = new MeshStandardMaterial({
           color: new Color(zc).lerp(new Color(16777215), 0.5),
           emissive: new Color(zc).multiplyScalar(0.35),
@@ -35891,8 +35917,9 @@
           }
           return c;
         };
-        const shopsReal = NODES.filter((n) => n.type === "shop" && n.zone === "whity" && WHITY_REAL_POS[n.name]);
-        const blockShops = WHITY_BLOCKS.map(() => []);
+        const shopsReal = NODES.filter((n) => n.type === "shop" && n.zone === zone && M.REAL_POS[n.name]);
+        D.shopIds = shopsReal.map((n) => n.id);
+        const blockShops = M.BLOCKS.map(() => []);
         const centroid = (b) => {
           let cx = 0, cy = 0;
           for (const [x, y] of b.g) {
@@ -35902,11 +35929,11 @@
           return [cx / b.g.length, cy / b.g.length];
         };
         for (const n of shopsReal) {
-          const [sgx, sgy] = WHITY_REAL_POS[n.name];
-          let bi = WHITY_BLOCKS.findIndex((b) => inPoly(sgx, sgy, b.g));
+          const [sgx, sgy] = M.REAL_POS[n.name];
+          let bi = M.BLOCKS.findIndex((b) => inPoly(sgx, sgy, b.g));
           if (bi < 0) {
             let best = 4;
-            WHITY_BLOCKS.forEach((b, i) => {
+            M.BLOCKS.forEach((b, i) => {
               const [cx, cy] = centroid(b);
               const d = Math.hypot(cx - sgx, cy - sgy);
               if (d < best) {
@@ -35917,10 +35944,10 @@
           }
           if (bi >= 0) blockShops[bi].push(n);
         }
-        WHITY_BLOCKS.forEach((b, i) => {
+        M.BLOCKS.forEach((b, i) => {
           const shape = new Shape();
           b.g.forEach(([gx, gy], k) => {
-            const [x, z] = G2W([gx, gy]);
+            const [x, z] = W([gx, gy]);
             if (k === 0) shape.moveTo(x, -z);
             else shape.lineTo(x, -z);
           });
@@ -35930,18 +35957,18 @@
           const mesh = new Mesh(geo, occ ? occMat : vacMat);
           mesh.position.y = FLOOR_Y.B1 + 1.5;
           const [cgx, cgy] = centroid(b);
-          mesh.userData.center = G2W([cgx, cgy]);
-          detailAnchors.push(mesh.userData.center[0], mesh.userData.center[1]);
+          mesh.userData.center = W([cgx, cgy]);
+          D.anchors.push(mesh.userData.center[0], mesh.userData.center[1]);
           if (occ) {
             mesh.userData.nodeId = blockShops[i][0].id;
             nodeMeshes.push(mesh);
           }
           detailGroup.add(mesh);
-          for (const n of blockShops[i]) blockMeshByShopId[n.id] = mesh;
+          for (const n of blockShops[i]) D.blockByShop[n.id] = mesh;
         });
       }
-      var detailNav = (() => {
-        const { x0, y0, cell, w, h, bits } = WHITY_WALK;
+      function makeDetailNav(WALK) {
+        const { x0, y0, cell, w, h, bits } = WALK;
         const bin = atob(bits);
         const walkAt = (k) => bin.charCodeAt(k >> 3) >> (k & 7) & 1;
         const at = (i, j) => i >= 0 && j >= 0 && i < w && j < h && !!walkAt(j * w + i);
@@ -36024,29 +36051,37 @@
           }
           return out.map(toG);
         };
-      })();
+      }
+      for (const [zone, M] of Object.entries(DETAIL_MAPS)) DETAIL[zone].nav = makeDetailNav(M.WALK);
       var detailRouteGroup = null;
+      var detailRouteZone = null;
       function clearDetailRoute() {
         if (detailRouteGroup) {
-          detailGroup.remove(detailRouteGroup);
+          DETAIL[detailRouteZone].group.remove(detailRouteGroup);
           detailRouteGroup = null;
+          detailRouteZone = null;
         }
       }
       function guidePosOf(n) {
-        if (!n || n.type !== "shop" || n.zone !== "whity") return null;
-        return WHITY_REAL_POS[n.name] || WHITY_AREA_ANCHORS[n.area] || null;
+        if (!n || n.type !== "shop") return null;
+        const M = DETAIL_MAPS[n.zone];
+        if (!M) return null;
+        const pos = M.REAL_POS[n.name] || M.AREA_ANCHORS[n.area] || null;
+        return pos ? { zone: n.zone, pos } : null;
       }
       function drawDetailRoute(startId, goalId) {
         clearDetailRoute();
         const a = guidePosOf(nodeById[startId]), b = guidePosOf(nodeById[goalId]);
-        if (!a || !b) return false;
-        const gpath = detailNav(a, b);
-        if (!gpath) return false;
-        const pts = [a, ...gpath, b].map((g2) => {
-          const [x, z] = G2W(g2);
+        if (!a || !b || a.zone !== b.zone) return null;
+        const zone = a.zone;
+        const gpath = DETAIL[zone].nav(a.pos, b.pos);
+        if (!gpath) return null;
+        const pts = [a.pos, ...gpath, b.pos].map((g2) => {
+          const [x, z] = g2w(zone, g2);
           return new Vector3(x, FLOOR_Y.B1 + 6, z);
         });
         detailRouteGroup = new Group();
+        detailRouteZone = zone;
         const curve = new CatmullRomCurve3(pts, false, "catmullrom", 0.1);
         detailRouteGroup.add(new Mesh(
           new TubeGeometry(curve, 140, 1.2, 8, false),
@@ -36055,8 +36090,8 @@
         const base = (v) => new Vector3(v.x, FLOOR_Y.B1, v.z);
         detailRouteGroup.add(makeStartPerson(base(pts[0])));
         detailRouteGroup.add(makeGoalFlag(base(pts[pts.length - 1])));
-        detailGroup.add(detailRouteGroup);
-        return true;
+        DETAIL[zone].group.add(detailRouteGroup);
+        return zone;
       }
       var adj = {};
       for (const n of NODES) adj[n.id] = [];
@@ -36192,7 +36227,7 @@
       var routeShopDecor = [];
       function decorateRouteShops(shopIds) {
         for (const id of shopIds) {
-          const block = detailMode ? blockMeshByShopId[id] : null;
+          const block = detailMode ? DETAIL[detailMode].blockByShop[id] : null;
           const mesh = block || shopMeshById[id];
           if (!mesh) continue;
           mesh.visible = true;
@@ -36565,7 +36600,7 @@
           info.querySelector("#route-steps").hidden = false;
           info.querySelector("#start-guide").style.display = "none";
           if (hasDetailRoute) {
-            enterDetail("whity");
+            enterDetail(hasDetailRoute);
             return;
           }
           const p = posOf(startN);
@@ -36604,7 +36639,7 @@
         decorateRouteShops(usedShopIds);
         document.body.classList.add("route-active");
         applyViewOffset();
-        if (detailMode && hasDetailRoute) {
+        if (detailMode && hasDetailRoute === detailMode) {
         } else {
           if (detailMode) exitDetail();
           focusZonesForRoute(path);
@@ -36902,7 +36937,7 @@
         const hit = raycaster.intersectObjects(nodeMeshes.filter((m) => m.parent.visible && (m.visible || nodeById[m.userData.nodeId]?.type !== "shop")))[0];
         if (!hit) {
           const fl2 = raycaster.intersectObjects(floorGroups.B1.children.filter((o) => o.isMesh && o.visible), false)[0];
-          if (fl2 && fl2.object.userData.zone === "whity") enterDetail("whity");
+          if (fl2 && DETAIL_MAPS[fl2.object.userData.zone]) enterDetail(fl2.object.userData.zone);
           return;
         }
         const id = hit.object.userData.nodeId;
@@ -36926,7 +36961,8 @@
           camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
           controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
           if (p >= 1) finishCamAnim();
-        } else if (detailMode && detailAnchors.length) {
+        } else if (detailMode && DETAIL[detailMode].anchors.length) {
+          const detailAnchors = DETAIL[detailMode].anchors;
           const dist = camera.position.distanceTo(controls.target);
           const halfH = dist * Math.tan(camera.fov * Math.PI / 360);
           const lim = Math.max(15, Math.min(halfH, halfH * camera.aspect) * 0.5);

@@ -6,7 +6,7 @@ import { initSurvey } from './survey.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { OSM_BUILDINGS, OSM_ROADS } from './ground_data.js'; // tools/gen_ground.py が生成
 import { LANDMARKS, PHOTOS } from './landmarks.js';
-import { WHITY_FLOOR, WHITY_WALK, WHITY_BLOCKS, WHITY_REAL_POS, WHITY_AREA_ANCHORS } from './detail_whity.js'; // tools/gen_detail_whity.py が生成
+import { DETAIL_MAPS } from './detail_maps.js'; // 詳細地図を持つ施設の登録表(whity / dotica / avanza …)
 
 // ---------------------------------------------------------------------------
 // 梅田ダンジョン データ
@@ -814,7 +814,7 @@ const MERGED_DOTS = []; // merged指定エリアの代表ドット(店の形は�
 })();
 
 // 広域地図の店ノードは合成位置のまま(店の位置は広域では持たない方針)。
-// WHITY_REAL_POS はガイド座標系(詳細地図専用)なので広域のノードには適用しない
+// 詳細地図の店位置(DETAIL_MAPS[*].REAL_POS)はガイド座標系(詳細地図専用)なので広域のノードには適用しない
 for (const n of NODES) [n.x, n.z] = M2W([n.mx, n.my]);
 const nodeById = Object.fromEntries(NODES.map(n => [n.id, n]));
 const posOf = n => new THREE.Vector3(n.x, FLOOR_Y[n.floor], n.z);
@@ -866,7 +866,9 @@ renderer.domElement.addEventListener('pointerdown', e => {
 }, { capture: true });
 renderer.domElement.addEventListener('wheel', () => { controls.zoomSpeed = 3; }, { capture: true, passive: true });
 controls.maxPolarAngle = Math.PI * 0.49;
-window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, dbgDetail: () => ({ ids: detailShopIds.length, labels: detailShopLabels.length, mode: detailMode, realKeys: Object.keys(WHITY_REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === 'whity')?.name }), dbgNav: (a, b) => detailNav(a, b), dbgReal: name => WHITY_REAL_POS[name], dbgWalk: () => WHITY_WALK }; // 開発用: 検証時にカメラ操作・状態確認に使う
+window.__dbg = { camera, controls, M2W, FLOOR_Y, THREE, scene, DETAIL_MAPS, // 開発用: 検証時にカメラ操作・状態確認に使う。z は詳細地図の施設ID(省略時は開いている施設、無ければ whity)
+  dbgDetail: (z = detailMode || 'whity') => ({ zone: z, ids: DETAIL[z].shopIds.length, labels: DETAIL[z].labels.length, mode: detailMode, realKeys: Object.keys(DETAIL_MAPS[z].REAL_POS).length, sampleNode: NODES.find(n => n.type === 'shop' && n.zone === z)?.name }),
+  dbgNav: (a, b, z = detailMode || 'whity') => DETAIL[z].nav(a, b), dbgReal: (name, z = 'whity') => DETAIL_MAPS[z].REAL_POS[name], dbgWalk: (z = 'whity') => DETAIL_MAPS[z].WALK };
 
 scene.add(new THREE.AmbientLight(0x8899bb, 0.9));
 const dir = new THREE.DirectionalLight(0xffffff, 1.4);
@@ -1373,25 +1375,24 @@ const landmarkById = {};
 }
 
 // 詳細地図はガイド座標系(フロアガイドそのまま)で、広域とは別の専用エリアに置く。
-// 広域(実座標)と重ならない遠方にオフセットし、詳細モード中はそこだけを見せる
-const G2W = ([gx, gy]) => [gx * 0.5 + 1600, gy * 0.5];
+// 広域(実座標)と重ならない遠方にオフセットし、詳細モード中はそこだけを見せる。オフセットは施設ごと(DETAIL_MAPS.origin)
+const g2w = (zone, [gx, gy]) => [gx * 0.5 + DETAIL_MAPS[zone].origin[0], gy * 0.5 + DETAIL_MAPS[zone].origin[1]];
 
 // ---------------------------------------------------------------------------
 // 詳細モード: 施設の床をタップ → その施設の詳細地図(区画+実位置の店名)。✕で広域へ戻る
-// いまはホワイティのみ(詳細データがある施設だけ入れる)
+// 入れるのは DETAIL_MAPS に登録した施設だけ(詳細データがある施設)
 // ---------------------------------------------------------------------------
-var detailMode = null; // (前方のイベントハンドラから参照するため var)
-const detailAnchors = []; // 詳細地図の実体がある位置([x,z,x,z,...] 床の外形点+区画の重心)。パンで見失わないための基準
-const detailShopIds = []; // 実位置を持つホワイティ店(詳細モードで名前を出す)
-const detailShopLabels = [];
-for (const n of NODES) {
-  if (n.type === 'shop' && n.zone === 'whity' && WHITY_REAL_POS[n.name]) detailShopIds.push(n.id);
-}
-function buildDetailLabels() {
-  if (detailShopLabels.length) return;
+var detailMode = null; // (前方のイベントハンドラから参照するため var) いま開いている施設のゾーンID
+// 施設ごとの詳細地図の実体。group=専用グループ / blockByShop=店ID→区画メッシュ / shopIds=実位置を持つ店 /
+// labels=店名ラベル / anchors=地図の実体がある位置([x,z,...] パンで見失わないための基準) / nav=ガイド内経路探索
+const DETAIL = {};
+for (const zone of Object.keys(DETAIL_MAPS)) DETAIL[zone] = { group: null, blockByShop: {}, shopIds: [], labels: [], anchors: [], nav: null };
+function buildDetailLabels(zone) {
+  const D = DETAIL[zone];
+  if (D.labels.length) return;
   const stacked = new Map(); // 同じ区画に複数店 → ラベルを縦にずらす
-  for (const id of detailShopIds) {
-    const block = blockMeshByShopId[id];
+  for (const id of D.shopIds) {
+    const block = D.blockByShop[id];
     if (!block) continue; // ガイド上の区画に対応づいた店だけ(詳細地図はガイドそのもの)
     const div = document.createElement('div');
     div.className = 'node-label shop detail-shop';
@@ -1403,17 +1404,19 @@ function buildDetailLabels() {
     lab.position.set(cx, 2.2 + n * 3, cz); // 区画の重心(ジオメトリがワールド座標なのでローカル=ワールド)
     block.add(lab);
     lab.visible = false;
-    detailShopLabels.push({ id, block, lab });
+    D.labels.push({ id, block, lab });
   }
 }
 const detailHidden = []; // 詳細モードで隠したオブジェクト(戻すときに復元)
 const detailSaved = {};
 function hideForDetail(obj) { if (obj.visible) { obj.visible = false; detailHidden.push(obj); } }
 function enterDetail(zoneId) {
-  if (detailMode === zoneId || zoneId !== 'whity') return;
+  if (detailMode === zoneId || !DETAIL_MAPS[zoneId]) return;
+  if (detailMode) exitDetail(); // 別の施設の詳細を開いていたら先に閉じる(専用エリアが違う)
   detailMode = zoneId;
-  buildDetailLabels();
-  for (const d of detailShopLabels) d.lab.visible = true;
+  const D = DETAIL[zoneId];
+  buildDetailLabels(zoneId);
+  for (const d of D.labels) d.lab.visible = true;
   document.getElementById('detail-bar').hidden = false;
   document.getElementById('detail-bar-name').textContent = ZONES[zoneId].name + ' 詳細地図';
   // 詳細地図=ガイド座標系の別画面。広域(実座標)のものは丸ごと隠して専用エリアへ飛ぶ
@@ -1425,9 +1428,9 @@ function enterDetail(zoneId) {
   for (const lab of groundLabelObjs) { if (lab.visible) { lab.visible = false; detailHidden.push(lab); } }
   routeGroup.visible = false; // 広域のルート線は詳細では出さない(詳細はガイド内経路で案内)
   syncRouteShopLabels(); // 広域のルート経由店ラベル(CSS2D)は親を隠しても残るので個別に消す
-  detailGroup.visible = true;
+  D.group.visible = true;
   // ガイド全体が入る範囲
-  const box = new THREE.Box3().expandByObject(detailGroup);
+  const box = new THREE.Box3().expandByObject(D.group);
   const c = box.getCenter(new THREE.Vector3());
   const r = Math.max(80, box.getBoundingSphere(new THREE.Sphere()).radius);
   detailSaved.camPos = camera.position.clone();
@@ -1455,10 +1458,11 @@ function enterDetail(zoneId) {
 }
 function exitDetail() {
   if (!detailMode) return;
+  const D = DETAIL[detailMode];
   detailMode = null;
-  detailGroup.visible = false;
+  D.group.visible = false;
   routeGroup.visible = true;
-  for (const d of detailShopLabels) d.lab.visible = false;
+  for (const d of D.labels) d.lab.visible = false;
   syncRouteShopLabels(); // 詳細用(区画)のラベルを消し、広域用のラベルを戻す
   for (const o of detailHidden) o.visible = true;
   detailHidden.length = 0;
@@ -1875,7 +1879,7 @@ for (const md of MERGED_DOTS) {
   });
   const mesh = new THREE.Mesh(mergedDotGeo, mergedDotMats[md.zone]);
   mesh.position.set(x, FLOOR_Y[md.floor] + 1.7, z);
-  if (md.zone === 'whity') {
+  if (DETAIL_MAPS[md.zone]) {
     mesh.userData.zone = md.zone; // 床タップと同じ扱い(=詳細地図へ)。館ノードは名前を持たない通路の交差点なので端点にしない
   } else {
     mesh.userData.nodeId = md.near; // タップ=館ノードを選択
@@ -1885,38 +1889,40 @@ for (const md of MERGED_DOTS) {
   shopMeshes.push(mesh); // 「詳細」トグルでは店ドット扱いで一緒に隠す
 }
 
-// 詳細地図(ガイド座標系)の専用グループ。広域とは独立し、詳細モード中だけ表示する
-const detailGroup = new THREE.Group();
-detailGroup.visible = false;
-scene.add(detailGroup);
+// 詳細地図(ガイド座標系)の専用グループ。施設ごとに1つ、広域とは独立し、その施設の詳細モード中だけ表示する
+for (const [zone, M] of Object.entries(DETAIL_MAPS)) {
+  const D = DETAIL[zone];
+  const W = g => g2w(zone, g);
+  const detailGroup = new THREE.Group();
+  detailGroup.visible = false;
+  scene.add(detailGroup);
+  D.group = detailGroup;
 
-// 床(通路含む): フロアガイドそのままの外形
-for (const f of WHITY_FLOOR) {
-  const shape = new THREE.Shape();
-  f.pts.forEach(([gx, gy], i) => {
-    const [x, z] = G2W([gx, gy]);
-    if (i === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z);
-    if (i % 4 === 0) detailAnchors.push(x, z); // パン制限の基準点(外形を間引いて採る)
-  });
-  for (const h of f.holes || []) {
-    const path = new THREE.Path();
-    h.forEach(([gx, gy], i) => {
-      const [x, z] = G2W([gx, gy]);
-      if (i === 0) path.moveTo(x, -z); else path.lineTo(x, -z);
+  // 床(通路含む): フロアガイドそのままの外形
+  for (const f of M.FLOOR) {
+    const shape = new THREE.Shape();
+    f.pts.forEach(([gx, gy], i) => {
+      const [x, z] = W([gx, gy]);
+      if (i === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z);
+      if (i % 4 === 0) D.anchors.push(x, z); // パン制限の基準点(外形を間引いて採る)
     });
-    shape.holes.push(path);
+    for (const h of f.holes || []) {
+      const path = new THREE.Path();
+      h.forEach(([gx, gy], i) => {
+        const [x, z] = W([gx, gy]);
+        if (i === 0) path.moveTo(x, -z); else path.lineTo(x, -z);
+      });
+      shape.holes.push(path);
+    }
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
+    const mesh = new THREE.Mesh(geo, zoneMats[zone] || corridorMat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.y = FLOOR_Y.B1 - 1.5;
+    detailGroup.add(mesh);
   }
-  const geo = new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false });
-  const mesh = new THREE.Mesh(geo, zoneMats.whity || corridorMat);
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.position.y = FLOOR_Y.B1 - 1.5;
-  detailGroup.add(mesh);
-}
 
-// テナント区画: 店が特定できた区画はクリーム色に光らせ、それ以外は暗い灰青
-const blockMeshByShopId = {};
-{
-  const zc = ZONES.whity.color;
+  // テナント区画: 店が特定できた区画は施設色で光らせ、それ以外は暗い灰青
+  const zc = ZONES[zone].color;
   const occMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(zc).lerp(new THREE.Color(0xffffff), 0.5),
     emissive: new THREE.Color(zc).multiplyScalar(0.35), roughness: 0.5, side: THREE.DoubleSide,
@@ -1931,19 +1937,20 @@ const blockMeshByShopId = {};
     return c;
   };
   // 各区画にガイド上の店を割り当てる(区画内 → だめなら重心4m以内の最寄り)
-  const shopsReal = NODES.filter(n => n.type === 'shop' && n.zone === 'whity' && WHITY_REAL_POS[n.name]);
-  const blockShops = WHITY_BLOCKS.map(() => []);
+  const shopsReal = NODES.filter(n => n.type === 'shop' && n.zone === zone && M.REAL_POS[n.name]);
+  D.shopIds = shopsReal.map(n => n.id);
+  const blockShops = M.BLOCKS.map(() => []);
   const centroid = b => {
     let cx = 0, cy = 0;
     for (const [x, y] of b.g) { cx += x; cy += y; }
     return [cx / b.g.length, cy / b.g.length];
   };
   for (const n of shopsReal) {
-    const [sgx, sgy] = WHITY_REAL_POS[n.name]; // ガイド上の店位置(番号の位置なので誤差なし)
-    let bi = WHITY_BLOCKS.findIndex(b => inPoly(sgx, sgy, b.g));
+    const [sgx, sgy] = M.REAL_POS[n.name]; // ガイド上の店位置(番号の位置なので誤差なし)
+    let bi = M.BLOCKS.findIndex(b => inPoly(sgx, sgy, b.g));
     if (bi < 0) {
       let best = 4;
-      WHITY_BLOCKS.forEach((b, i) => {
+      M.BLOCKS.forEach((b, i) => {
         const [cx, cy] = centroid(b);
         const d = Math.hypot(cx - sgx, cy - sgy);
         if (d < best) { best = d; bi = i; }
@@ -1951,10 +1958,10 @@ const blockMeshByShopId = {};
     }
     if (bi >= 0) blockShops[bi].push(n);
   }
-  WHITY_BLOCKS.forEach((b, i) => {
+  M.BLOCKS.forEach((b, i) => {
     const shape = new THREE.Shape();
     b.g.forEach(([gx, gy], k) => {
-      const [x, z] = G2W([gx, gy]);
+      const [x, z] = W([gx, gy]);
       if (k === 0) shape.moveTo(x, -z); else shape.lineTo(x, -z);
     });
     const geo = new THREE.ExtrudeGeometry(shape, { depth: 1.5, bevelEnabled: false });
@@ -1963,18 +1970,18 @@ const blockMeshByShopId = {};
     const mesh = new THREE.Mesh(geo, occ ? occMat : vacMat);
     mesh.position.y = FLOOR_Y.B1 + 1.5; // 床スラブの上に乗せる
     const [cgx, cgy] = centroid(b);
-    mesh.userData.center = G2W([cgx, cgy]); // ラベルの置き場所(区画の重心)
-    detailAnchors.push(mesh.userData.center[0], mesh.userData.center[1]);
+    mesh.userData.center = W([cgx, cgy]); // ラベルの置き場所(区画の重心)
+    D.anchors.push(mesh.userData.center[0], mesh.userData.center[1]);
     if (occ) { mesh.userData.nodeId = blockShops[i][0].id; nodeMeshes.push(mesh); }
     detailGroup.add(mesh);
-    for (const n of blockShops[i]) blockMeshByShopId[n.id] = mesh;
+    for (const n of blockShops[i]) D.blockByShop[n.id] = mesh;
   });
 }
 
-// 詳細地図内の経路探索: 歩行可能グリッド(床−区画、gen_detail_whity.py生成)上のA*。
-// ガイドの通路だけを通るので、ガイド内の案内は原理的に間違えない
-const detailNav = (() => {
-  const { x0, y0, cell, w, h, bits } = WHITY_WALK;
+// 詳細地図内の経路探索: 歩行可能グリッド(床−区画、tools/gen_detail_*.py 生成)上のA*。
+// ガイドの通路だけを通るので、ガイド内の案内は原理的に間違えない。施設ごとにグリッドが違うので工場関数
+function makeDetailNav(WALK) {
+  const { x0, y0, cell, w, h, bits } = WALK;
   const bin = atob(bits);
   const walkAt = k => (bin.charCodeAt(k >> 3) >> (k & 7)) & 1;
   const at = (i, j) => i >= 0 && j >= 0 && i < w && j < h && !!walkAt(j * w + i);
@@ -2049,29 +2056,37 @@ const detailNav = (() => {
     }
     return out.map(toG);
   };
-})();
+}
+for (const [zone, M] of Object.entries(DETAIL_MAPS)) DETAIL[zone].nav = makeDetailNav(M.WALK);
 
 // 詳細地図上のルート描画(白いチューブ+出発・ゴール)
-let detailRouteGroup = null;
+let detailRouteGroup = null, detailRouteZone = null;
 function clearDetailRoute() {
-  if (detailRouteGroup) { detailGroup.remove(detailRouteGroup); detailRouteGroup = null; }
+  if (detailRouteGroup) { DETAIL[detailRouteZone].group.remove(detailRouteGroup); detailRouteGroup = null; detailRouteZone = null; }
 }
-// 店のガイド上の位置: 名前一致した39店は正確な位置、それ以外は所属モール区分の代表点(エリアまで案内)
+// 店のガイド上の位置: 名前一致した店は正確な位置、それ以外は所属モール区分の代表点(エリアまで案内)。
+// 詳細地図を持つ施設の店だけ通す。戻り値は { zone, pos }
 function guidePosOf(n) {
-  if (!n || n.type !== 'shop' || n.zone !== 'whity') return null;
-  return WHITY_REAL_POS[n.name] || WHITY_AREA_ANCHORS[n.area] || null;
+  if (!n || n.type !== 'shop') return null;
+  const M = DETAIL_MAPS[n.zone];
+  if (!M) return null;
+  const pos = M.REAL_POS[n.name] || M.AREA_ANCHORS[n.area] || null;
+  return pos ? { zone: n.zone, pos } : null;
 }
+// 両端が同じ施設の詳細地図に載る店ならガイド内経路を描き、その施設IDを返す(なければ null)
 function drawDetailRoute(startId, goalId) {
   clearDetailRoute();
   const a = guidePosOf(nodeById[startId]), b = guidePosOf(nodeById[goalId]);
-  if (!a || !b) return false;
-  const gpath = detailNav(a, b);
-  if (!gpath) return false;
-  const pts = [a, ...gpath, b].map(g => {
-    const [x, z] = G2W(g);
+  if (!a || !b || a.zone !== b.zone) return null;
+  const zone = a.zone;
+  const gpath = DETAIL[zone].nav(a.pos, b.pos);
+  if (!gpath) return null;
+  const pts = [a.pos, ...gpath, b.pos].map(g => {
+    const [x, z] = g2w(zone, g);
     return new THREE.Vector3(x, FLOOR_Y.B1 + 6, z);
   });
   detailRouteGroup = new THREE.Group();
+  detailRouteZone = zone;
   const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.1);
   detailRouteGroup.add(new THREE.Mesh(
     new THREE.TubeGeometry(curve, 140, 1.2, 8, false),
@@ -2080,8 +2095,8 @@ function drawDetailRoute(startId, goalId) {
   const base = v => new THREE.Vector3(v.x, FLOOR_Y.B1, v.z);
   detailRouteGroup.add(makeStartPerson(base(pts[0])));
   detailRouteGroup.add(makeGoalFlag(base(pts[pts.length - 1])));
-  detailGroup.add(detailRouteGroup);
-  return true;
+  DETAIL[zone].group.add(detailRouteGroup);
+  return zone;
 }
 
 // ---------------------------------------------------------------------------
@@ -2229,7 +2244,7 @@ let routeShopDecor = []; // { mesh, mat, label }
 function decorateRouteShops(shopIds) {
   for (const id of shopIds) {
     // 詳細モード中は丸ドットではなく店の区画そのものを光らせる
-    const block = detailMode ? blockMeshByShopId[id] : null;
+    const block = detailMode ? DETAIL[detailMode].blockByShop[id] : null;
     const mesh = block || shopMeshById[id];
     if (!mesh) continue;
     mesh.visible = true; // 広域で店ドット非表示でも、ルートの目印店だけは見せる
@@ -2633,7 +2648,7 @@ function showRoute(startId, goalId) {
   info.querySelector('#start-guide').addEventListener('click', () => {
     info.querySelector('#route-steps').hidden = false;
     info.querySelector('#start-guide').style.display = 'none';
-    if (hasDetailRoute) { enterDetail('whity'); return; }
+    if (hasDetailRoute) { enterDetail(hasDetailRoute); return; }
     const p = posOf(startN);
     camAnim = { fromPos: camera.position.clone(), toPos: new THREE.Vector3(p.x + 30, p.y + 80, p.z + 80),
                 fromTgt: controls.target.clone(), toTgt: p.clone(), start: performance.now(), dur: 900 };
@@ -2671,8 +2686,8 @@ function showRoute(startId, goalId) {
   // 経路が通る施設だけを強調し、出発地が手前になる視点へ移動。
   // 詳細モード中でガイド内経路があるときはカメラを動かさない(詳細地図で完結)。
   // ガイド外へ出るルートなら広域に戻して見せる
-  if (detailMode && hasDetailRoute) {
-    // 何もしない(詳細地図の経路が見えている)
+  if (detailMode && hasDetailRoute === detailMode) {
+    // 何もしない(いま開いている施設の詳細地図に経路が見えている)
   } else {
     if (detailMode) exitDetail();
     focusZonesForRoute(path);
@@ -3003,7 +3018,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (!hit) {
     // 店・スポットに当たらなければ床を調べ、詳細データのある施設なら詳細モードへ
     const fl = raycaster.intersectObjects(floorGroups.B1.children.filter(o => o.isMesh && o.visible), false)[0];
-    if (fl && fl.object.userData.zone === 'whity') enterDetail('whity');
+    if (fl && DETAIL_MAPS[fl.object.userData.zone]) enterDetail(fl.object.userData.zone);
     return;
   }
   const id = hit.object.userData.nodeId;
@@ -3032,7 +3047,8 @@ function animate() {
     camera.position.lerpVectors(camAnim.fromPos, camAnim.toPos, e);
     controls.target.lerpVectors(camAnim.fromTgt, camAnim.toTgt, e);
     if (p >= 1) finishCamAnim();
-  } else if (detailMode && detailAnchors.length) {
+  } else if (detailMode && DETAIL[detailMode].anchors.length) {
+    const detailAnchors = DETAIL[detailMode].anchors;
     // 詳細地図は広域から離れた専用エリアにあり、周りには何も無い。パンで外へ出ると画面が真っ暗になるので、
     // 注視点を地図の実体(床・区画)の近くに留める。外接ボックスではだめ(V字のくぼみは地図が無い)
     // 引き代は「いま見えている範囲」の半分(寄っているときほど厳しく = 常に画面内に地図が残る)

@@ -48,13 +48,14 @@ python3 tools/floor_audit.py     # フロア接続監査（歩ける高さ基準
 | `landmarks.js` | 目印（金色のピン）と写真。現地調査の記録から手で追記する |
 | `survey.js` | 現地調査モード（`?survey=1`） |
 | `geo.js` | 座標の土台 metric-v1。`tools/data/frame.json` と同じ値（`tools/geo.py` が一致を検査） |
+| `detail_maps.js` | 詳細地図を持つ施設の登録表。`detail_<zone>.js`（自動生成）を束ね、専用エリアのオフセット `origin` を決める |
 
 ### 自動生成（手編集しない）
 
 | ファイル | 生成元 |
 |---|---|
 | `app.js` | `npx esbuild main.js --bundle --outfile=app.js --format=iife` |
-| `detail_whity.js` | `python3 tools/extract_whity_pdf.py` → `python3 tools/gen_detail_whity.py` |
+| `detail_whity.js` | `python3 tools/extract_whity_pdf.py` → `python3 tools/gen_detail_whity.py`（`detail_maps.js` が束ねて main.js に渡す） |
 | `ground_data.js` | `python3 tools/gen_ground.py`（OSMのビル外形+道路網） |
 | `exits_data.js` | `python3 tools/gen_exits.py`（OSMの番号付き出入口 165件） |
 
@@ -85,9 +86,9 @@ tools/data/floorguides/whity_2016_labeled.pdf   ← 2016年公式フロアガイ
 
 - **地上に出さない。** 地上出口・地上専用通路は表示も案内もしない
 - **corridor ゾーン**（`nishi_umeda` / `sonechika`）は現地で施設として認識されない通路。施設レイヤー・地図ラベル・「ここから○○」案内に出さない
-- **詳細地図は `whity` のみ。** `enterDetail()` は他ゾーンでは何もしない
-- 詳細地図の案内に入る条件は「両端がホワイティの店ノード」（`guidePosOf` は `type === 'shop'` かつ `zone === 'whity'` のみ通す）。ゾーン地点を選ぶと広域案内のままになる
-- **ホワイティのモール集約ドットは詳細地図への入口。** 出発地・目的地には設定しない（店を選ぶのは詳細地図の管轄）。三番街・イーマのドットは詳細地図が無いので従来どおり館ノードを選択する
+- **詳細地図を持つ施設は `detail_maps.js` の `DETAIL_MAPS` に登録したものだけ**（現在 `whity`。ドーチカ・堂島アバンザを追加予定）。`enterDetail()` は未登録ゾーンでは何もしない。施設ごとに専用エリア（`origin`）を離して置き、互いに重ねない
+- 詳細地図の案内に入る条件は「両端が**同じ施設**の詳細地図に載る店ノード」（`guidePosOf` は `type === 'shop'` かつ `DETAIL_MAPS[zone]` があるものだけ通す）。ゾーン地点を選ぶと広域案内のままになる
+- **詳細地図を持つ施設のモール集約ドットは詳細地図への入口。** 出発地・目的地には設定しない（店を選ぶのは詳細地図の管轄）。三番街・イーマのように詳細地図が無い施設のドットは従来どおり館ノードを選択する
 
 ## 動作確認
 
