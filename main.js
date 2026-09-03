@@ -1459,7 +1459,7 @@ function enterDetail(zoneId) {
   // ガイド全体が入る範囲
   const box = new THREE.Box3().expandByObject(D.group);
   const c = box.getCenter(new THREE.Vector3());
-  const r = Math.max(80, box.getBoundingSphere(new THREE.Sphere()).radius);
+  const r = Math.max(45, box.getBoundingSphere(new THREE.Sphere()).radius); // 小さい施設(アバンザ・三番街の1フロア)でも画面に収まる程度に寄る
   detailSaved.camPos = camera.position.clone();
   detailSaved.camTgt = controls.target.clone();
   // Google Maps 風の操作: 1本指=パン、2本指=ズーム+ひねり回転(+上下で傾き)、左ドラッグ=パン、右ドラッグ=回転。
@@ -2117,13 +2117,18 @@ function drawDetailRoute(startId, goalId) {
   detailRouteGroup = new THREE.Group();
   detailRouteZone = zone;
   const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.1);
+  // 詳細地図は数十mの施設をカメラが近くから見るので、広域用の太さ・大きさ(通路幅より大きい人型や輪)だとつぶれる。
+  // 線は幅約1m、人と旗は広域の1/3にする(ガイド座標は 1 world = 2m で広域と同じ縮尺)
   detailRouteGroup.add(new THREE.Mesh(
-    new THREE.TubeGeometry(curve, 140, 1.2, 8, false),
+    new THREE.TubeGeometry(curve, 140, 0.45, 8, false),
     new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xdddddd, emissiveIntensity: 1.3 })
   ));
   const base = v => new THREE.Vector3(v.x, y0, v.z);
-  detailRouteGroup.add(makeStartPerson(base(pts[0])));
-  detailRouteGroup.add(makeGoalFlag(base(pts[pts.length - 1])));
+  const DETAIL_MARK_SCALE = 0.33;
+  const person = makeStartPerson(base(pts[0])); person.scale.setScalar(DETAIL_MARK_SCALE);
+  const flag = makeGoalFlag(base(pts[pts.length - 1])); flag.scale.setScalar(DETAIL_MARK_SCALE);
+  detailRouteGroup.add(person);
+  detailRouteGroup.add(flag);
   DETAIL[zone].group.add(detailRouteGroup);
   return zone;
 }

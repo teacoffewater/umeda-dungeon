@@ -35569,7 +35569,7 @@
         D.group.visible = true;
         const box = new Box3().expandByObject(D.group);
         const c = box.getCenter(new Vector3());
-        const r = Math.max(80, box.getBoundingSphere(new Sphere()).radius);
+        const r = Math.max(45, box.getBoundingSphere(new Sphere()).radius);
         detailSaved.camPos = camera.position.clone();
         detailSaved.camTgt = controls.target.clone();
         detailSaved.enableRotate = controls.enableRotate;
@@ -36220,12 +36220,17 @@
         detailRouteZone = zone;
         const curve = new CatmullRomCurve3(pts, false, "catmullrom", 0.1);
         detailRouteGroup.add(new Mesh(
-          new TubeGeometry(curve, 140, 1.2, 8, false),
+          new TubeGeometry(curve, 140, 0.45, 8, false),
           new MeshStandardMaterial({ color: 16777215, emissive: 14540253, emissiveIntensity: 1.3 })
         ));
         const base = (v) => new Vector3(v.x, y0, v.z);
-        detailRouteGroup.add(makeStartPerson(base(pts[0])));
-        detailRouteGroup.add(makeGoalFlag(base(pts[pts.length - 1])));
+        const DETAIL_MARK_SCALE = 0.33;
+        const person = makeStartPerson(base(pts[0]));
+        person.scale.setScalar(DETAIL_MARK_SCALE);
+        const flag = makeGoalFlag(base(pts[pts.length - 1]));
+        flag.scale.setScalar(DETAIL_MARK_SCALE);
+        detailRouteGroup.add(person);
+        detailRouteGroup.add(flag);
         DETAIL[zone].group.add(detailRouteGroup);
         return zone;
       }
