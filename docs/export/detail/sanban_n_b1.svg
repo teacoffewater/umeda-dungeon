@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-11 -10 92 72" width="368" height="288">
+<title>阪急三番街 北館B1F 詳細地図(ガイド座標: 1単位=1m, x=東, y=南)</title>
+<rect x="-11" y="-10" width="92" height="72" fill="#f4f4f4"/>
+<g id="floor" fill="#e8963c" fill-opacity="0.25" stroke="#e8963c" stroke-width="0.3">
+  <path fill-rule="evenodd" d="M4.8 38.5 L10.2 38.7 L10.2 40.2 L18.9 40.2 L33.8 39.5 L33.8 39.1 L36.1 39.1 L36.1 37.8 L38.8 37.8 L38.8 36.7 L40.9 36.5 L43.3 36.5 L43.3 38.7 L61 37.1 L61 33.4 L60.1 33.4 L60.1 31.1 L61 30.9 L61 20.3 L64.9 20.3 L64.6 16.6 L69.7 16.6 L69.7 38.2 L14.7 42 L35.2 42 L35.2 40.8 L70 38.6 L70.3 9.9 L70 8.3 L66.7 7.4 L66.7 6.4 L68.1 5.3 L69.3 5.3 L69.4 4.2 L68.3 4.1 L67.4 2.8 L64.9 2.4 L63.8 2.8 L62.8 4 L62.8 5.9 L61 5.9 L49.1 2.4 L37.7 2.4 L37.7 0 L22.5 0 L22.5 2.4 L21 2.4 L21 0 L16.7 0 L16.7 1.4 L15 1.4 L15 0 L7.1 0 L7.2 2.4 L-0.3 2.5 L-0.3 42 L0 2.7 L7.5 2.7 L7.5 5.7 L2.7 5.7 L2.7 36 L5.1 36 Z"/>
+</g>
+<g id="blocks" stroke="#333" stroke-width="0.15">
+  <polygon points="2.7,5.7 2.7,24.1 12.2,24.1 12.2,10.2 12,10.2 12,9.9 11.7,9.8 11.6,9.4 11.3,9.3 11.3,3.2 7.5,3.2 7.5,5.7" fill="#b0b6c0" fill-opacity="0.5" data-no="1" data-mall="sanban_n_b1"><title>区画1 / sanban_n_b1</title></polygon>
+  <polygon points="2.7,31.8 2.7,36 4.8,36 4.8,35.8 8.6,35.8 8.6,36 12.2,36 12.2,31.8" fill="#e8963c" fill-opacity="0.8" data-no="3" data-mall="sanban_n_b1"><title>区画3 / sanban_n_b1 / カードショップ ミント</title></polygon>
+  <polygon points="5.9,26.7 5.9,29.2 9,29.2 9,26.7" fill="#e8963c" fill-opacity="0.8" data-no="2" data-mall="sanban_n_b1"><title>区画2 / sanban_n_b1 / フットセラピー</title></polygon>
+  <polygon points="14.7,19.8 14.7,26 21.5,26 21.5,19.8" fill="#b0b6c0" fill-opacity="0.5" data-no="1" data-mall="sanban_n_b1"><title>区画1 / sanban_n_b1</title></polygon>
+  <polygon points="23.4,37.1 23.4,39.5 26.7,39.5 26.7,37.1 26.6,37.1 26.6,37 23.6,37 23.6,37.1" fill="#e8963c" fill-opacity="0.8" data-no="7" data-mall="sanban_n_b1"><title>区画7 / sanban_n_b1 / プリンセスアッシュ</title></polygon>
+  <polygon points="25.1,4.1 25.1,9.7 24.9,9.7 24.9,9.8 24.6,9.8 24.5,10.1 29.1,10.1 29.1,4.1" fill="#e8963c" fill-opacity="0.8" data-no="5" data-mall="sanban_n_b1"><title>区画5 / sanban_n_b1 / 鉄道模型の店 ポポンデッタ</title></polygon>
+  <polygon points="24.2,10.3 24.2,16 24.3,16 24.3,16.1 33.2,16.1 33.2,10.4" fill="#b0b6c0" fill-opacity="0.5" data-no="6" data-mall="sanban_n_b1"><title>区画6 / sanban_n_b1</title></polygon>
+  <polygon points="24.2,16.4 24.2,21.3 24.3,21.3 24.6,21.7 24.9,21.7 25.4,22.1 25.7,22.1 26.1,22.5 26.4,22.5 26.4,22.7 26.6,22.7 27,23.1 27.3,23.1 27.8,23.5 28.1,23.5 28.5,24 28.8,24 28.8,24.1 29,24.1 29.4,24.5 29.7,24.5 30.2,25 30.5,25 30.9,25.4 31.2,25.4 31.2,25.5 31.4,25.5 31.8,26 32.1,26 32.6,26.4 32.9,26.4 33.3,26.9 33.6,26.9 33.6,27 33.8,27 34.2,27.4 34.5,27.4 34.5,27.5 34.7,27.5 35,27.9 35.3,27.9 35.8,28.3 36.1,28.3 36.5,28.7 36.8,28.7 36.8,28.8 37,28.8 37.4,29.3 37.7,29.3 37.7,29.4 48.4,29.4 48.4,27.2 50.8,27.2 50.8,19.5 33.2,19.5 33.2,16.4" fill="#e8963c" fill-opacity="0.8" data-no="6" data-mall="sanban_n_b1"><title>区画6 / sanban_n_b1 / キデイランド / どんぐり共和国 / スヌーピータウン</title></polygon>
+  <polygon points="28.8,36.9 28.8,39.5 29.7,39.5 29.7,39.3 30.8,39.3 30.8,39.5 33.8,39.5 33.8,39.1 35.2,39.1 35.2,39 35.9,39 35.9,37.8 35.8,37.8 35.8,37.6 35.3,37.4 35.3,37.1 35.2,37.1 35,36.9" fill="#e8963c" fill-opacity="0.8" data-no="8" data-mall="sanban_n_b1"><title>区画8 / sanban_n_b1 / ウルトラマンワールドM78</title></polygon>
+  <polygon points="35.3,34.6 35.3,36.8 35.5,36.8 35.5,37 35.8,37.1 35.8,37.4 35.9,37.4 36.2,37.7 38.6,37.7 38.6,36.7 40.9,36.7 40.9,36.5 43.1,36.5 43.1,36.4 43.3,36.4 43.3,34.2 36.7,34 36.7,34.6" fill="#e8963c" fill-opacity="0.8" data-no="10" data-mall="sanban_n_b1"><title>区画10 / sanban_n_b1 / ホロライブプロダクション オフィシャルショップ</title></polygon>
+  <polygon points="36.7,32.4 39.8,32.4 39.8,33.9 43.6,33.9 43.6,38.7 44,38.7 44,38.6 44.8,38.6 44.8,38.5 45.5,38.5 45.5,38.4 46.3,38.4 46.3,38.2 47.6,38.2 47.6,38.1 48.8,38.1 48.8,38 50.2,38 50.2,37.9 52.9,37.8 52.9,37.7 54.1,37.7 54.1,37.6 55.4,37.6 55.4,37.5 58.1,37.4 58.1,37.2 59.3,37.2 59.3,37.1 60.7,37.1 60.7,33.5 50.6,33.5 50.5,33.3 50.2,33.3 49.9,32.9 49.6,32.9 49.1,32.5 48.8,32.5 48.4,32.1 48.1,32.1 47.6,31.6 47.3,31.6 47.3,31.5 47.2,31.5 46.9,31.2 46.6,31.2 46.4,30.9 38.9,30.9 38.9,31.1 38.6,31.1 38.2,31.5 37.9,31.5 37.4,31.9 37.1,31.9 37.1,32.1 36.7,32.3" fill="#e8963c" fill-opacity="0.8" data-no="11" data-mall="sanban_n_b1"><title>区画11 / sanban_n_b1 / カワチ（画材・文具）</title></polygon>
+  <polygon points="41.9,7.3 41.9,11.1 48.7,11.1 48.7,10.6 52.4,10.6 52.4,13.4 48.7,13.4 48.7,12.9 41.9,12.9 41.9,16.9 42.1,16.9 42.1,17 61,17 61,16.9 62,16.9 62,16.8 62.2,16.8 62.2,16.6 69.8,16.6 69.8,9.9 60.8,9.9 60.8,10.1 61,10.1 61,10.3 61.1,10.3 61.1,10.5 61.3,10.5 61.3,11.5 61.1,11.5 61.1,11.6 59.9,11.6 59.9,11.5 59.8,11.5 59.8,10.6 59.6,10.6 59.6,10.5 58.9,10.5 58.9,10.6 58.7,10.6 58.7,12.8 58.6,12.8 58.6,12.9 57.4,12.9 57.4,12.8 57.2,12.8 57.2,10.6 57.4,10.6 57.4,10.3 57.5,10.3 57.5,10.1 57.7,10.1 57.7,9.9 55.9,9.9 55.9,5.4 49.1,5.4 49.1,7.2 49,7.2 49,7.3" fill="#e8963c" fill-opacity="0.8" data-no="12" data-mall="sanban_n_b1"><title>区画12 / sanban_n_b1 / ユザワヤ</title></polygon>
+  <polygon points="53.5,17.9 53.5,31.1 56.8,31.1 56.8,30.6 60.4,30.6 60.4,31.1 60.7,31.1 60.7,19.7 54.8,19.7 54.8,17.9" fill="#b0b6c0" fill-opacity="0.5" data-no="6" data-mall="sanban_n_b1"><title>区画6 / sanban_n_b1</title></polygon>
+</g>
+<g id="shops" font-size="1.6" fill="#222">
+  <text x="9.6" y="10.4" text-anchor="middle" dominant-baseline="middle">#1</text>
+  <text x="7.1" y="34.9" text-anchor="middle" dominant-baseline="middle">カードショップ ミント</text>
+  <text x="7.5" y="27.9" text-anchor="middle" dominant-baseline="middle">フットセラピー</text>
+  <text x="18.1" y="22.9" text-anchor="middle" dominant-baseline="middle">#1</text>
+  <text x="25.1" y="37.7" text-anchor="middle" dominant-baseline="middle">プリンセスアッシュ</text>
+  <text x="25.9" y="8.4" text-anchor="middle" dominant-baseline="middle">鉄道模型の店 ポポンデッタ</text>
+  <text x="27.2" y="14.2" text-anchor="middle" dominant-baseline="middle">#6</text>
+  <text x="32.4" y="25.1" text-anchor="middle" dominant-baseline="middle">キデイランド / どんぐり共和国 / スヌーピータウン</text>
+  <text x="33.4" y="38.4" text-anchor="middle" dominant-baseline="middle">ウルトラマンワールドM78</text>
+  <text x="38.4" y="36.4" text-anchor="middle" dominant-baseline="middle">ホロライブプロダクション オフィシャルショップ</text>
+  <text x="47.4" y="34.9" text-anchor="middle" dominant-baseline="middle">カワチ（画材・文具）</text>
+  <text x="56.3" y="11.7" text-anchor="middle" dominant-baseline="middle">ユザワヤ</text>
+  <text x="57.2" y="26.1" text-anchor="middle" dominant-baseline="middle">#6</text>
+</g>
+<g id="links" fill="#c8901a" stroke="#c8901a" font-size="2.2" font-weight="bold">
+  <polygon points="35,44 33.5,40 36.5,40" stroke="none"><title>南館へは B2F の連絡通路で(B1F は直結なし)</title></polygon>
+  <text x="35.0" y="46.0" stroke="none" text-anchor="middle">➜ 南館へは B2F の連絡通路で(B1F は直結なし)</text>
+</g>
+<g id="anchors" fill="#d33">
+  <circle cx="29.7" cy="26.7" r="0.8"><title>エリア代表点 sanban_n_b1</title></circle>
+</g>
+<g id="legend" font-size="2.5" fill="#333"><text x="-9" y="-6">阪急三番街 北館B1F  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>
+</svg>

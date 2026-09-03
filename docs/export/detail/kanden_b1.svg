@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 114 59" width="456" height="236">
+<title>関電不動産西梅田ビル B1F(仮配置) 詳細地図(ガイド座標: 1単位=1m, x=東, y=南)</title>
+<rect x="-10" y="-10" width="114" height="59" fill="#f4f4f4"/>
+<g id="floor" fill="#3a78c2" fill-opacity="0.25" stroke="#3a78c2" stroke-width="0.3">
+  <path fill-rule="evenodd" d="M0 0 L0 39 L52 39 L52 0 Z"/>
+</g>
+<g id="blocks" stroke="#333" stroke-width="0.15">
+  <polygon points="0,0 0,14 11.5,14 11.5,0" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / SSS Kaneko stretch</title></polygon>
+  <polygon points="11.5,0 11.5,14 23,14 23,0" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / めん処 鍋物 呑処 はま栄</title></polygon>
+  <polygon points="23,0 23,14 34.5,14 34.5,0" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / Heilee brow</title></polygon>
+  <polygon points="34.5,0 34.5,14 46,14 46,0" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / NOVA 駅前留学</title></polygon>
+  <polygon points="0,25 0,39 11.5,39 11.5,25" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / リサイクルブティック フォーシーズンズ</title></polygon>
+  <polygon points="11.5,25 11.5,39 23,39 23,25" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / 携帯電話 スモールアイランド</title></polygon>
+  <polygon points="23,25 23,39 34.5,39 34.5,25" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / nail salon Sou</title></polygon>
+  <polygon points="34.5,25 34.5,39 46,39 46,25" fill="#3a78c2" fill-opacity="0.8" data-no="" data-mall="kanden(仮配置)"><title>kanden(仮配置) / LETO</title></polygon>
+</g>
+<g id="shops" font-size="1.6" fill="#222">
+  <text x="5.8" y="7.0" text-anchor="middle" dominant-baseline="middle">SSS Kaneko stretch</text>
+  <text x="17.3" y="7.0" text-anchor="middle" dominant-baseline="middle">めん処 鍋物 呑処 はま栄</text>
+  <text x="28.8" y="7.0" text-anchor="middle" dominant-baseline="middle">Heilee brow</text>
+  <text x="40.3" y="7.0" text-anchor="middle" dominant-baseline="middle">NOVA 駅前留学</text>
+  <text x="5.8" y="32.0" text-anchor="middle" dominant-baseline="middle">リサイクルブティック フォーシーズンズ</text>
+  <text x="17.3" y="32.0" text-anchor="middle" dominant-baseline="middle">携帯電話 スモールアイランド</text>
+  <text x="28.8" y="32.0" text-anchor="middle" dominant-baseline="middle">nail salon Sou</text>
+  <text x="40.3" y="32.0" text-anchor="middle" dominant-baseline="middle">LETO</text>
+</g>
+<g id="links" fill="#c8901a" stroke="#c8901a" font-size="2.2" font-weight="bold">
+  <polygon points="53,19.5 49,21 49,18" stroke="none"><title>B2F(ドーチカ側)へ(館内階段)</title></polygon>
+  <text x="55.0" y="19.5" stroke="none" text-anchor="start">➜ B2F(ドーチカ側)へ(館内階段)</text>
+</g>
+<g id="anchors" fill="#d33">
+  <circle cx="23" cy="19.5" r="0.8"><title>エリア代表点 kanden_b1</title></circle>
+</g>
+<g id="legend" font-size="2.5" fill="#333"><text x="-8" y="-6">関電不動産西梅田ビル B1F(仮配置)  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>
+</svg>

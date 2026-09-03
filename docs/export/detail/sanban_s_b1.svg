@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-53 -20 139 90" width="556" height="360">
+<title>阪急三番街 南館B1F 詳細地図(ガイド座標: 1単位=1m, x=東, y=南)</title>
+<rect x="-53" y="-20" width="139" height="90" fill="#f4f4f4"/>
+<g id="floor" fill="#e8963c" fill-opacity="0.25" stroke="#e8963c" stroke-width="0.3">
+  <path fill-rule="evenodd" d="M-0.1 37.5 L2.9 46.7 L4.4 46.8 L4.5 47.8 L15.8 47.9 L16.4 47.5 L16.4 46.8 L21 46.8 L21 47.4 L31.4 47.9 L31.6 49.9 L31.6 47.6 L22.1 47.3 L21.2 47.2 L21.2 46.5 L3.1 46.5 L0.1 37.5 L0.1 25.9 L5.2 25.6 L5.2 29 L8.6 29 L8.6 29.9 L7.8 29.9 L8.2 31.7 L8.4 30.4 L14.5 30.4 L14.5 31.2 L10.7 31.2 L10.7 33.6 L14.5 33.6 L14.5 34.4 L9.9 34.4 L8.4 35 L8.4 33 L7.8 33 L7.8 33.5 L8.2 33.5 L8.2 35.4 L7.2 35.7 L7.2 38.5 L7.4 35.9 L10.1 34.6 L14.5 34.6 L14.5 36.5 L11.7 38.3 L8.6 38.5 L8.6 39.8 L6.2 39.8 L6.2 44.7 L7.4 44.7 L7.4 43.9 L7.2 44.6 L6.4 44.6 L6.4 40.4 L9 40.2 L9 38.8 L10.2 39 L9.1 40.2 L13.1 40.4 L13.7 41 L13.7 39.8 L16.2 39.8 L16.2 41.9 L18.4 41.9 L18.4 43.1 L15.8 43.1 L15.8 43.9 L18.4 43.9 L18.4 44.7 L18.6 44 L21.4 44 L21.4 45.1 L21.8 45.1 L21.8 44 L24.5 44 L24.5 45.1 L24.9 45.1 L24.9 40.7 L25.9 40.7 L26.7 41.4 L33.4 41.4 L33.4 45.1 L33.8 45.1 L33.8 44 L35.7 44 L35.7 45.1 L42.8 45.1 L42.8 41.4 L47.1 41.4 L48.7 42.8 L54.2 42.8 L54.2 45.1 L55.4 45.1 L55.4 46.4 L31.6 46.5 L59 46.5 L59 47.6 L58.4 47.6 L58.4 49.9 L58.6 48.1 L66 48.1 L66 45.7 L67.4 45.7 L67.5 47.5 L70.4 47.5 L70.6 45.4 L72.2 45.3 L72.2 36.7 L75.5 36.6 L75.4 17 L24.4 17 L24.4 10 L25.7 10 L25.7 14.7 L26.7 15.6 L30.7 15.7 L31.6 14.9 L35 14.9 L36 15.9 L61.5 15.9 L61.6 15.1 L66.1 15.1 L67.1 15.9 L73.6 15.8 L74.1 15.1 L74.1 10.4 L73.7 9.6 L61.7 9.6 L61.7 1.1 L61.4 0.5 L58.6 0.4 L58.6 0 L31.4 0 L31.4 0.4 L26.1 0.4 L25.7 0.8 L25.7 6.8 L26.7 7.5 L26.7 8.4 L24.3 8.4 L24.2 0.7 L13 0.7 L12.9 1.1 L11.7 1.1 L11.1 1.5 L11.4 3.1 L10.8 3.2 L10.6 4.7 L9.3 4.7 L9.3 18.7 L12.7 18.8 L12.8 23.1 L18.5 23.1 L18.5 24.5 L26.8 24.5 L26.8 25.3 L24 25.3 L23.9 26.9 L21.8 26.9 L21.7 27.9 L20 28 L20 30.3 L21.9 30.3 L21.9 32 L20.5 32 L19.9 31.4 L16.3 31.5 L16.2 33.1 L19.5 33.2 L19.6 32.5 L21.9 32.8 L21.9 33.9 L20 33.9 L20 36.3 L21.9 36.3 L21.9 37.6 L26.7 37.6 L26.9 35.6 L29.8 35.3 L29.8 41 L26.7 41 L25.8 40.4 L19.5 40.4 L18.3 41.5 L16.4 41.7 L16.4 39.7 L13.5 39.7 L13.5 40.1 L11 40.1 L11 38.5 L11.9 38.5 L14.7 36.7 L14.8 34.5 L16 34.3 L16 33.7 L14.7 33.5 L14.7 31.4 L16 31.2 L16 30.6 L14.8 30.4 L14.8 28 L10.9 25.5 L8.2 25.5 L7.8 22.1 L7 22.1 L7 3.7 L10 2.4 L10.1 1.2 L4.8 1.8 L4.7 9 L-0.1 9.1 Z"/>
+</g>
+<g id="blocks" stroke="#333" stroke-width="0.15">
+  <polygon points="5.7,20.8 3.6,20.8 3.6,22.5 5.7,22.5 5.8,22.5 5.8,22.3 5.7,22.3" fill="#e8963c" fill-opacity="0.8" data-no="6" data-mall="sanban_s_b1"><title>区画6 / sanban_s_b1 / メンディングサービス</title></polygon>
+  <polygon points="2.8,23.5 0.7,23.5 0.7,25.3 2.7,25.3 2.7,25.2 2.8,25.2" fill="#e8963c" fill-opacity="0.8" data-no="7" data-mall="sanban_s_b1"><title>区画7 / sanban_s_b1 / りそな銀行 セブンデイズプラザ</title></polygon>
+  <polygon points="8.5,26.5 8.5,28.1 10.5,28.1 10.5,26.4 8.6,26.4 8.6,26.5" fill="#e8963c" fill-opacity="0.8" data-no="8" data-mall="sanban_s_b1"><title>区画8 / sanban_s_b1 / ミッシュマッシュ</title></polygon>
+  <polygon points="9.6,35.7 9.6,37.3 11.8,37.3 11.8,35.7" fill="#e8963c" fill-opacity="0.8" data-no="12" data-mall="sanban_s_b1"><title>区画12 / sanban_s_b1 / ミツミネ</title></polygon>
+  <polygon points="9.1,41.5 9.1,43.2 11.1,43.2 11.1,41.5" fill="#e8963c" fill-opacity="0.8" data-no="13" data-mall="sanban_s_b1"><title>区画13 / sanban_s_b1 / 銀座ワシントン</title></polygon>
+  <polygon points="12.7,28.3 10.5,28.3 10.5,30 12.7,30" fill="#e8963c" fill-opacity="0.8" data-no="10" data-mall="sanban_s_b1"><title>区画10 / sanban_s_b1 / ハートダンス</title></polygon>
+  <polygon points="13.7,31.5 11.6,31.5 11.6,33.3 13.7,33.3 13.7,33.2 13.8,33.2 13.8,31.6 13.7,31.6" fill="#e8963c" fill-opacity="0.8" data-no="11" data-mall="sanban_s_b1"><title>区画11 / sanban_s_b1 / コスメキッチン</title></polygon>
+  <polygon points="19,42.3 19,44 21.1,44 21.1,42.3" fill="#e8963c" fill-opacity="0.8" data-no="79" data-mall="sanban_s_b1"><title>区画79 / sanban_s_b1 / ルージュ・ヴィフ ラクレ</title></polygon>
+  <polygon points="22.1,42.3 22.1,44 24.2,44 24.2,42.3" fill="#e8963c" fill-opacity="0.8" data-no="80" data-mall="sanban_s_b1"><title>区画80 / sanban_s_b1 / プロポーションボディドレッシング</title></polygon>
+  <polygon points="26.6,21.8 26.6,23.5 28.6,23.5 28.6,21.9 28.5,21.9 28.5,21.8" fill="#e8963c" fill-opacity="0.8" data-no="19" data-mall="sanban_s_b1"><title>区画19 / sanban_s_b1 / ノーリーズソフィー</title></polygon>
+  <polygon points="28,32.1 28.1,32.1 28.1,32.2 28.2,32.2 28.2,32.1 28.3,32.1 28.3,31.5 28.2,31.5 28.1,31.5 28,31.5" fill="#e8963c" fill-opacity="0.8" data-no="30" data-mall="sanban_s_b1"><title>区画30 / sanban_s_b1 / ハーブス 三番街店</title></polygon>
+  <polygon points="28.1,42.3 28.1,44 30.1,44 30.1,42.3" fill="#e8963c" fill-opacity="0.8" data-no="82" data-mall="sanban_s_b1"><title>区画82 / sanban_s_b1 / ナチュラルビューティーベーシック</title></polygon>
+  <polygon points="31.5,21.8 31.5,23.5 33.6,23.5 33.6,21.9 33.5,21.9 33.5,21.8" fill="#e8963c" fill-opacity="0.8" data-no="20" data-mall="sanban_s_b1"><title>区画20 / sanban_s_b1 / コラージュ ガリャルダガランテ</title></polygon>
+  <polygon points="31.3,34.4 31.1,34.6 30.9,34.6 30.9,34.7 30.8,34.7 30.6,34.9 30.4,34.9 30.3,35.1 34.2,35.1 34.2,35.2 34.3,35.2 34.3,36.5 35.9,36.5 35.9,35.4 36,35.4 36,35.3 36.7,35.3 36.7,33.6 35.5,33.6 35.5,33.2 33.5,33.2 33.5,33.6 32.6,33.6 32.5,33.6 32.5,33.7 32.3,33.7 32,34 31.8,34 31.5,34.4" fill="#e8963c" fill-opacity="0.8" data-no="37" data-mall="sanban_s_b1"><title>区画37 / sanban_s_b1 / ちいかわらんど</title></polygon>
+  <polygon points="31,36.9 31,38.6 33.2,38.6 33.2,36.9" fill="#e8963c" fill-opacity="0.8" data-no="36" data-mall="sanban_s_b1"><title>区画36 / sanban_s_b1 / ストロベリーフィールズ</title></polygon>
+  <polygon points="32.9,29.1 32.9,30.8 34.9,30.8 34.9,29.1" fill="#e8963c" fill-opacity="0.8" data-no="31" data-mall="sanban_s_b1"><title>区画31 / sanban_s_b1 / ユナイテッドアローズ グリーンレーベルリラクシング</title></polygon>
+  <polygon points="34,42.3 34,44 36,44 36,42.3" fill="#e8963c" fill-opacity="0.8" data-no="84" data-mall="sanban_s_b1"><title>区画84 / sanban_s_b1 / インティミッシミ</title></polygon>
+  <polygon points="35.1,37.2 35.1,38.9 37.2,38.9 37.2,37.2" fill="#e8963c" fill-opacity="0.8" data-no="68" data-mall="sanban_s_b1"><title>区画68 / sanban_s_b1 / エメ</title></polygon>
+  <polygon points="36.4,21.8 36.4,23.5 38.5,23.5 38.5,21.8" fill="#e8963c" fill-opacity="0.8" data-no="21" data-mall="sanban_s_b1"><title>区画21 / sanban_s_b1 / ロペピクニック 三番街店</title></polygon>
+  <polygon points="36.8,25.3 36.6,25.4 36.6,27 38.7,27 38.7,25.3" fill="#e8963c" fill-opacity="0.8" data-no="49" data-mall="sanban_s_b1"><title>区画49 / sanban_s_b1 / ポートランド</title></polygon>
+  <polygon points="38.1,41 38.1,42.6 38.2,42.6 38.2,42.7 40.2,42.7 40.2,40.9 38.2,40.9 38.2,41" fill="#e8963c" fill-opacity="0.8" data-no="85" data-mall="sanban_s_b1"><title>区画85 / sanban_s_b1 / サマンサモスモス</title></polygon>
+  <polygon points="38.9,33.2 38.9,34.8 40.9,34.8 40.9,33.2 40.8,33.2" fill="#e8963c" fill-opacity="0.8" data-no="38" data-mall="sanban_s_b1"><title>区画38 / sanban_s_b1 / ナポカ</title></polygon>
+  <polygon points="38.2,39.6 38.2,40.2 40.2,40.2 40.4,40 40.6,40 40.8,39.8 40.9,39.8 41.2,39.4 41.4,39.4 41.7,39.1 41.9,39.1 42.1,38.9 42.3,38.9 42.3,38.8 42.4,38.8 42.6,38.6 42.8,38.6 42.8,38.5 44.9,38.5 44.9,37.7 43.4,37.7 43.3,37.7 43.3,37.6 43.2,37.6 43.2,37.5 43.1,37.5 43.1,37.4 43,37.4 43,37.3 42.9,37.3 42.8,37.3 42.5,36.9 42.2,36.9 41.9,37.3 41.8,37.3 41.8,37 39.8,37 39.8,38.6 39.7,38.6 39.5,38.9 39.3,38.9 39,39.2 38.8,39.2 38.5,39.5 38.3,39.5 38.3,39.6" fill="#e8963c" fill-opacity="0.8" data-no="73" data-mall="sanban_s_b1"><title>区画73 / sanban_s_b1 / ピーツー ドッグ&amp;キャット</title></polygon>
+  <polygon points="40.3,21.8 40.3,23.5 42.3,23.5 42.3,21.8" fill="#e8963c" fill-opacity="0.8" data-no="22" data-mall="sanban_s_b1"><title>区画22 / sanban_s_b1 / パーフェクトスーツファクトリー</title></polygon>
+  <polygon points="42.1,27.4 42.1,27.5 42.2,27.5 42.4,27.8 42.6,27.8 42.9,28 42.9,28.2 43.3,28.4 43.3,29.1 43.4,29.1 44,29.1 44,29.2 44.1,29.2 44.1,29.4 44.3,29.5 44.3,29.6 44.4,29.6 44.4,29.8 44.5,29.8 44.5,29.9 44.6,29.9 44.7,29.7 44.9,29.7 45.2,29.4 45.4,29.4 45.7,29.1 45.9,29.1 46.1,28.8 46.3,28.8 46.3,28.7 46.7,28.5 46.7,28.4 46.6,28.4 46.6,28.2 46.5,28.2 46.4,28.2 46.4,28.1 46,27.8 46,27.7 45.7,27.5 45.7,27 41.6,27 41.6,27.1 41.7,27.1 41.7,27.2" fill="#e8963c" fill-opacity="0.8" data-no="32" data-mall="sanban_s_b1"><title>区画32 / sanban_s_b1 / ピロースタンド</title></polygon>
+  <polygon points="42,39.2 42,40.9 44.1,40.9 44.1,39.2" fill="#e8963c" fill-opacity="0.8" data-no="74" data-mall="sanban_s_b1"><title>区画74 / sanban_s_b1 / ビューズ アイブロウ スタジオ</title></polygon>
+  <polygon points="42.8,36.9 42.8,37 42.9,37 42.9,37.1 43,37.1 43,37.2 43.1,37.2 43.1,37.3 43.2,37.3 43.5,37.6 45.5,37.6 45.5,37.5 45.7,37.5 45.8,37.3 46,37.3 46.1,37.2 46.3,37.2 46.4,37 46.6,37 46.6,36.9 46.7,36.9 46.9,36.9 46.9,36.8 48.8,36.8 48.8,33.6 45.4,33.6 45.3,33.7 45.1,33.7 45.1,33.8 45,33.8 45,34 44.9,34 44.9,34.1 44.8,34.1 44.8,34.4 44.7,34.4 44.7,34.5 44.6,34.5 44.5,34.8 44.3,34.9 44.2,35.3 44,35.3 44,35.5 43.9,35.5 43.9,35.6 43.7,35.7 43.7,35.8 43.3,36.1 43.3,36.2 43.2,36.2 43.2,36.3 43.1,36.3 43.1,36.4 43,36.4 43,36.5 42.6,36.7 42.6,36.9" fill="#e8963c" fill-opacity="0.8" data-no="39" data-mall="sanban_s_b1"><title>区画39 / sanban_s_b1 / リーフ</title></polygon>
+  <polygon points="43.5,26 43.8,26 43.8,25.9 43.9,25.9 43.9,25.4 43.8,25.4 43.8,25.3 43.6,25.3 43.6,25.4 43.5,25.4" fill="#e8963c" fill-opacity="0.8" data-no="50" data-mall="sanban_s_b1"><title>区画50 / sanban_s_b1 / モノミュージアム</title></polygon>
+  <polygon points="44.1,21.2 44.1,22.9 46.2,22.9 46.2,21.2" fill="#e8963c" fill-opacity="0.8" data-no="23" data-mall="sanban_s_b1"><title>区画23 / sanban_s_b1 / ディノス F.O.バイ サクラフォークス</title></polygon>
+  <polygon points="44.7,42.3 44.7,44 46.8,44 46.8,42.3" fill="#e8963c" fill-opacity="0.8" data-no="86" data-mall="sanban_s_b1"><title>区画86 / sanban_s_b1 / ハニーズ</title></polygon>
+  <polygon points="45.9,37.8 45.9,39.5 47.9,39.5 47.9,37.8" fill="#b0b6c0" fill-opacity="0.5" data-no="86" data-mall="sanban_s_b1"><title>区画86 / sanban_s_b1</title></polygon>
+  <polygon points="46.1,25.6 46.1,26.9 46.2,26.9 46.2,27 48.1,27 48.1,26.9 48.2,26.9 48.2,25.3 48.1,25.3 48.1,25.2 46.2,25.2 46.2,25.6" fill="#e8963c" fill-opacity="0.8" data-no="51" data-mall="sanban_s_b1"><title>区画51 / sanban_s_b1 / フォンテーヌ クチュール</title></polygon>
+  <polygon points="46.1,30.4 46.1,32.1 48.1,32.1 48.1,30.4" fill="#e8963c" fill-opacity="0.8" data-no="33" data-mall="sanban_s_b1"><title>区画33 / sanban_s_b1 / スロヴネンヤ ドゥセー</title></polygon>
+  <polygon points="48.5,19.7 48.5,21.9 54.2,22 54.2,19.7" fill="#e8963c" fill-opacity="0.8" data-no="24" data-mall="sanban_s_b1"><title>区画24 / sanban_s_b1 / ショップチャンネル大阪</title></polygon>
+  <polygon points="48.8,25.3 48.8,26.9 50.9,26.9 50.9,25.2 48.9,25.2 48.9,25.3" fill="#e8963c" fill-opacity="0.8" data-no="52" data-mall="sanban_s_b1"><title>区画52 / sanban_s_b1 / ピッコーネ・ローマ</title></polygon>
+  <polygon points="49.3,37.3 49.3,39 51.4,39 51.4,37.3" fill="#e8963c" fill-opacity="0.8" data-no="76" data-mall="sanban_s_b1"><title>区画76 / sanban_s_b1 / ファブリック トウキョウ</title></polygon>
+  <polygon points="49.9,30.4 49.9,32.1 52,32.1 52,30.4" fill="#e8963c" fill-opacity="0.8" data-no="34" data-mall="sanban_s_b1"><title>区画34 / sanban_s_b1 / コキュリコット</title></polygon>
+  <polygon points="50.8,34.4 50.8,36.1 52.9,36.1 52.9,34.4" fill="#e8963c" fill-opacity="0.8" data-no="40" data-mall="sanban_s_b1"><title>区画40 / sanban_s_b1 / ジンズ</title></polygon>
+  <polygon points="51.5,25.3 51.5,26.9 53.6,26.9 53.6,25.3 53.5,25.3 53.5,25.2 51.6,25.2 51.6,25.3" fill="#e8963c" fill-opacity="0.8" data-no="53" data-mall="sanban_s_b1"><title>区画53 / sanban_s_b1 / チュニック</title></polygon>
+  <polygon points="51.9,37.3 51.9,39 53.8,39 53.8,38.9 53.9,38.9 53.9,37.3" fill="#e8963c" fill-opacity="0.8" data-no="77" data-mall="sanban_s_b1"><title>区画77 / sanban_s_b1 / ドラッグウェア</title></polygon>
+  <polygon points="53.2,27.8 53.2,29.5 55.2,29.5 55.2,27.8" fill="#e8963c" fill-opacity="0.8" data-no="57" data-mall="sanban_s_b1"><title>区画57 / sanban_s_b1 / タビインターナショナル</title></polygon>
+  <polygon points="53.7,30.4 53.7,32.1 55.8,32.1 55.8,30.4" fill="#e8963c" fill-opacity="0.8" data-no="35" data-mall="sanban_s_b1"><title>区画35 / sanban_s_b1 / フットデザイン・無重力マッサージ</title></polygon>
+  <polygon points="54.2,25.9 54.2,27.6 56.3,27.6 56.3,25.9" fill="#e8963c" fill-opacity="0.8" data-no="54" data-mall="sanban_s_b1"><title>区画54 / sanban_s_b1 / ラフィネ</title></polygon>
+  <polygon points="54.2,37.3 54.2,39 56.3,39 56.3,37.2 54.3,37.2 54.3,37.3" fill="#e8963c" fill-opacity="0.8" data-no="78" data-mall="sanban_s_b1"><title>区画78 / sanban_s_b1 / ドライヘッドスパ専門サロン リセット</title></polygon>
+  <polygon points="55,34.4 55,36.1 57.1,36.1 57.1,34.4" fill="#e8963c" fill-opacity="0.8" data-no="41" data-mall="sanban_s_b1"><title>区画41 / sanban_s_b1 / ヘルス＆ビューティー メトラボ</title></polygon>
+  <polygon points="55,43.1 55,44.8 57.1,44.8 57.1,43.1 56.4,43.1 55.1,43.1" fill="#e8963c" fill-opacity="0.8" data-no="89" data-mall="sanban_s_b1"><title>区画89 / sanban_s_b1 / フォルムアイ</title></polygon>
+  <polygon points="56.2,19.9 56.2,21.6 58.3,21.6 58.3,19.9" fill="#e8963c" fill-opacity="0.8" data-no="26" data-mall="sanban_s_b1"><title>区画26 / sanban_s_b1 / カロー</title></polygon>
+  <polygon points="60,34.1 60,35.7 67.2,35.7 67.2,37.5 68.8,37.5 68.8,33.6 67.3,33.6 67.3,28.9 67.2,28.9 67.2,28.8 64.4,28.8 64.4,34.1" fill="#e8963c" fill-opacity="0.8" data-no="90" data-mall="sanban_s_b1"><title>区画90 / sanban_s_b1 / 上島珈琲店</title></polygon>
+  <polygon points="60.6,36.8 60.6,38.5 62.7,38.5 62.7,36.8" fill="#e8963c" fill-opacity="0.8" data-no="91" data-mall="sanban_s_b1"><title>区画91 / sanban_s_b1 / まねきや</title></polygon>
+  <polygon points="61.3,26.2 61.3,27.9 63.5,27.9 63.5,26.2" fill="#e8963c" fill-opacity="0.8" data-no="29" data-mall="sanban_s_b1"><title>区画29 / sanban_s_b1 / ロッサ</title></polygon>
+  <polygon points="63.2,21.5 63.2,23.3 65.3,23.3 65.3,21.6 65.2,21.6 65.2,21.5" fill="#e8963c" fill-opacity="0.8" data-no="27" data-mall="sanban_s_b1"><title>区画27 / sanban_s_b1 / あい鍼灸院・接骨院</title></polygon>
+  <polygon points="63.2,24 63.2,25.7 65.3,25.7 65.3,24" fill="#e8963c" fill-opacity="0.8" data-no="28" data-mall="sanban_s_b1"><title>区画28 / sanban_s_b1 / ほけんの窓口</title></polygon>
+  <polygon points="62.9,39.4 62.9,41.2 65,41.2 65,39.4" fill="#e8963c" fill-opacity="0.8" data-no="92" data-mall="sanban_s_b1"><title>区画92 / sanban_s_b1 / 鈴乃屋</title></polygon>
+  <polygon points="63,42.9 63,44.6 65.1,44.6 65.1,42.9" fill="#e8963c" fill-opacity="0.8" data-no="93" data-mall="sanban_s_b1"><title>区画93 / sanban_s_b1 / きものやまと</title></polygon>
+  <polygon points="66,31.8 66,32.4 66.2,32.5 66.2,32.4 66.3,32.4 66.3,31.8" fill="#b0b6c0" fill-opacity="0.5" data-no="90" data-mall="sanban_s_b1"><title>区画90 / sanban_s_b1</title></polygon>
+</g>
+<g id="shops" font-size="1.6" fill="#222">
+  <text x="5.1" y="22.0" text-anchor="middle" dominant-baseline="middle">メンディングサービス</text>
+  <text x="2.1" y="24.7" text-anchor="middle" dominant-baseline="middle">りそな銀行 セブンデイズプラザ</text>
+  <text x="9.2" y="27.0" text-anchor="middle" dominant-baseline="middle">ミッシュマッシュ</text>
+  <text x="10.7" y="36.5" text-anchor="middle" dominant-baseline="middle">ミツミネ</text>
+  <text x="10.1" y="42.4" text-anchor="middle" dominant-baseline="middle">銀座ワシントン</text>
+  <text x="11.6" y="29.1" text-anchor="middle" dominant-baseline="middle">ハートダンス</text>
+  <text x="13.2" y="32.4" text-anchor="middle" dominant-baseline="middle">コスメキッチン</text>
+  <text x="20.1" y="43.2" text-anchor="middle" dominant-baseline="middle">ルージュ・ヴィフ ラクレ</text>
+  <text x="23.2" y="43.2" text-anchor="middle" dominant-baseline="middle">プロポーションボディドレッシング</text>
+  <text x="27.9" y="22.4" text-anchor="middle" dominant-baseline="middle">ノーリーズソフィー</text>
+  <text x="28.1" y="31.9" text-anchor="middle" dominant-baseline="middle">ハーブス 三番街店</text>
+  <text x="29.1" y="43.2" text-anchor="middle" dominant-baseline="middle">ナチュラルビューティーベーシック</text>
+  <text x="32.9" y="22.4" text-anchor="middle" dominant-baseline="middle">コラージュ ガリャルダガランテ</text>
+  <text x="33.2" y="34.6" text-anchor="middle" dominant-baseline="middle">ちいかわらんど</text>
+  <text x="32.1" y="37.8" text-anchor="middle" dominant-baseline="middle">ストロベリーフィールズ</text>
+  <text x="33.9" y="30.0" text-anchor="middle" dominant-baseline="middle">ユナイテッドアローズ グリーンレーベルリラクシング</text>
+  <text x="35.0" y="43.2" text-anchor="middle" dominant-baseline="middle">インティミッシミ</text>
+  <text x="36.2" y="38.0" text-anchor="middle" dominant-baseline="middle">エメ</text>
+  <text x="37.5" y="22.6" text-anchor="middle" dominant-baseline="middle">ロペピクニック 三番街店</text>
+  <text x="37.5" y="26.0" text-anchor="middle" dominant-baseline="middle">ポートランド</text>
+  <text x="38.7" y="41.8" text-anchor="middle" dominant-baseline="middle">サマンサモスモス</text>
+  <text x="40.1" y="33.8" text-anchor="middle" dominant-baseline="middle">ナポカ</text>
+  <text x="41.5" y="38.5" text-anchor="middle" dominant-baseline="middle">ピーツー ドッグ&amp;キャット</text>
+  <text x="41.3" y="22.6" text-anchor="middle" dominant-baseline="middle">パーフェクトスーツファクトリー</text>
+  <text x="44.5" y="28.6" text-anchor="middle" dominant-baseline="middle">ピロースタンド</text>
+  <text x="43.0" y="40.0" text-anchor="middle" dominant-baseline="middle">ビューズ アイブロウ スタジオ</text>
+  <text x="44.6" y="36.0" text-anchor="middle" dominant-baseline="middle">リーフ</text>
+  <text x="43.7" y="25.6" text-anchor="middle" dominant-baseline="middle">モノミュージアム</text>
+  <text x="45.2" y="22.1" text-anchor="middle" dominant-baseline="middle">ディノス F.O.バイ サクラフォークス</text>
+  <text x="45.8" y="43.2" text-anchor="middle" dominant-baseline="middle">ハニーズ</text>
+  <text x="46.9" y="38.6" text-anchor="middle" dominant-baseline="middle">#86</text>
+  <text x="47.2" y="26.2" text-anchor="middle" dominant-baseline="middle">フォンテーヌ クチュール</text>
+  <text x="47.1" y="31.3" text-anchor="middle" dominant-baseline="middle">スロヴネンヤ ドゥセー</text>
+  <text x="51.3" y="20.8" text-anchor="middle" dominant-baseline="middle">ショップチャンネル大阪</text>
+  <text x="49.5" y="25.8" text-anchor="middle" dominant-baseline="middle">ピッコーネ・ローマ</text>
+  <text x="50.4" y="38.1" text-anchor="middle" dominant-baseline="middle">ファブリック トウキョウ</text>
+  <text x="51.0" y="31.3" text-anchor="middle" dominant-baseline="middle">コキュリコット</text>
+  <text x="51.9" y="35.3" text-anchor="middle" dominant-baseline="middle">ジンズ</text>
+  <text x="52.6" y="25.7" text-anchor="middle" dominant-baseline="middle">チュニック</text>
+  <text x="53.2" y="38.4" text-anchor="middle" dominant-baseline="middle">ドラッグウェア</text>
+  <text x="54.2" y="28.6" text-anchor="middle" dominant-baseline="middle">タビインターナショナル</text>
+  <text x="54.8" y="31.3" text-anchor="middle" dominant-baseline="middle">フットデザイン・無重力マッサージ</text>
+  <text x="55.3" y="26.8" text-anchor="middle" dominant-baseline="middle">ラフィネ</text>
+  <text x="54.9" y="37.8" text-anchor="middle" dominant-baseline="middle">ドライヘッドスパ専門サロン リセット</text>
+  <text x="56.0" y="35.3" text-anchor="middle" dominant-baseline="middle">ヘルス＆ビューティー メトラボ</text>
+  <text x="55.9" y="43.7" text-anchor="middle" dominant-baseline="middle">フォルムアイ</text>
+  <text x="57.3" y="20.8" text-anchor="middle" dominant-baseline="middle">カロー</text>
+  <text x="65.8" y="33.1" text-anchor="middle" dominant-baseline="middle">上島珈琲店</text>
+  <text x="61.7" y="37.6" text-anchor="middle" dominant-baseline="middle">まねきや</text>
+  <text x="62.4" y="27.1" text-anchor="middle" dominant-baseline="middle">ロッサ</text>
+  <text x="64.6" y="22.1" text-anchor="middle" dominant-baseline="middle">あい鍼灸院・接骨院</text>
+  <text x="64.3" y="24.9" text-anchor="middle" dominant-baseline="middle">ほけんの窓口</text>
+  <text x="64.0" y="40.3" text-anchor="middle" dominant-baseline="middle">鈴乃屋</text>
+  <text x="64.0" y="43.8" text-anchor="middle" dominant-baseline="middle">きものやまと</text>
+  <text x="66.2" y="32.2" text-anchor="middle" dominant-baseline="middle">#90</text>
+</g>
+<g id="links" fill="#c8901a" stroke="#c8901a" font-size="2.2" font-weight="bold">
+  <polygon points="-2,25 2,23.5 2,26.5" stroke="none"><title>リンクス梅田・JR大阪駅へ(西口連絡通路)</title></polygon>
+  <text x="-4.0" y="25.0" stroke="none" text-anchor="end">➜ リンクス梅田・JR大阪駅へ(西口連絡通路)</text>
+  <polygon points="40,52 38.5,48 41.5,48" stroke="none"><title>ホワイティうめだ(プチシャン)へ</title></polygon>
+  <text x="40.0" y="54.0" stroke="none" text-anchor="middle">➜ ホワイティうめだ(プチシャン)へ</text>
+  <polygon points="37,-2 38.5,2 35.5,2" stroke="none"><title>北館へは B2F の連絡通路で(B1F は直結なし)</title></polygon>
+  <text x="37.0" y="-4.0" stroke="none" text-anchor="middle">➜ 北館へは B2F の連絡通路で(B1F は直結なし)</text>
+</g>
+<g id="anchors" fill="#d33">
+  <circle cx="41.3" cy="32.2" r="0.8"><title>エリア代表点 sanban_s_b1</title></circle>
+</g>
+<g id="legend" font-size="2.5" fill="#333"><text x="-51" y="-16">阪急三番街 南館B1F  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>
+</svg>

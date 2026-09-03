@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -24 110 74" width="440" height="296">
+<title>関電不動産西梅田ビル B2F 詳細地図(ガイド座標: 1単位=1m, x=東, y=南)</title>
+<rect x="-10" y="-24" width="110" height="74" fill="#f4f4f4"/>
+<g id="floor" fill="#3a78c2" fill-opacity="0.25" stroke="#3a78c2" stroke-width="0.3">
+  <path fill-rule="evenodd" d="M52 39 L52 2.8 L47.8 0 L8.4 0 L5.1 16.4 L0 24 L0 39.2 Z"/>
+</g>
+<g id="blocks" stroke="#333" stroke-width="0.15">
+  <polygon points="52,39 52,23 30.6,23 30.6,39" fill="#3a78c2" fill-opacity="0.8" data-no="4" data-mall="kanden"><title>区画4 / kanden / 堂島喫茶 SUI</title></polygon>
+  <polygon points="30.6,39 30.6,23 19.7,23 19.7,39" fill="#3a78c2" fill-opacity="0.8" data-no="1" data-mall="kanden"><title>区画1 / kanden / 中国料理 敦煌</title></polygon>
+  <polygon points="19.7,39 19.7,23 14.6,23 11.7,39" fill="#3a78c2" fill-opacity="0.8" data-no="2" data-mall="kanden"><title>区画2 / kanden / 割烹 小澤</title></polygon>
+  <polygon points="11.7,39 14.6,23 9.1,23 6.2,39" fill="#b0b6c0" fill-opacity="0.5" data-no="" data-mall="空き"><title>空き</title></polygon>
+  <polygon points="6.2,39 7.7,30.5 0,30.5 0,39.2" fill="#b0b6c0" fill-opacity="0.5" data-no="" data-mall="トイレ"><title>トイレ</title></polygon>
+  <polygon points="38.3,16.9 38.3,0 8.4,0 5.1,16.9" fill="#3a78c2" fill-opacity="0.8" data-no="3" data-mall="kanden"><title>区画3 / kanden / とんこう</title></polygon>
+</g>
+<g id="shops" font-size="1.6" fill="#222">
+  <text x="41.3" y="31.0" text-anchor="middle" dominant-baseline="middle">堂島喫茶 SUI</text>
+  <text x="25.2" y="31.0" text-anchor="middle" dominant-baseline="middle">中国料理 敦煌</text>
+  <text x="16.4" y="31.0" text-anchor="middle" dominant-baseline="middle">割烹 小澤</text>
+  <text x="22.5" y="8.4" text-anchor="middle" dominant-baseline="middle">とんこう</text>
+</g>
+<g id="links" fill="#c8901a" stroke="#c8901a" font-size="2.2" font-weight="bold">
+  <polygon points="42,-6 43.5,-2 40.5,-2" stroke="none"><title>ドーチカへ(C61)</title></polygon>
+  <text x="42.0" y="-8.0" stroke="none" text-anchor="middle">➜ ドーチカへ(C61)</text>
+  <polygon points="48.3,20 44.3,21.5 44.3,18.5" stroke="none"><title>B1Fへ(館内階段)</title></polygon>
+  <text x="50.3" y="20.0" stroke="none" text-anchor="start">➜ B1Fへ(館内階段)</text>
+</g>
+<g id="anchors" fill="#d33">
+  <circle cx="26.3" cy="25.4" r="0.8"><title>エリア代表点 kanden_b2</title></circle>
+</g>
+<g id="legend" font-size="2.5" fill="#333"><text x="-8" y="-20">関電不動産西梅田ビル B2F  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-11 -11 88 74" width="352" height="296">
+<title>阪急三番街 北館B2F 詳細地図(ガイド座標: 1単位=1m, x=東, y=南)</title>
+<rect x="-11" y="-11" width="88" height="74" fill="#f4f4f4"/>
+<g id="floor" fill="#e8963c" fill-opacity="0.25" stroke="#e8963c" stroke-width="0.3">
+  <path fill-rule="evenodd" d="M0.1 9.9 L-0.2 11.5 L10.1 11.5 L10.1 27.3 L-0.3 27.4 L0.1 27.9 L-0.2 29.5 L10.1 29.5 L10.1 36.6 L40 36.6 L40 35.9 L63.3 34.5 L63.3 3.1 L62.6 3.1 L62.6 0.1 L11.4 -0.2 L11.2 0.9 L10.1 1.3 L10.1 9.2 L-0.2 9.2 Z"/>
+</g>
+<g id="blocks" stroke="#333" stroke-width="0.15">
+  <polygon points="10.9,29.2 10.9,30.9 18.9,30.9 18.9,29.8 14,29.8 14,29.2 13.6,29.2 11.1,29.2" fill="#e8963c" fill-opacity="0.8" data-no="12" data-mall="sanban_n_b2"><title>区画12 / sanban_n_b2 / ヨーキーズクレープリー / ピースオブベイク</title></polygon>
+  <polygon points="11.3,1.6 11.3,3.2 14.1,3.2 14.1,1.6" fill="#e8963c" fill-opacity="0.8" data-no="18" data-mall="sanban_n_b2"><title>区画18 / sanban_n_b2 / みそかつ 矢場とん</title></polygon>
+  <polygon points="11.3,3.6 11.3,5.2 14.1,5.2 14.1,3.6" fill="#e8963c" fill-opacity="0.8" data-no="17" data-mall="sanban_n_b2"><title>区画17 / sanban_n_b2 / 大阪・堂島 とろ家</title></polygon>
+  <polygon points="11.3,6.1 11.3,7.8 14.1,7.8 14.1,6.1" fill="#e8963c" fill-opacity="0.8" data-no="16" data-mall="sanban_n_b2"><title>区画16 / sanban_n_b2 / 中華そば専門 バラそば屋</title></polygon>
+  <polygon points="17.6,16.2 17.6,17.8 20.4,17.8 20.4,16.2" fill="#e8963c" fill-opacity="0.8" data-no="15" data-mall="sanban_n_b2"><title>区画15 / sanban_n_b2 / 宮武讃岐うどん</title></polygon>
+  <polygon points="17.6,18.8 17.6,20.5 20.4,20.5 20.4,18.8" fill="#e8963c" fill-opacity="0.8" data-no="14" data-mall="sanban_n_b2"><title>区画14 / sanban_n_b2 / 舎鈴</title></polygon>
+  <polygon points="17.8,23.6 17.8,25.3 20.6,25.3 20.6,23.6" fill="#e8963c" fill-opacity="0.8" data-no="13" data-mall="sanban_n_b2"><title>区画13 / sanban_n_b2 / 1ポンドのステーキハンバーグ タケル</title></polygon>
+  <polygon points="28.3,33 28.3,34.5 31.2,34.5 31.2,33.2 31.1,33.2 31.1,33" fill="#e8963c" fill-opacity="0.8" data-no="11" data-mall="sanban_n_b2"><title>区画11 / sanban_n_b2 / 仙台牛たん 麦とろ 三代目文治</title></polygon>
+  <polygon points="29.3,22.1 29.3,23.6 34.4,23.6 34.4,22.1 33.3,22.1 33.3,21.8 30.4,21.8 30.4,22.1" fill="#e8963c" fill-opacity="0.8" data-no="8" data-mall="sanban_n_b2"><title>区画8 / sanban_n_b2 / &amp;コーヒー メゾンカイザー</title></polygon>
+  <polygon points="33.7,33 33.7,34.5 36.5,34.5 36.5,33" fill="#e8963c" fill-opacity="0.8" data-no="10" data-mall="sanban_n_b2"><title>区画10 / sanban_n_b2 / ダパイダン105</title></polygon>
+  <polygon points="38.1,33.1 38.5,34.8 39.3,34.8 39.8,34.8 39.8,34.7 42.6,34.6 42.6,34.5 44,34.5 45.5,34.5 45.5,34.4 45.6,34.4 45.6,34 45.5,34 45.5,33.4 45.4,33.4 45.2,32.7 43.3,32.7 43.3,32.5 40.3,32.5 40.3,32.9 39.3,32.8 39.3,33 38.2,33 38.2,33.1" fill="#e8963c" fill-opacity="0.8" data-no="9" data-mall="sanban_n_b2"><title>区画9 / sanban_n_b2 / フレッシュネスバーガー</title></polygon>
+  <polygon points="41,7.6 41,9.3 44,9.3 44,7.7 43.8,7.7 43.8,7.6" fill="#e8963c" fill-opacity="0.8" data-no="3" data-mall="sanban_n_b2"><title>区画3 / sanban_n_b2 / 越南路 エツナンルー</title></polygon>
+  <polygon points="41.6,2.6 41.6,4.3 44.4,4.3 44.4,2.6" fill="#e8963c" fill-opacity="0.8" data-no="1" data-mall="sanban_n_b2"><title>区画1 / sanban_n_b2 / どうとんぼり神座×青藍</title></polygon>
+  <polygon points="42.3,18.5 42.3,20.1 45.1,20.1 45.1,18.5" fill="#e8963c" fill-opacity="0.8" data-no="6" data-mall="sanban_n_b2"><title>区画6 / sanban_n_b2 / リ:エント楽韓堂</title></polygon>
+  <polygon points="42.3,21.6 42.3,23.3 45.1,23.3 45.1,21.6" fill="#e8963c" fill-opacity="0.8" data-no="7" data-mall="sanban_n_b2"><title>区画7 / sanban_n_b2 / イタリアンダイニング ペスカ</title></polygon>
+  <polygon points="47.7,4.3 47.7,5.8 50.5,5.8 50.5,4.3" fill="#e8963c" fill-opacity="0.8" data-no="2" data-mall="sanban_n_b2"><title>区画2 / sanban_n_b2 / 天丼・天串・串カツ いしのや</title></polygon>
+  <polygon points="47.7,10 47.7,11.6 50.5,11.6 50.5,10" fill="#e8963c" fill-opacity="0.8" data-no="4" data-mall="sanban_n_b2"><title>区画4 / sanban_n_b2 / お好み焼 清十郎</title></polygon>
+  <polygon points="47.7,13.1 47.7,14.8 50.5,14.8 50.5,13.1" fill="#e8963c" fill-opacity="0.8" data-no="5" data-mall="sanban_n_b2"><title>区画5 / sanban_n_b2 / ミアキッチン</title></polygon>
+</g>
+<g id="shops" font-size="1.6" fill="#222">
+  <text x="14.0" y="29.8" text-anchor="middle" dominant-baseline="middle">ヨーキーズクレープリー / ピースオブベイク</text>
+  <text x="12.7" y="2.4" text-anchor="middle" dominant-baseline="middle">みそかつ 矢場とん</text>
+  <text x="12.7" y="4.4" text-anchor="middle" dominant-baseline="middle">大阪・堂島 とろ家</text>
+  <text x="12.7" y="6.9" text-anchor="middle" dominant-baseline="middle">中華そば専門 バラそば屋</text>
+  <text x="19.0" y="17.0" text-anchor="middle" dominant-baseline="middle">宮武讃岐うどん</text>
+  <text x="19.0" y="19.6" text-anchor="middle" dominant-baseline="middle">舎鈴</text>
+  <text x="19.2" y="24.5" text-anchor="middle" dominant-baseline="middle">1ポンドのステーキハンバーグ タケル</text>
+  <text x="30.2" y="33.6" text-anchor="middle" dominant-baseline="middle">仙台牛たん 麦とろ 三代目文治</text>
+  <text x="31.9" y="22.4" text-anchor="middle" dominant-baseline="middle">&amp;コーヒー メゾンカイザー</text>
+  <text x="35.1" y="33.8" text-anchor="middle" dominant-baseline="middle">ダパイダン105</text>
+  <text x="42.1" y="33.7" text-anchor="middle" dominant-baseline="middle">フレッシュネスバーガー</text>
+  <text x="42.9" y="8.2" text-anchor="middle" dominant-baseline="middle">越南路 エツナンルー</text>
+  <text x="43.0" y="3.4" text-anchor="middle" dominant-baseline="middle">どうとんぼり神座×青藍</text>
+  <text x="43.7" y="19.3" text-anchor="middle" dominant-baseline="middle">リ:エント楽韓堂</text>
+  <text x="43.7" y="22.5" text-anchor="middle" dominant-baseline="middle">イタリアンダイニング ペスカ</text>
+  <text x="49.1" y="5.0" text-anchor="middle" dominant-baseline="middle">天丼・天串・串カツ いしのや</text>
+  <text x="49.1" y="10.8" text-anchor="middle" dominant-baseline="middle">お好み焼 清十郎</text>
+  <text x="49.1" y="14.0" text-anchor="middle" dominant-baseline="middle">ミアキッチン</text>
+</g>
+<g id="links" fill="#c8901a" stroke="#c8901a" font-size="2.2" font-weight="bold">
+  <polygon points="18,45 16.5,41 19.5,41" stroke="none"><title>南館B2Fへ(連絡通路・西)</title></polygon>
+  <text x="18.0" y="47.0" stroke="none" text-anchor="middle">➜ 南館B2Fへ(連絡通路・西)</text>
+  <polygon points="55,45 53.5,41 56.5,41" stroke="none"><title>南館B2Fへ(連絡通路・東)</title></polygon>
+  <text x="55.0" y="47.0" stroke="none" text-anchor="middle">➜ 南館B2Fへ(連絡通路・東)</text>
+</g>
+<g id="anchors" fill="#d33">
+  <circle cx="31.6" cy="17.4" r="0.8"><title>エリア代表点 sanban_n_b2</title></circle>
+</g>
+<g id="legend" font-size="2.5" fill="#333"><text x="-9" y="-7">阪急三番街 北館B2F  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>
+</svg>
