@@ -2,6 +2,7 @@
 // 使い方: node tools/export_detail_vector.mjs → docs/export/detail/<施設ID>.svg / .eps
 // 座標はその施設のガイド座標(m)のまま(1 単位 = 1m、x=東、y=南。EPS は y を反転)。
 // 層: floor(床の外形と穴) / blocks(区画。店が付いた区画は施設色、空きは灰) / shops(店名ラベル) / links(他施設への接続の矢印と文字) / anchors(エリア代表点)
+//     entrances(空。店の入口を手で置いてもらう層: 区画の辺の上の丸 + title に区画番号か店名。読み戻すと案内のゴールになる)
 // 直した SVG を返してもらったら、<g id="floor"> と <g id="blocks"> の <path>/<polygon> をガイド座標のまま読み戻せる。
 import { writeFileSync, mkdirSync } from 'node:fs';
 // detail_maps.js は ESM(型宣言の無いリポジトリなので node からは直接読めない)。先に esbuild で束ねる:
@@ -60,7 +61,11 @@ for (const [key, M] of Object.entries(DETAIL_MAPS)) {
   }
   S.push('</g>', '<g id="anchors" fill="#d33">');
   for (const [area, [ax, ay]] of Object.entries(M.AREA_ANCHORS || {})) S.push(`  <circle cx="${ax}" cy="${ay}" r="0.8"><title>エリア代表点 ${esc(area)}</title></circle>`);
-  S.push('</g>', `<g id="legend" font-size="2.5" fill="#333"><text x="${x0 + 2}" y="${y0 + 4}">${esc(name)}  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>`, '</svg>');
+  // 店の入口(手で置いてもらう層)。区画の辺の上に半径0.5m の丸を置き、title に区画番号(または店名)を書く。複数入口は複数の丸
+  S.push('</g>', '<g id="entrances" fill="#e03030" stroke="none">',
+    '  <!-- ここに店の入口を置く: <circle cx="…" cy="…" r="0.5"><title>区画番号 または 店名</title></circle>  (座標はガイド座標 m。区画の辺の上、通路に接する所) -->',
+    '</g>');
+  S.push(`<g id="legend" font-size="2.5" fill="#333"><text x="${x0 + 2}" y="${y0 + 4}">${esc(name)}  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>`, '</svg>');
   writeFileSync(OUT + key + '.svg', S.join('\n'));
   // EPS(1m = 4pt、y 反転)
   const hex = c => [1, 3, 5].map(i => (parseInt(c.slice(i, i + 2), 16) / 255).toFixed(3)).join(' ');
@@ -72,6 +77,7 @@ for (const [key, M] of Object.entries(DETAIL_MAPS)) {
   M.BLOCKS.forEach((b, i) => { E.push(`% block ${b.no || ''} ${b.mall || ''} ${shopsOf[i].join('/')}`); E.push(`${shopsOf[i].length ? hex(col) : '0.7 0.72 0.75'} rgb ` + eps(b.g) + ' f'); });
   E.push('% ---- links ----', '0.78 0.56 0.1 rgb');
   for (const L of M.links || []) { const [gx, gy] = L.g; let [dx, dy] = L.dir || [0, -1]; const n = Math.hypot(dx, dy) || 1; dx /= n; dy /= n; E.push(`% link ${L.to}`); E.push(eps([[gx + dx * 4, gy + dy * 4], [gx - dy * 1.5, gy + dx * 1.5], [gx + dy * 1.5, gy - dx * 1.5]]) + ' f'); }
+  E.push('% ---- entrances (店の入口。手で置く: 区画の辺の上に半径0.5 の丸 `x y 0.5 0 360 arc cp f` と直前に `% entrance <区画番号|店名>`) ----', '0.88 0.19 0.19 rgb');
   E.push('%%EOF');
   writeFileSync(OUT + key + '.eps', E.join('\n'));
   console.log(key, name, 'floor', M.FLOOR.length, 'blocks', M.BLOCKS.length, 'shops', Object.keys(M.REAL_POS).length, 'links', (M.links || []).length);

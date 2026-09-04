@@ -31,5 +31,8 @@
 <g id="anchors" fill="#d33">
   <circle cx="23" cy="19.5" r="0.8"><title>エリア代表点 kanden_b1</title></circle>
 </g>
+<g id="entrances" fill="#e03030" stroke="none">
+  <!-- ここに店の入口を置く: <circle cx="…" cy="…" r="0.5"><title>区画番号 または 店名</title></circle>  (座標はガイド座標 m。区画の辺の上、通路に接する所) -->
+</g>
 <g id="legend" font-size="2.5" fill="#333"><text x="-8" y="-6">関電不動産西梅田ビル B1F(仮配置)  ガイド座標(1単位=1m, x=東, y=南)。色付き区画=店が特定できた区画、灰=空き/未対応。矢印=他施設への接続</text></g>
 </svg>
