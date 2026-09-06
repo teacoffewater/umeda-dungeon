@@ -76,6 +76,11 @@ tools/data/floorguides/dotica_vicinity_board_2026-09-03.jpg   ← 南端(C93)の
   → tools/gen_polys.py が floor / avanza_ext を床にする。nodes は `--apply` で main.js の NODES に書き込む(集約ドットの rect は手で)
 ```
 
+2026-09-06補正: `tools/data/dotica_reference_correction.json` の床・ノードが
+添付店舗図と全体図に基づく最新の広域補正。上記の生成処理より優先する。
+`gen_polys.py` と `extract_dotica_board.py --apply` は補正を読み込む。
+詳細図の座標は変更しない。再生成後は `npm run check:dotica` を実行する。
+
 ## 座標系は2つある（最重要）
 
 「広域」と「詳細」は**別の座標系**で、意図的に位置合わせしていない。これを混ぜると壊れる。

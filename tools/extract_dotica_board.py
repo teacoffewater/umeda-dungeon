@@ -292,6 +292,9 @@ cv.save(OUT + 'dotica_board_metric.png'); print('wrote dotica_board_metric.png')
 
 # ===================== --apply: main.js のノード座標を書き換える =====================
 if '--apply' in sys.argv:
+    correction = os.path.join(os.path.dirname(__file__), 'data', 'dotica_reference_correction.json')
+    if os.path.exists(correction):
+        NODE_M.update(json.load(open(correction))['nodes'])
     mp_ = os.path.join(ROOT, 'main.js'); ms = open(mp_).read(); n_ = 0
     for k, (x, y) in list(NODE_M.items()) + [('kanden_b1', NODE_M['kanden_b2'])]:
         pat = re.compile(r"((?:J|P)\('%s',\s*(?:'[^']*',\s*'(?:S1|B1|B2)',\s*)?)(-?[\d.]+),\s*(-?[\d.]+)" % k)

@@ -47,3 +47,18 @@ GPS: 地上(空が見える所)で「GPSテスト」か記録フォームの「G
 - 通路網の概略座標: 梅田地下街案内図のトレース
 - 店舗: 阪急三番街・ホワイティうめだ・ディアモール大阪の公式フロアマップ
 - 位置関係はデフォルメした概略図であり、実際の縮尺とは異なる
+
+## ドーチカ形状修正（2026-09-06）
+
+GitHubの `b54ba71` の元ソースに、添付店舗図・全体図に基づく修正を統合。
+広域の床と経路は `main.js`、店舗エリアの集約位置は `shops.js` に反映済み。
+詳細地図の店舗座標と他施設の処理はGitHub版を維持している。
+
+```bash
+npm run build          # ソースからapp.jsを生成
+npm run check:dotica   # 床形状・26区間の経路・周辺ビル接続の検証
+```
+
+`tools/data/dotica_reference_correction.json` は広域の概略補正データ。
+`gen_polys.py` はこの補正を優先し、`extract_dotica_board.py --apply` も補正済み
+ノードを維持する。地図の再生成後にも `npm run check:dotica` を実行する。

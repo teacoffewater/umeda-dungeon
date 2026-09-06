@@ -8,3 +8,8 @@ tools/_detail_whity_tmp.mjs
 
 # Python のバイトコードキャッシュ(検証スクリプト実行で生成される)
 __pycache__/
+
+# ローカル確認・納品・退避ファイル
+/backups/
+/output/
+/tmp/

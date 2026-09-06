@@ -205,7 +205,10 @@ dotica_band = _edge_band(lambda a, b, w, z, fl: z == 'dotica')         # C-84の
 # floor = 本線(区画+通路)と枝(C61/C72/C80/C83/C84 の通路)、C80 の広場(南サンクンガーデン)と C84 の通路。
 # 通路の東の桃色部分(アバンザ B1F の高さのデッキ)は歩けない面なので床にしない。アバンザへは3本の通路の帯(自エッジ)でつなぐ
 _db = json.load(open(os.path.join(DATA, 'dotica_board.json')))
-DOTICA_FLOOR = Polygon(_db['floor']).buffer(0)
+# User reference correction takes precedence over the photographed-board outline.
+_dc_path = os.path.join(DATA, 'dotica_reference_correction.json')
+_dc = json.load(open(_dc_path)) if os.path.exists(_dc_path) else _db
+DOTICA_FLOOR = Polygon(_dc['floor'], _dc.get('holes', [])).buffer(0)
 
 FACILITY_BLD = {
     'sanban': bpoly(*byname['大阪梅田']),
@@ -370,6 +373,14 @@ for floor in ('S1', 'B1', 'B2'):
     for zone in ORDER:
         key = (floor, zone)
         if key not in groups:
+            continue
+        # Keep the verified reference outline exact: generic building clipping and
+        # simplification would cut off its short, connected building entrances.
+        if key == ('B1', 'dotica') and os.path.exists(_dc_path):
+            out_entries.append({'floor': floor, 'zone': zone, 'pts': _dc['floor'],
+                                'holes': _dc.get('holes', []),
+                                'covers': covers_by_group.get(key, [])})
+            claimed = unary_union([claimed, DOTICA_FLOOR]) if claimed is not None else DOTICA_FLOOR
             continue
         u = unary_union(groups[key]).buffer(0)
         # クロージング(膨張→収縮)で幅違い合流部の欠けを均す

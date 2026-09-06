@@ -34,7 +34,8 @@ INTRUSION_WHITELIST = {('whity', 'sanban'), ('whity', 'hankyu_dept'), ('diamor',
                        ('sanban', 'links')}  # 最後はOSMビル外形同士の重複(11m四方)由来
 
 # --- 床ポリゴン ---
-fsrc = open(os.path.join(ROOT, 'tools', 'floor_polys_generated.js')).read()
+# Inspect the floor used by the app rather than a possibly stale generated snapshot.
+fsrc = open(os.path.join(ROOT, 'main.js')).read()
 finals = []
 for m in re.finditer(r"\{ floor: '(S1|B[12])', zone: '(\w+)', pts: (\[\[.*?\]\])(?:, holes: \[(.*?)\])?(?:, covers:.*?)? \},", fsrc):
     holes = [json.loads(h) for h in re.findall(r"\[\[.*?\]\]", m.group(4))] if m.group(4) else []
