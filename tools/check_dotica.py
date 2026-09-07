@@ -33,3 +33,31 @@ while todo:
     seen.add(n); todo.extend(adj.get(n,[]))
 assert {'j_sone_w','kanden_b2','j_avz_n','avz_c_in','j_avz_s','dojima_flat','kiyo_b1'} <= seen
 print('OK: Dotica floor valid; 26 route segments inside; straight/bend geometry and all building connections verified.')
+
+# A centreline-only check misses wedge-shaped cuts at bends. Require the full
+# walking width, including both corners, for each continuous building connector.
+from collections import defaultdict
+edge_widths={(a,b):float(w) for a,b,w in re.findall(r"\['([^']+)',\s*'([^']+)',\s*([\d.]+),\s*'dotica'\]", src)}
+main_nodes=set(north+south)
+incident=defaultdict(list)
+for (a,b),w in edge_widths.items():
+    if a in main_nodes and b in main_nodes: continue
+    required=LineString([nodes[a],nodes[b]]).buffer(w/2,cap_style=2)
+    assert poly.buffer(.00001).covers(required),(a,b,'corridor width is cut away')
+    incident[a].append((b,w));incident[b].append((a,w))
+count=0
+for at,es in incident.items():
+    if len(es)!=2 or es[0][1]!=es[1][1]:continue
+    (a,w),(b,_)=es
+    joint=LineString([nodes[a],nodes[at],nodes[b]]).buffer(w/2,cap_style=2,join_style=2)
+    assert poly.buffer(.00001).covers(joint),(at,'open corner / slit at junction')
+    count+=1
+print(f'OK: full-width connectors and {count} continuous bend/straight joints have no slit.')
+
+# Same-height overlapping slabs create the jagged/flickering triangles seen at
+# building entrances. Check actual exported floor polygons, not mesh heights.
+for m in re.finditer(r"floor: 'B1', zone: '(\w+)', pts: (\[\[.*?\]\])(?:, holes: (\[.*?\]))?, covers:",src):
+    if m[1]=='dotica':continue
+    other=Polygon(json.loads(m[2]),json.loads(m[3]) if m[3] else [])
+    assert poly.intersection(other).area<.0001,(m[1],'overlapping coplanar floor')
+print('OK: no coplanar floor overlap at Dotica building entrances.')

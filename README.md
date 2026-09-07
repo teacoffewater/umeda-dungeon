@@ -62,3 +62,10 @@ npm run check:dotica   # 床形状・26区間の経路・周辺ビル接続の�
 `tools/data/dotica_reference_correction.json` は広域の概略補正データ。
 `gen_polys.py` はこの補正を優先し、`extract_dotica_board.py --apply` も補正済み
 ノードを維持する。地図の再生成後にも `npm run check:dotica` を実行する。
+
+### 接続通路の継ぎ目（2026-09-07）
+
+`python3 tools/repair_dotica_junctions.py` は通路を連続した折れ線として作り、
+曲がり角の両側を接合する。建物と同じ高さの床は `dotica_floor_partition.py`
+で重複しない境界に分割する。床の高さをずらしてちらつきを隠さない。
+`npm run check:dotica` は通路全幅・9継ぎ目の欠けと、接続先との床重複も検証する。

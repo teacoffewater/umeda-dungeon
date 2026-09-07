@@ -431,6 +431,11 @@ for floor in ('S1', 'B1', 'B2'):
                 first = False
             out_entries.append(e)
 
+# Match the exact connector boundary after all generic clipping/simplification.
+if not DEPTH_VIEW:
+    from dotica_floor_partition import partition_dotica
+    out_entries = partition_dotica(out_entries)
+
 # --- JS出力 & main.jsへの差し替え ---
 def js_pts(pts):
     return '[' + ', '.join(f'[{x}, {y}]' for x, y in pts) + ']'
